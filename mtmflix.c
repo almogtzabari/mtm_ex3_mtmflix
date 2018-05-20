@@ -1,4 +1,18 @@
-//
-// Created by Almog on 19/05/2018.
-//
+#include "mtmflix.h"
+#include "map.h"
+#include "series.h"
+
+
+struct mtmFlix_t{
+    Map users;
+    Map series;
+
+
+};
+
+MtmFlix mtmFlixCreate(){
+    Map users = mapCreate(copySeriesDataElements,copySeriesKeyElements,
+            freeSeriesDataElements,freeSeriesKeyElements,compareSeriesDataElements);
+}
+
 
