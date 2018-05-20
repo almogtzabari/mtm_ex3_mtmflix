@@ -130,6 +130,10 @@ void seriesDestroy(Series series){
     free(series);
 }
 
+void freeSeriesSetElements(SetElement element){
+    seriesDestroy((Series)element);
+}
+
 void freeSeriesMapKeyElements(MapKeyElement element){
     free((char*)element);
 }
@@ -137,6 +141,14 @@ void freeSeriesMapKeyElements(MapKeyElement element){
 int compareSeriesMapDataElements(MapDataElement element1,
                                  MapDataElement element2){
 
+}
+
+int compareSeries(Series series1, Series series2){
+
+}
+
+int compareSeriesSetElements(SetElement element1, SetElement element2){
+    return compareSeries((Series)element1,(Series)element2);
 }
 
 /** //todo: what about bad min/max input?
