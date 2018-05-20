@@ -1,5 +1,4 @@
 #include <malloc.h>
-
 #include <assert.h>
 #include <mem.h>
 #include "user.h"
@@ -43,6 +42,13 @@ User userCreate(const char* username, int age){
     new_user->user_favorite_series=setCreate(copySeriesSetElements,
                                              freeSeriesSetElements,
                                              compareSeriesSetElements);
+    if(!new_user->user_favorite_series){
+        free((char*)new_user->username);
+        setDestroy(new_user->user_friends_list);
+        free(new_user);
+        return NULL;
+    }
+    return new_user;
 }
 
 
