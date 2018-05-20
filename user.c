@@ -32,17 +32,21 @@ User userCreate(const char* username, int age){
         return NULL;
     }
     new_user->age=age;
-    new_user->user_friends_list=setCreate(userCopy,userDestroy,userCompare);
+    new_user->user_friends_list= setCreate(userCopySetElement,
+                                           userDestroySetElement,
+                                           userCompareSetElements);
     if(!new_user->user_friends_list){
         free((char*)new_user->username);
         free(new_user);
         return NULL;
     }
-    new_user->user_favorite_series=setCreate(copySeriesSetElements,);
+    new_user->user_favorite_series=setCreate(copySeriesSetElements,
+                                             freeSeriesSetElements,
+                                             compareSeriesSetElements);
 }
 
 
-SetElement userCopy (SetElement element){
+SetElement userCopySetElement(SetElement element){
     return userCopyAux((User)element);
 }
 
@@ -83,7 +87,7 @@ const char* usernameCopy (const char* username){
     return username_copy;
 }
 
-void userDestroy (SetElement element){
+void userDestroySetElement(SetElement element){
     return (userDestroyAux((User)element));
 }
 
@@ -108,7 +112,7 @@ void userDestroyAux (User user){
  * @param element2
  * @return
  */
-int userCompare (SetElement element1, SetElement element2){
+int userCompareSetElements(SetElement element1, SetElement element2){
     return (userCompareAux((User)element1,(User)element2));
 }
 
