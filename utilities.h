@@ -6,6 +6,8 @@
 #include "set.h"
 #include "series.h"
 #include "user.h"
+#include "mtmflix.h"
+#include "mtm_ex3.h"
 
 //-----------------------------------------------------------------------//
 //                       SERIES MAP FUNCTIONS                            //
@@ -21,6 +23,12 @@ void freeSeriesMapDataElements(MapDataElement element);
 MapKeyElement copySeriesMapKeyElements(MapKeyElement element);
 
 MapDataElement copySeriesMapDataElements(MapDataElement element);
+
+MapDataElement seriesCreateMapDataElement(char* series_name,
+                                          int number_of_episodes,
+                                          Genre genre,
+                                          int* ages,
+                                          double episode_duration);
 
 //-----------------------------------------------------------------------//
 //                       SERIES SET FUNCTIONS                            //
@@ -40,6 +48,7 @@ MapDataElement copyUserMapDataElements(MapDataElement element);
 MapKeyElement copyUserMapKeyElements(MapKeyElement element);
 void freeUserMapDataElements(MapDataElement element);
 void freeUserMapKeyElements(MapKeyElement element);
+MapDataElement userCreateMapDataElement(char* username, int age);
 
 
 //-----------------------------------------------------------------------//

@@ -6,7 +6,7 @@
 
 /**
  ***** Function: copySeriesMapDataElements *****
- * Description: Creates a copy
+ * Description: Gets a series map data element and returns a copy.
  * @param element
  * @return
  */
@@ -18,6 +18,7 @@ MapKeyElement copySeriesMapKeyElements(MapKeyElement element){
     return (MapKeyElement)copySeriesName((char*)element);
 }
 
+
 void freeSeriesMapDataElements(MapDataElement element){
     seriesDestroy((Series)element);
 }
@@ -28,6 +29,14 @@ void freeSeriesMapKeyElements(MapKeyElement element){
 
 int compareSeriesMapDataElements(MapDataElement element1,
                                  MapDataElement element2){
+
+}
+
+MapDataElement seriesCreateMapDataElement(char* series_name,
+                            int number_of_episodes, Genre genre,
+                            int* ages, double episode_duration){
+    return seriesCreate(series_name,number_of_episodes,genre,ages,
+                        episode_duration);
 
 }
 
@@ -51,12 +60,16 @@ SetElement copySeriesSetElements(SetElement element){
 //                       USERS MAP FUNCTIONS                             //
 //-----------------------------------------------------------------------//
 
+MapDataElement userCreateMapDataElement(char* username, int age){
+    return userCreate(username,age);
+}
+
 MapDataElement copyUserMapDataElements(MapDataElement element) {
-    return (MapDataElement)userCopy((User) element);
+    return userCopy((User) element);
 }
 
 MapKeyElement copyUserMapKeyElements(MapKeyElement element){
-    return (MapKeyElement)usernameCopy((char*)element);
+    return usernameCopy((char*)element);
 }
 
 void freeUserMapDataElements(MapDataElement element){

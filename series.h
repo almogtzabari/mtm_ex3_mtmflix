@@ -6,6 +6,7 @@
 #include <malloc.h>
 #include <string.h>
 #include "set.h"
+#include "mtm_ex3.h"
 
 typedef struct series_t* Series;
 
@@ -23,6 +24,9 @@ char* copySeriesName(char* name);
 void seriesDestroy(Series series);
 
 int compareSeries(Series series1, Series series2);
+
+Series seriesCreate(const char* series_name, int number_of_episodes,
+                    Genre genre, int* ages, double episode_duration);
 
 
 
