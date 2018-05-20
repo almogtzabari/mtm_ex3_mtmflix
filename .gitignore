@@ -12,8 +12,12 @@ cmake-build-debug/CMakeFiles/feature_tests.c
 cmake-build-debug/CMakeFiles/Makefile2
 cmake-build-debug/CMakeFiles/mtm_ex3_mtmflix.dir/build.make
 *.make
+*.includecache
 *.rsp
 *.marks
 *.obj
 cmake-build-debug/Makefile
 cmake-build-debug/mtm_ex3_mtmflix.cbp
+*.includecache
+*.includecache
+*.internal
