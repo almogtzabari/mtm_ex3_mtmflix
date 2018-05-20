@@ -1,19 +1,33 @@
-//
-// Created by Almog on 19/05/2018.
-//
 
 #ifndef MTM_EX3_MTMFLIX_SERIES_H
 #define MTM_EX3_MTMFLIX_SERIES_H
 
-typedef struct series_t* Series;
-typedef void* SeriesKeyElement;
-typedef void* SeriesDataElement;
+#include "map.h"
+#include <malloc.h>
+#include <string.h>
 
-SeriesDataElement copySeriesDataElements(SeriesDataElement);
-SeriesKeyElement copySeriesKeyElements(SeriesKeyElement);
-void freeSeriesDataElements(SeriesDataElement);
-void freeSeriesKeyElements(SeriesKeyElement);
-int compareSeriesDataElements(SeriesDataElement,SeriesDataElement);
+typedef struct series_t* Series;
+
+typedef enum SeriesResult_t {
+    SERIES_MEMORY_ALLOCATION_FAILED,
+    SERIES_SUCCESS,
+    SERIES_NULL_ARGUMENT
+} SeriesResult;
+
+MapDataElement copySeriesMapDataElements(MapDataElement element);
+Series copySeries(Series series);
+MapKeyElement copySeriesMapKeyElements(MapKeyElement element);
+char* copySeriesName(char* name);
+void freeSeriesMapDataElements(MapDataElement element);
+void seriesDestroy(Series series);
+
+void freeSeriesMapKeyElements(MapKeyElement element);
+
+int compareSeriesMapDataElements(MapDataElement element1,
+                                 MapDataElement element2);
+
+
+
 
 #endif //MTM_EX3_MTMFLIX_SERIES_H
 
