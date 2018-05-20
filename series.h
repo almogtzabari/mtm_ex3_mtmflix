@@ -5,6 +5,7 @@
 #include "map.h"
 #include <malloc.h>
 #include <string.h>
+#include "set.h"
 
 typedef struct series_t* Series;
 
@@ -25,6 +26,8 @@ void freeSeriesMapKeyElements(MapKeyElement element);
 
 int compareSeriesMapDataElements(MapDataElement element1,
                                  MapDataElement element2);
+
+SetElement copySeriesSetElements(SetElement element);
 
 
 

@@ -111,6 +111,10 @@ MapKeyElement copySeriesMapKeyElements(MapKeyElement element){
     return (MapKeyElement)copySeriesName((char*)element);
 }
 
+SetElement copySeriesSetElements(SetElement element) {
+    return (SetElement)copySeries((Series)element);
+}
+
 void freeSeriesMapDataElements(MapDataElement element){
     seriesDestroy((Series)element);
 }
