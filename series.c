@@ -8,7 +8,7 @@
 //                   STATIC FUNCTIONS DECALARATIONS                      //
 //-----------------------------------------------------------------------//
 
-static int* seriesSetAgeLimit(int* ages,SeriesResult* status);
+static int* seriesInsertAgeLimit(int *ages, SeriesResult *status);
 
 //-----------------------------------------------------------------------//
 //                            STRUCT SERIES                              //
@@ -53,7 +53,7 @@ Series seriesCreate(const char* series_name, int number_of_episodes,
         return NULL;
     }
     SeriesResult status;
-    int* series_age_limit = seriesSetAgeLimit(ages,&status);
+    int* series_age_limit = seriesInsertAgeLimit(ages, &status);
     if(status != SERIES_SUCCESS){
         /* Couldn't allocate memory for ages array of series. */
         free(name);
@@ -90,9 +90,7 @@ Series copySeries(Series series){
     return series_copy;
 }
 
-MapDataElement copySeriesMapDataElements(MapDataElement element) {
-    return (MapDataElement)copySeries((Series) element);
-}
+
 
 char* copySeriesName(char* name){
     if(!name){
@@ -107,18 +105,6 @@ char* copySeriesName(char* name){
     return strcpy(name_copy,name);
 }
 
-MapKeyElement copySeriesMapKeyElements(MapKeyElement element){
-    return (MapKeyElement)copySeriesName((char*)element);
-}
-
-SetElement copySeriesSetElements(SetElement element) {
-    return (SetElement)copySeries((Series)element);
-}
-
-void freeSeriesMapDataElements(MapDataElement element){
-    seriesDestroy((Series)element);
-}
-
 /**
  ***** Function: seriesDestroy *****
  * Description: Free all allocated memory of a given series.
@@ -130,25 +116,8 @@ void seriesDestroy(Series series){
     free(series);
 }
 
-void freeSeriesSetElements(SetElement element){
-    seriesDestroy((Series)element);
-}
-
-void freeSeriesMapKeyElements(MapKeyElement element){
-    free((char*)element);
-}
-
-int compareSeriesMapDataElements(MapDataElement element1,
-                                 MapDataElement element2){
-
-}
-
 int compareSeries(Series series1, Series series2){
 
-}
-
-int compareSeriesSetElements(SetElement element1, SetElement element2){
-    return compareSeries((Series)element1,(Series)element2);
 }
 
 /** //todo: what about bad min/max input?
@@ -165,7 +134,7 @@ int compareSeriesSetElements(SetElement element1, SetElement element2){
  * @param ages - Array of age limitations. If NULL there are no limitaions.
  * @return - A
  */
-static int* seriesSetAgeLimit(int* ages,SeriesResult* status) {
+static int* seriesInsertAgeLimit(int *ages, SeriesResult *status) {
     if (ages) {
         /* There is an age limitations */
         int *series_ages = malloc(sizeof(ages));

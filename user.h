@@ -3,6 +3,7 @@
 
 #include "set.h"
 #include "series.h"
+#include "utilities.h"
 
 typedef enum {
     USER_SUCCESS,
