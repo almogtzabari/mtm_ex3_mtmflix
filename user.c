@@ -1,4 +1,8 @@
-//
-// Created by Almog on 19/05/2018.
-//
+#include "user.h"
+#include "set.h"
 
+struct user_t{
+  char* username;
+  int age;
+  Set jf;
+};

@@ -1,0 +1,48 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+C:/Users/Ariel Kfir/Desktop/Ariel/Semester 2/Matam/Hw3/mtm_ex3_mtmflix/list.h
+stdbool.h
+-
+
+C:/Users/Ariel Kfir/Desktop/Ariel/Semester 2/Matam/Hw3/mtm_ex3_mtmflix/main.c
+
+C:/Users/Ariel Kfir/Desktop/Ariel/Semester 2/Matam/Hw3/mtm_ex3_mtmflix/map.h
+stdbool.h
+-
+
+C:/Users/Ariel Kfir/Desktop/Ariel/Semester 2/Matam/Hw3/mtm_ex3_mtmflix/mtm_ex3.h
+stdio.h
+-
+stdbool.h
+-
+list.h
+C:/Users/Ariel Kfir/Desktop/Ariel/Semester 2/Matam/Hw3/mtm_ex3_mtmflix/list.h
+
+C:/Users/Ariel Kfir/Desktop/Ariel/Semester 2/Matam/Hw3/mtm_ex3_mtmflix/mtmflix.c
+malloc.h
+-
+mtmflix.h
+C:/Users/Ariel Kfir/Desktop/Ariel/Semester 2/Matam/Hw3/mtm_ex3_mtmflix/mtmflix.h
+map.h
+C:/Users/Ariel Kfir/Desktop/Ariel/Semester 2/Matam/Hw3/mtm_ex3_mtmflix/map.h
+
+C:/Users/Ariel Kfir/Desktop/Ariel/Semester 2/Matam/Hw3/mtm_ex3_mtmflix/mtmflix.h
+stdio.h
+-
+mtm_ex3.h
+C:/Users/Ariel Kfir/Desktop/Ariel/Semester 2/Matam/Hw3/mtm_ex3_mtmflix/mtm_ex3.h
+
+C:/Users/Ariel Kfir/Desktop/Ariel/Semester 2/Matam/Hw3/mtm_ex3_mtmflix/serie.c
+stdio.h
+C:/Users/Ariel Kfir/Desktop/Ariel/Semester 2/Matam/Hw3/mtm_ex3_mtmflix/stdio.h
+
+C:/Users/Ariel Kfir/Desktop/Ariel/Semester 2/Matam/Hw3/mtm_ex3_mtmflix/user.c
+stdio.h
+C:/Users/Ariel Kfir/Desktop/Ariel/Semester 2/Matam/Hw3/mtm_ex3_mtmflix/stdio.h
+

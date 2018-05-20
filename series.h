@@ -5,7 +5,7 @@
 #ifndef MTM_EX3_MTMFLIX_SERIES_H
 #define MTM_EX3_MTMFLIX_SERIES_H
 
-typedef struct serie_t* Series;
+typedef struct series_t* Series;
 typedef void* SeriesKeyElement;
 typedef void* SeriesDataElement;
 

@@ -7,12 +7,10 @@ struct mtmFlix_t{
     Map users;
     Map series;
 
-
 };
 
 MtmFlix mtmFlixCreate(){
-    Map users = mapCreate(copySeriesDataElements,copySeriesKeyElements,
-            freeSeriesDataElements,freeSeriesKeyElements,compareSeriesDataElements);
+
 }
 
 
