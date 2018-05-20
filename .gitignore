@@ -28,3 +28,6 @@ cmake-build-debug/mtm_ex3_mtmflix.cbp
 *.obj
 cmake-build-debug/CMakeFiles/Progress/1
 cmake-build-debug/CMakeFiles/Progress/2
+*.a
+.idea/.name
+*.cbp
