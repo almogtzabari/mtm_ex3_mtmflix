@@ -16,13 +16,11 @@ typedef struct user_t* User;
 
 
 User userCreate(const char* username, int age);
-User userCopyAux (User user);
-void userDestroyAux (User user);
-void userDestroySetElement(SetElement element);
-int userCompareAux (User user1, User user2);
-int userCompareSetElements(SetElement element1, SetElement element2);
-SetElement userCopySetElement(SetElement element);
+User userCopy (User user);
+void userDestroy (User user);
+int userCompare (User user1, User user2);
 const char* usernameCopy (const char* username);
 
 
 #endif //MTM_EX3_MTMFLIX_USER_H
+

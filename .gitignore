@@ -31,3 +31,4 @@ cmake-build-debug/CMakeFiles/Progress/2
 *.a
 .idea/.name
 *.cbp
+*.c___jb_tmp___

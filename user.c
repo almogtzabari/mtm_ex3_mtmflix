@@ -1,6 +1,6 @@
 #include <malloc.h>
 #include <assert.h>
-#include <mem.h>
+#include <string.h>
 #include "user.h"
 
 
@@ -52,20 +52,15 @@ User userCreate(const char* username, int age){
     return new_user;
 }
 
-
-SetElement userCopySetElement(SetElement element){
-    return userCopyAux((User)element);
-}
-
 /**
- ***** Function: userCopyAux *****
+ ***** Function: userCopy *****
  * Description: Copies a given user.
  *
  * @param user - A user to copy.
  * @return
  * A new user or NULL in case of failure.
  */
-User userCopyAux (User user){
+User userCopy (User user){
     assert(user);
     User new_user=userCreate(user->username,user->age);
     if(!new_user){
@@ -94,42 +89,28 @@ const char* usernameCopy (const char* username){
     return username_copy;
 }
 
-void userDestroySetElement(SetElement element){
-    return (userDestroyAux((User)element));
-}
-
 /**
- ***** Function: userDestroyAux *****
+ ***** Function: userDestroy *****
  * Description: Deallocates an existing user.
  *
  * @param user - A user to destroy.
  */
-void userDestroyAux (User user){
+void userDestroy (User user){
     free((char*)user->username);
     setDestroy(user->user_friends_list);
     setDestroy(user->user_favorite_series);
     free(user);
 }
 
-/**
- ***** Function: userCompare *****
- * Description: casts void* to User and calls user compare function.
- * The casting is done in order to use the set functions.
- * @param element1 -
- * @param element2
- * @return
- */
-int userCompareSetElements(SetElement element1, SetElement element2){
-    return (userCompareAux((User)element1,(User)element2));
-}
+
 
 /**
-  ***** Function: userCompareAux *****
+  ***** Function: userCompare *****
  * Description:
  * @param user1 -
  * @param user2
  * @return
  */
-int userCompareAux (User user1, User user2){
+int userCompare (User user1, User user2){
     return strcmp(user1->username,user2->username);
 }

@@ -5,6 +5,7 @@
 #include "map.h"
 #include "set.h"
 #include "series.h"
+#include "user.h"
 
 //-----------------------------------------------------------------------//
 //                       SERIES MAP FUNCTIONS                            //
@@ -34,6 +35,19 @@ void freeSeriesSetElements(SetElement element);
 //-----------------------------------------------------------------------//
 //                       USERS MAP FUNCTIONS                             //
 //-----------------------------------------------------------------------//
+
+MapDataElement copyUserMapDataElements(MapDataElement element);
+MapKeyElement copyUserMapKeyElements(MapKeyElement element);
+void freeUserMapDataElements(MapDataElement element);
+void freeUserMapKeyElements(MapKeyElement element);
+
+
+//-----------------------------------------------------------------------//
+//                       USERS SET FUNCTIONS                             //
+//-----------------------------------------------------------------------//
+void userDestroySetElement(SetElement element);
+int userCompareSetElements(SetElement element1, SetElement element2);
+SetElement userCopySetElement(SetElement element);
 
 
 
