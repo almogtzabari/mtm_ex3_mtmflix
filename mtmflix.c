@@ -61,7 +61,13 @@ MtmFlixResult mtmFlixAddUser(MtmFlix mtmflix,
 //todo: Add comments!
 //todo: Change function name to usernameIsValid (because the answer is yes or no).
 //todo: Check if username is already exist in this mtmFlix.
+/**
+ ***** Function: usernameIsValid *****
+ * @param username
+ * @return
+ */
 static bool usernameCheck (const char* username){
+
     bool contain_letter=false;
     while(*username){
         if(*username<'0' || (*username>'9' && *username<'A') ||
