@@ -35,15 +35,16 @@ User userCreate(const char* username, int age){
     }
     strcpy(new_user->username,username);
     new_user->age=age;
-    new_user->user_friends_list= listCreate();
+    new_user->user_friends_list= listCreate(copyFriendUsername,
+            destroyFriendUsername);
     if(!new_user->user_friends_list){
         /* Friend list creation failed */
         free(new_user->username);
         free(new_user);
         return NULL;
     }
-    // todo: CHANGE TO SERIES FUNCTIONS
-    new_user->user_favorite_series= listCreate();
+    new_user->user_favorite_series= listCreate(copyFavoriteSeriesName,
+            destroyFavoriteSeriesName);
     if(!new_user->user_favorite_series){
         /* User favorite series list creation failed */
         free(new_user->username);
@@ -105,18 +106,18 @@ void userDestroy (User user){
 /**
   ***** Function: userCompare *****
  * Description: Compares between two user's usernames.
- * @param user1 - First user.
- * @param user2 - Second user.
+ * @param username1 - First username.
+ * @param username2 - Second username.
  *
  * @return
- * A negative integer if user1's name is less than user2's name, 0 if the
- * names are equal and a positive integer if user1's name is bigger.
+ * A negative integer if username1 is less than username2, 0 if the
+ * names are equal and a positive integer if username1 name is bigger.
  *
  */
-int userCompare (User user1, User user2){
-    assert(user1);
-    assert(user2);
-    return strcmp(user1->username,user2->username);
+int userCompare (char* username1, char* username2){
+    assert(username1);
+    assert(username2);
+    return strcmp(username1,username2);
 }
 
 
