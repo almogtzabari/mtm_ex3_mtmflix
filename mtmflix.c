@@ -5,6 +5,8 @@
 #include "user.h"
 
 static bool usernameIsValid (const char* username);
+static void seriesRemoveFromUsersLists(List user_favorite_series,
+                                       const char* series_name);
 
 struct mtmFlix_t{
     Set users;
@@ -93,8 +95,41 @@ static bool usernameIsValid (const char* username){
     return true;
 }
 
-MtmFlixResult mtmFlixRemoveUser(MtmFlix mtmflix, const char* username){
-    
+MtmFlixResult mtmFlixRemoveSeries(MtmFlix mtmflix, const char* name){
+    if (!mtmflix || !name){
+        return MTMFLIX_NULL_ARGUMENT;
+    }
+    Series temp_series=seriesCreate(name,1,DRAMA,NULL,1);
+    if(!setIsIn(mtmflix->series,temp_series)){
+        seriesDestroy(temp_series);
+        return MTMFLIX_SERIES_DOES_NOT_EXIST;
+    }
+    setRemove(mtmflix->series,temp_series);
+    seriesDestroy(temp_series);
+    SET_FOREACH(User,current_user,mtmflix->users){
+        /*Removing the series from each user's favorite series list  */
+        seriesRemoveFromUsersLists(
+                userGetFavoriteSeriesList(current_user),name);
+    }
+    return MTMFLIX_SUCCESS;
+}
+
+static void seriesRemoveFromUsersLists(List user_favorite_series,
+                                const char* series_name){
+    LIST_FOREACH(ListElement,iterator,user_favorite_series){
+        if(!strcmp((char*)iterator,series_name)){
+            listRemoveCurrent(user_favorite_series);
+            break;
+        }
+    }
+}
+
+
+MtmFlixResult mtmFlixGetRecommendations(MtmFlix mtmflix,
+                                        const char* username, int count,
+                                        FILE* outputStream){
+
+
 }
 
 

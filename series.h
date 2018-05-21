@@ -31,6 +31,7 @@ Series seriesCreate(const char* series_name, int number_of_episodes,
 
 void seriesDestroyName(char* name);
 
+Genre seriesGetGenre (Series series);
 
 #endif //MTM_EX3_MTMFLIX_SERIES_H
 

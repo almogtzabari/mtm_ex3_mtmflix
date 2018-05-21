@@ -181,4 +181,6 @@ static int* seriesInsertAgeLimit(int* ages, SeriesResult *status) {
     return NULL;
 }
 
-
+Genre seriesGetGenre (Series series){
+    return series->genre;
+}
