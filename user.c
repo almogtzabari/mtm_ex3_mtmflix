@@ -35,8 +35,8 @@ User userCreate(const char* username, int age){
     }
     strcpy(new_user->username,username);
     new_user->age=age;
-    new_user->user_friends_list= listCreate(copyFriendName,
-            destroyFriendName);
+    new_user->user_friends_list= listCreate(copyUsername,
+                                            destroyFriendName);
     if(!new_user->user_friends_list){
         /* Friend list creation failed */
         free(new_user->username);
@@ -44,8 +44,8 @@ User userCreate(const char* username, int age){
         return NULL;
     }
     // todo: CHANGE TO SERIES FUNCTIONS
-    new_user->user_favorite_series=listCreate(copyFriendName,
-            destroyFriendName);
+    new_user->user_favorite_series= listCreate(copyUsername,
+                                               destroyFriendName);
     if(!new_user->user_favorite_series){
         /* User favorite series list creation failed */
         free(new_user->username);
@@ -123,29 +123,29 @@ int userCompare (User user1, User user2){
 /**
  ***** Function: copyFriendName *****
  * Description: Copying a friend's name.
- * @param friend_name - A friend's name to copy.
+ * @param user - A friend's name to copy.
  *
  * @return
  * A copy of the given friend's name.
  */
-ListElement copyFriendName (ListElement friend_name){
-    assert(friend_name);
-    char* username_copy=malloc(strlen(friend_name)+1);
+char* copyUsername(User user){
+    assert(user);
+    char* username_copy=malloc(strlen(user->username)+1);
     if(!username_copy){
         /* Memory allocation failed */
         return NULL;
     }
-    strcpy(username_copy,friend_name);
+    strcpy(username_copy,user->username);
     return username_copy;
 }
 
 /**
  ***** Function: destroyFriendName *****
  * Description: Deallocates the memory used for a friend's name.
- * @param friend_name - A friend's name to destroy.
+ * @param user - A friend's name to destroy.
  */
-void destroyFriendName (ListElement friend_name){
-    free(friend_name);
+void destroyUsername (User user){
+    free(user);
 }
 
 

@@ -24,7 +24,7 @@ MtmFlix mtmFlixCreate(){
         free(flix);
         return NULL;
     }
-    flix->users =setCreate(userCopy,,);
+    flix->users =setCreate(,,);
     if(!flix->users){
         setDestroy(flix->series);
         free(flix);

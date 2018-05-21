@@ -23,8 +23,8 @@ void userDestroy (User user);
 int userCompare (User user1, User user2);
 
 
-ListElement copyFriendName (ListElement friend_name);
-void destroyFriendName (ListElement friend_name);
+char* copyUsername(User user);
+void destroyUsername (User user);
 
 
 #endif //MTM_EX3_MTMFLIX_USER_H
