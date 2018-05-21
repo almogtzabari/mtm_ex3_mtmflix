@@ -125,11 +125,4 @@ static void seriesRemoveFromUsersLists(List user_favorite_series,
 }
 
 
-MtmFlixResult mtmFlixGetRecommendations(MtmFlix mtmflix,
-                                        const char* username, int count,
-                                        FILE* outputStream){
-
-
-}
-
 
