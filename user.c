@@ -35,8 +35,7 @@ User userCreate(const char* username, int age){
     }
     strcpy(new_user->username,username);
     new_user->age=age;
-    new_user->user_friends_list= listCreate(copyUsername,
-                                            destroyFriendName);
+    new_user->user_friends_list= listCreate();
     if(!new_user->user_friends_list){
         /* Friend list creation failed */
         free(new_user->username);
@@ -44,8 +43,7 @@ User userCreate(const char* username, int age){
         return NULL;
     }
     // todo: CHANGE TO SERIES FUNCTIONS
-    new_user->user_favorite_series= listCreate(copyUsername,
-                                               destroyFriendName);
+    new_user->user_favorite_series= listCreate();
     if(!new_user->user_favorite_series){
         /* User favorite series list creation failed */
         free(new_user->username);
@@ -55,6 +53,7 @@ User userCreate(const char* username, int age){
     }
     return new_user;
 }
+
 
 /**
  ***** Function: userCopy *****
@@ -87,6 +86,8 @@ User userCopy (User user){
     return new_user;
 }
 
+
+
 /**
  ***** Function: userDestroy *****
  * Description: Deallocates an existing user.
@@ -94,7 +95,7 @@ User userCopy (User user){
  * @param user - A user to destroy.
  */
 void userDestroy (User user){
-    assert(user);;
+    assert(user);
     free(user->username);
     listDestroy(user->user_friends_list);
     listDestroy(user->user_favorite_series);
@@ -120,15 +121,16 @@ int userCompare (User user1, User user2){
 
 
 
+
 /**
- ***** Function: copyFriendName *****
+ ***** Function: usernameCopy *****
  * Description: Copying a friend's name.
  * @param user - A friend's name to copy.
  *
  * @return
  * A copy of the given friend's name.
  */
-char* copyUsername(User user){
+char* usernameCopy(User user){
     assert(user);
     char* username_copy=malloc(strlen(user->username)+1);
     if(!username_copy){
@@ -140,12 +142,11 @@ char* copyUsername(User user){
 }
 
 /**
- ***** Function: destroyFriendName *****
+ ***** Function: destroyUsername *****
  * Description: Deallocates the memory used for a friend's name.
  * @param user - A friend's name to destroy.
  */
 void destroyUsername (User user){
     free(user);
 }
-
 
