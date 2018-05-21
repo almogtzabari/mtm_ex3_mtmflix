@@ -146,7 +146,7 @@ char* usernameCopy(User user){
  * Description: Deallocates the memory used for a friend's name.
  * @param user - A friend's name to destroy.
  */
-void destroyUsername (User user){
-    free(user);
+void destroyUsername (char* friend_username){
+    free(friend_username);
 }
 

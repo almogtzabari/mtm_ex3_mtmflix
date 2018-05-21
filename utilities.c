@@ -56,5 +56,5 @@ ListElement copyFriendUsername(ListElement element){
 }
 
 void destroyFriendUsername(ListElement element){
-    return destroyFriendUsername((char*)element);
+    return destroyUsername((char*)element);
 }

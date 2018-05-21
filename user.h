@@ -24,7 +24,7 @@ int userCompare (User user1, User user2);
 
 
 char* usernameCopy(User user);
-void destroyUsername (User user);
+void destroyUsername (char* friend_username);
 
 
 #endif //MTM_EX3_MTMFLIX_USER_H
