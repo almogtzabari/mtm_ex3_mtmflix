@@ -6,10 +6,10 @@
 
 
 struct user_t{
-  const char* username;
-  int age;
-  Set user_friends_list;
-  Set user_favorite_series;
+    char* username;
+    int age;
+    List user_friends_list;
+    List user_favorite_series;
 };
 
 /**
@@ -24,28 +24,32 @@ struct user_t{
 User userCreate(const char* username, int age){
     User new_user = malloc(sizeof(*new_user));
     if(!new_user){
+        /* User memory allocation failed */
         return NULL;
     }
-    new_user->username=usernameCopy(username);
+    new_user->username=malloc(strlen(username)+1);
     if(!new_user->username){
+        /* Username memory allocation failed */
         free(new_user);
         return NULL;
     }
+    strcpy(new_user->username,username);
     new_user->age=age;
-    new_user->user_friends_list= setCreate(userCopySetElement,
-                                           userDestroySetElement,
-                                           userCompareSetElements);
+    new_user->user_friends_list= listCreate(copyFriendName,
+            destroyFriendName);
     if(!new_user->user_friends_list){
-        free((char*)new_user->username);
+        /* Friend list creation failed */
+        free(new_user->username);
         free(new_user);
         return NULL;
     }
-    new_user->user_favorite_series=setCreate(copySeriesSetElements,
-                                             freeSeriesSetElements,
-                                             compareSeriesSetElements);
+    // todo: CHANGE TO SERIES FUNCTIONS
+    new_user->user_favorite_series=listCreate(copyFriendName,
+            destroyFriendName);
     if(!new_user->user_favorite_series){
-        free((char*)new_user->username);
-        setDestroy(new_user->user_friends_list);
+        /* User favorite series list creation failed */
+        free(new_user->username);
+        listDestroy(new_user->user_friends_list);
         free(new_user);
         return NULL;
     }
@@ -60,33 +64,28 @@ User userCreate(const char* username, int age){
  * @return
  * A new user or NULL in case of failure.
  */
-User userCopy (User user){
-    assert(user);
+SetElement userCopy (SetElement user_to_copy){
+    assert(user_to_copy);
+    User user=user_to_copy;
     User new_user=userCreate(user->username,user->age);
     if(!new_user){
+        /* User creation failed */
         return NULL;
     }
-    new_user->user_friends_list=setCopy(user->user_friends_list);
+    new_user->user_friends_list=listCopy(user->user_friends_list);
     if(!new_user->user_friends_list){
-        free((char*)new_user->username);
+        /* List copying failed */
+        free(new_user->username);
         return NULL;
     }
-    new_user->user_favorite_series=setCopy(user->user_favorite_series);
+    new_user->user_favorite_series=listCopy(user->user_favorite_series);
     if(!new_user->user_favorite_series){
-        free((char*)new_user->username);
-        setDestroy(new_user->user_friends_list);
+        /* List copying failed */
+        free(new_user->username);
+        listDestroy(new_user->user_friends_list);
         return NULL;
     }
     return new_user;
-}
-
-const char* usernameCopy (const char* username){
-    char* username_copy=malloc(sizeof(username)+1);
-    if(!username_copy){
-        return NULL;
-    }
-    strcpy(username_copy,username);
-    return username_copy;
 }
 
 /**
@@ -95,22 +94,59 @@ const char* usernameCopy (const char* username){
  *
  * @param user - A user to destroy.
  */
-void userDestroy (User user){
-    free((char*)user->username);
-    setDestroy(user->user_friends_list);
-    setDestroy(user->user_favorite_series);
+void userDestroy (SetElement user_to_destroy){
+    assert(user_to_destroy);
+    User user=user_to_destroy;
+    free(user->username);
+    listDestroy(user->user_friends_list);
+    listDestroy(user->user_favorite_series);
     free(user);
 }
 
-
-
 /**
   ***** Function: userCompare *****
- * Description:
- * @param user1 -
- * @param user2
+ * Description: Compares between two user's usernames.
+ * @param user1 - First user.
+ * @param user2 - Second user.
+ *
  * @return
+ * A negative integer if user1's name is less than user2's name, 0 if the
+ * names are equal and a positive integer if user1's name is bigger.
+ *
  */
-int userCompare (User user1, User user2){
+int userCompare (SetElement element1, SetElement element2){
+    assert(element1);
+    assert(element2);
+    User user1=element1;
+    User user2=element2;
     return strcmp(user1->username,user2->username);
 }
+
+/**
+ ***** Function: copyFriendName *****
+ * Description: Copying a friend's name.
+ * @param friend_name - A friend's name to copy.
+ *
+ * @return
+ * A copy of the given friend's name.
+ */
+ListElement copyFriendName (ListElement friend_name){
+    assert(friend_name);
+    char* username_copy=malloc(strlen(friend_name)+1);
+    if(!username_copy){
+        return NULL;
+    }
+    strcpy(username_copy,friend_name);
+    return username_copy;
+}
+
+/**
+ ***** Function: destroyFriendName *****
+ * Description: Deallocates the memory used for a friend's name.
+ * @param friend_name - A friend's name to destroy.
+ */
+void destroyFriendName (ListElement friend_name){
+    free(friend_name);
+}
+
+

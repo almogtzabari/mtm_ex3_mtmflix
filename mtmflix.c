@@ -7,9 +7,8 @@
 static bool usernameCheck (const char* username);
 
 struct mtmFlix_t{
-    Map users;
-    Map series;
-
+    Set users;
+    Set series;
 };
 
 
@@ -19,15 +18,18 @@ MtmFlix mtmFlixCreate(){
         /* Failed to allocate memory. */
         return NULL;
     }
-    flix->series = mapCreate(copySeriesMapDataElements,
-            copySeriesMapKeyElements,freeSeriesMapDataElements,
-                             freeSeriesMapKeyElements,compareSeriesMapDataElements);
+    flix->series = setCreate(copySeriesSetElements,freeSeriesSetElements,
+            compareSeriesSetElements);
     if(!flix->series){
         /* Failed to allocate memory for the series map. */
         free(flix);
         return NULL;
     }
-    flix->users =NULL;
+    flix->users =setCreate(,,);
+    if(!flix->users){
+        setDestroy(flix->series);
+        free(flix);
+    }
     return flix;
 
 }
@@ -43,26 +45,7 @@ MtmFlixResult mtmFlixAddUser(MtmFlix mtmflix,
     if(age<MTM_MIN_AGE || age>MTM_MAX_AGE){
         return MTMFLIX_ILLEGAL_AGE;
     }
-    if(mapContains(mtmflix->users,(MapKeyElement)username)){
-        return MTMFLIX_USERNAME_ALREADY_USED;
-    }
-    MapDataElement user_data=userCreateMapDataElement(username,age);
-    if(!user_data){
-        /*If creating user data failed */
-        return MTMFLIX_OUT_OF_MEMORY;
-    }
-    MapKeyElement user_key=(MapKeyElement)usernameCopy(username); //todo: Check map copying key element to replace casting.
-    if(!user_key){
-        freeUserMapDataElements(user_data);
-        return MTMFLIX_OUT_OF_MEMORY;
-    }
-    if(mapPut(mtmflix->users,user_data,user_key)!=MAP_SUCCESS) {
-        /* If adding a user failed */
-        freeUserMapDataElements(user_data);
-        freeUserMapKeyElements(user_key);
-        return MTMFLIX_OUT_OF_MEMORY;
-    }
-    return MTMFLIX_SUCCESS;
+
 }
 
 
