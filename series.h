@@ -17,17 +17,18 @@ typedef enum SeriesResult_t {
 } SeriesResult;
 
 
-Series copySeries(Series series);
+Series seriesCopy(Series series);
 
-char* copySeriesName(char* name);
+char* seriesCopyName(char *name);
 
 void seriesDestroy(Series series);
 
-int compareSeries(Series series1, Series series2);
+int seriesCompare(Series series1, Series series2);
 
 Series seriesCreate(const char* series_name, int number_of_episodes,
                     Genre genre, int* ages, double episode_duration);
 
+void seriesDestroyName(char* name);
 
 
 #endif //MTM_EX3_MTMFLIX_SERIES_H

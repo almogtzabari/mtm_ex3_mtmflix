@@ -27,31 +27,5 @@ char* usernameCopy(User user);
 void destroyUsername (User user);
 
 
-
-
-
-
-
-
-
-SetElement userCopySetElement (SetElement element1){
-    return userCopy((User)element1);
-}
-
-void userDestroySetElememnt (SetElement element1){
-    return userDestroy((User)element1);
-}
-
-int userCompareSetElement (SetElement element1, SetElement element2){
-    return userCompare((User)element1,(User)element2);
-}
-
-ListElement copyFriendUsername (ListElement element){
-    return usernameCopy((User)element);
-}
-
-void destroyFriendUsername (ListElement element){
-    return destroyUsername((User)element);
-}
 #endif //MTM_EX3_MTMFLIX_USER_H
 

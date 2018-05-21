@@ -70,12 +70,12 @@ Series seriesCreate(const char* series_name, int number_of_episodes,
 }
 
 /**
- ***** Function: copySeries *****
+ ***** Function: seriesCopy *****
  * Description: Creates a copy of the given series.
  * @param series - A series to create a copy of.
  * @return - A copy of the given series or NULL in case of failure.
  */
-Series copySeries(Series series){
+Series seriesCopy(Series series){
     if(!series){
         /* NULL argument.*/
         return NULL;
@@ -93,7 +93,7 @@ Series copySeries(Series series){
 
 
 
-char* copySeriesName(char* name){
+char* seriesCopyName(char *name){
     if(!name){
         /* NULL argument. */
         return NULL;
@@ -118,9 +118,18 @@ void seriesDestroy(Series series){
     free(series);
 }
 
-int compareSeries(Series series1, Series series2){
+int seriesCompare(Series series1, Series series2){
 
 }
+
+void seriesDestroyName(char* name){
+    free(name);
+}
+
+
+//-----------------------------------------------------------------------//
+//                    STRUCT SERIES STATIC FUNCTIONS                     //
+//-----------------------------------------------------------------------//
 
 /** //todo: what about bad min/max input?
  ***** Function: seriesSetAgeLimit *****
