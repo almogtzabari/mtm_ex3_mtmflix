@@ -49,7 +49,7 @@ MtmFlixResult mtmFlixAddUser(MtmFlix mtmflix,
         return MTMFLIX_NULL_ARGUMENT;
     }
     //todo: See todo's above usernameCheck function.
-    if(!usernameCheck(username)){
+    if(!usernameCheck(username,mtmflix->users)){
         return MTMFLIX_ILLEGAL_USERNAME;
     }
     if(age<MTM_MIN_AGE || age>MTM_MAX_AGE){
@@ -66,8 +66,8 @@ MtmFlixResult mtmFlixAddUser(MtmFlix mtmflix,
  * @param username
  * @return
  */
-static bool usernameCheck (const char* username){
-
+static bool usernameCheck (const char* username,Set users){
+    if(setIsIn())
     bool contain_letter=false;
     while(*username){
         if(*username<'0' || (*username>'9' && *username<'A') ||

@@ -43,7 +43,7 @@ void userDestroySetElememnt (SetElement element1){
 }
 
 int userCompareSetElements(SetElement element1, SetElement element2){
-    return userCompare((char*)element1,(char*)element2);
+    return userCompare((User)element1,(User)element2);
 }
 
 

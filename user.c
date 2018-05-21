@@ -106,18 +106,18 @@ void userDestroy (User user){
 /**
   ***** Function: userCompare *****
  * Description: Compares between two user's usernames.
- * @param username1 - First username.
- * @param username2 - Second username.
+ * @param user1 - First user.
+ * @param user2 - Second user.
  *
  * @return
- * A negative integer if username1 is less than username2, 0 if the
- * names are equal and a positive integer if username1 name is bigger.
+ * A negative integer if user1's name is less than user2's name, 0 if the
+ * names are equal and a positive integer if user1's name is bigger.
  *
  */
-int userCompare (char* username1, char* username2){
-    assert(username1);
-    assert(username2);
-    return strcmp(username1,username2);
+int userCompare (User user1, User user2){
+    assert(user1);
+    assert(user2);
+    return strcmp(user1->username,user2->username);
 }
 
 
