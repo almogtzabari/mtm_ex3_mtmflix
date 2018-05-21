@@ -18,9 +18,9 @@ typedef struct user_t* User;
 User userCreate(const char* username, int age);
 
 
-SetElement userCopy (SetElement user_to_copy);
-void userDestroy (SetElement user_to_destroy);
-int userCompare (SetElement element1, SetElement element2);
+User userCopy (User user);
+void userDestroy (User user);
+int userCompare (User user1, User user2);
 
 
 ListElement copyFriendName (ListElement friend_name);

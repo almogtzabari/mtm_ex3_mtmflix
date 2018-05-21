@@ -18,14 +18,13 @@ MtmFlix mtmFlixCreate(){
         /* Failed to allocate memory. */
         return NULL;
     }
-    flix->series = setCreate(copySeriesSetElements,freeSeriesSetElements,
-            compareSeriesSetElements);
+    flix->series = setCreate();
     if(!flix->series){
         /* Failed to allocate memory for the series map. */
         free(flix);
         return NULL;
     }
-    flix->users =setCreate(,,);
+    flix->users =setCreate(userCopy,,);
     if(!flix->users){
         setDestroy(flix->series);
         free(flix);

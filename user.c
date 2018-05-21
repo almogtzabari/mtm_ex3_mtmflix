@@ -64,9 +64,8 @@ User userCreate(const char* username, int age){
  * @return
  * A new user or NULL in case of failure.
  */
-SetElement userCopy (SetElement user_to_copy){
-    assert(user_to_copy);
-    User user=user_to_copy;
+User userCopy (User user){
+    assert(user);
     User new_user=userCreate(user->username,user->age);
     if(!new_user){
         /* User creation failed */
@@ -94,9 +93,8 @@ SetElement userCopy (SetElement user_to_copy){
  *
  * @param user - A user to destroy.
  */
-void userDestroy (SetElement user_to_destroy){
-    assert(user_to_destroy);
-    User user=user_to_destroy;
+void userDestroy (User user){
+    assert(user);;
     free(user->username);
     listDestroy(user->user_friends_list);
     listDestroy(user->user_favorite_series);
@@ -114,13 +112,13 @@ void userDestroy (SetElement user_to_destroy){
  * names are equal and a positive integer if user1's name is bigger.
  *
  */
-int userCompare (SetElement element1, SetElement element2){
-    assert(element1);
-    assert(element2);
-    User user1=element1;
-    User user2=element2;
+int userCompare (User user1, User user2){
+    assert(user1);
+    assert(user2);
     return strcmp(user1->username,user2->username);
 }
+
+
 
 /**
  ***** Function: copyFriendName *****
@@ -134,6 +132,7 @@ ListElement copyFriendName (ListElement friend_name){
     assert(friend_name);
     char* username_copy=malloc(strlen(friend_name)+1);
     if(!username_copy){
+        /* Memory allocation failed */
         return NULL;
     }
     strcpy(username_copy,friend_name);
