@@ -151,3 +151,12 @@ void destroyUsername (char* friend_username){
     free(friend_username);
 }
 
+List userGetFriendList(User user){
+    assert(user);
+    return user->user_friends_list;
+}
+
+List userGetFavoriteSeriesList(User user){
+    assert(user);
+    return user->user_favorite_series;
+}
