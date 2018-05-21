@@ -12,7 +12,9 @@
 //                       SERIES LIST FUNCTIONS                           //
 //-----------------------------------------------------------------------//
 
-
+ListElement copyFavouriteSeriesName(ListElement element){
+    return copySeriesName((char*)element);
+}
 
 
 

@@ -6,6 +6,7 @@
 #include "set.h"
 #include "series.h"
 #include "user.h"
+#include "list.h"
 #include "mtmflix.h"
 #include "mtm_ex3.h"
 
