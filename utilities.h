@@ -14,20 +14,25 @@
 //                       SERIES SET FUNCTIONS                            //
 //-----------------------------------------------------------------------//
 
-int compareSeriesSetElements(SetElement element1, SetElement element2);
 
-SetElement copySeriesSetElements(SetElement element);
 
-void freeSeriesSetElements(SetElement element);
+//-----------------------------------------------------------------------//
+//                       SERIES LIST FUNCTIONS                           //
+//-----------------------------------------------------------------------//
 
 
 
 //-----------------------------------------------------------------------//
 //                       USERS SET FUNCTIONS                             //
 //-----------------------------------------------------------------------//
-void userDestroySetElement(SetElement element);
-int userCompareSetElements(SetElement element1, SetElement element2);
-SetElement userCopySetElement(SetElement element);
+
+
+
+//-----------------------------------------------------------------------//
+//                       USERS LIST FUNCTIONS                            //
+//-----------------------------------------------------------------------//
+
+
 
 
 
