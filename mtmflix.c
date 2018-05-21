@@ -4,7 +4,7 @@
 #include "utilities.h"
 #include "user.h"
 
-static bool usernameCheck (const char* username);
+static bool usernameIsValid (const char* username);
 
 struct mtmFlix_t{
     Set users;
@@ -48,39 +48,49 @@ MtmFlixResult mtmFlixAddUser(MtmFlix mtmflix,
     if(!mtmflix || !username){
         return MTMFLIX_NULL_ARGUMENT;
     }
-    //todo: See todo's above usernameCheck function.
-    if(!usernameCheck(username,mtmflix->users)){
+    User temp_user=userCreate(username,age);
+    if(!temp_user){
+        return MTMFLIX_OUT_OF_MEMORY;
+    }
+    if(setIsIn(mtmflix->users,temp_user)){
+        userDestroy(temp_user);
+        return MTMFLIX_USERNAME_ALREADY_USED;
+    }
+    if(!usernameIsValid(username)){
         return MTMFLIX_ILLEGAL_USERNAME;
     }
     if(age<MTM_MIN_AGE || age>MTM_MAX_AGE){
         return MTMFLIX_ILLEGAL_AGE;
     }
-
+    setAdd(mtmflix->users,temp_user);
+    userDestroy(temp_user);
+    return MTMFLIX_SUCCESS;
 }
 
-//todo: Add comments!
-//todo: Change function name to usernameIsValid (because the answer is yes or no).
-//todo: Check if username is already exist in this mtmFlix.
+
 /**
  ***** Function: usernameIsValid *****
- * @param username
+ * @param username - Username to check.
+ *
  * @return
+ * True if the username contains at least one legal character
+ * (letter or number) else false.
  */
-static bool usernameCheck (const char* username,Set users){
-    if(setIsIn())
-    bool contain_letter=false;
+static bool usernameIsValid (const char* username){
+    assert(username);
+    if(!(*username)){
+        /*Username is an empty string */
+        return false;
+    }
     while(*username){
         if(*username<'0' || (*username>'9' && *username<'A') ||
                 (*username>'Z' && *username<'a') || *username>'z'){
+            /* Username contains an illegal character */
             return false;
-        }
-        if ((*username>'A' && *username<'Z') ||
-            (*username>'a' && *username<'z')){
-            contain_letter=true;
         }
         username++;
     }
-    return contain_letter;
+    return true;
 }
 
 MtmFlixResult mtmFlixRemoveUser(MtmFlix mtmflix, const char* username){
