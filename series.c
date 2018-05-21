@@ -119,7 +119,14 @@ void seriesDestroy(Series series){
 }
 
 int seriesCompare(Series series1, Series series2){
-
+    assert(series1 && series2);
+    int genre_diff = strcmp((char*)series1->genre,(char*)series2->genre);
+    if(genre_diff!=0){
+        /* Two series has different genres. */
+        return genre_diff;
+    }
+    /* Two series has the same genre. */
+    return strcmp(series1->series_name,series2->series_name);
 }
 
 void seriesDestroyName(char* name){
@@ -145,7 +152,7 @@ void seriesDestroyName(char* name){
  * @param ages - Array of age limitations. If NULL there are no limitaions.
  * @return - A
  */
-static int* seriesInsertAgeLimit(int *ages, SeriesResult *status) {
+static int* seriesInsertAgeLimit(int* ages, SeriesResult *status) {
     if (ages) {
         /* There is an age limitations */
         int *series_ages = malloc(sizeof(ages));

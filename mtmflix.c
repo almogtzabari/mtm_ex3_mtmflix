@@ -12,25 +12,35 @@ struct mtmFlix_t{
 };
 
 
+/**
+ ***** mtmFlixCreate *****
+ * Description: Creates a new mtmFlix.
+ *
+ * @return
+ * new mtmFlix in case of success.
+ * Null in case of failure.
+ */
 MtmFlix mtmFlixCreate(){
     MtmFlix flix = malloc(sizeof(*flix));
     if(!flix){
         /* Failed to allocate memory. */
         return NULL;
     }
-    flix->series = setCreate();
+    flix->series = setCreate(seriesCopySetElement,seriesDestroySetElement,
+            seriesCompareSetElements);
     if(!flix->series){
-        /* Failed to allocate memory for the series map. */
+        /* Failed to allocate memory for the series set. */
         free(flix);
         return NULL;
     }
-    flix->users =setCreate(,,);
+    flix->users = setCreate(userCopySetElement,userDestroySetElememnt,
+            userCompareSetElements);
     if(!flix->users){
+        /* Failed to allocate memory for the users set. */
         setDestroy(flix->series);
         free(flix);
     }
     return flix;
-
 }
 
 MtmFlixResult mtmFlixAddUser(MtmFlix mtmflix,
@@ -38,6 +48,7 @@ MtmFlixResult mtmFlixAddUser(MtmFlix mtmflix,
     if(!mtmflix || !username){
         return MTMFLIX_NULL_ARGUMENT;
     }
+    //todo: See todo's above usernameCheck function.
     if(!usernameCheck(username)){
         return MTMFLIX_ILLEGAL_USERNAME;
     }
@@ -47,7 +58,9 @@ MtmFlixResult mtmFlixAddUser(MtmFlix mtmflix,
 
 }
 
-
+//todo: Add comments!
+//todo: Change function name to usernameIsValid (because the answer is yes or no).
+//todo: Check if username is already exist in this mtmFlix.
 static bool usernameCheck (const char* username){
     bool contain_letter=false;
     while(*username){
@@ -62,6 +75,10 @@ static bool usernameCheck (const char* username){
         username++;
     }
     return contain_letter;
+}
+
+MtmFlixResult mtmFlixRemoveUser(MtmFlix mtmflix, const char* username){
+    
 }
 
 

@@ -7,6 +7,7 @@
 #include <string.h>
 #include "set.h"
 #include "mtm_ex3.h"
+#include <assert.h>
 
 typedef struct series_t* Series;
 
