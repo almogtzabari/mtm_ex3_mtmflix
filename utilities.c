@@ -55,7 +55,6 @@ ListElement copyFriendUsername(ListElement element){
     return usernameCopy((User)element);
 }
 
-//todo: problem with type (user)element? I think it should get char*.
 void destroyFriendUsername(ListElement element){
-    return destroyUsername((User)element);
+    return destroyFriendUsername((char*)element);
 }
