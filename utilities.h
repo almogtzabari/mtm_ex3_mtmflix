@@ -41,6 +41,8 @@ int userCompareSetElements(SetElement element1, SetElement element2);
 
 ListElement copyFriendUsername (ListElement element);
 void destroyFriendUsername(ListElement element);
+ListResult removeUsernameFromAllFriendlists(Set users_set, char* username);
+void removeUserFromFriendList(List user_friend_list, ListElement username);
 
 
 

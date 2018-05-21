@@ -125,4 +125,40 @@ static void seriesRemoveFromUsersLists(List user_favorite_series,
 }
 
 
+/**
+ ***** Function: mtmFlixRemoveUser *****
+ * Description: Removes a given user from the given MtmFlix.
+ * @param mtmflix - The MtmFlix we want to remove the user from.
+ * @param username - Username we want to remove.
+ * @return
+ * MTMFLIX_NULL_ARGUMENT - If one or more of the given arguments is NULL.
+ * MTMFLIX_USER_DOES_NOT_EXIST - If the user does not exist in the MtmFlix.
+ * MTMFLIX_SUCCESS - If user removed from MtmFlix.
+ *
+ */
+//todo: what if the mtmflix->users is NULL?
+MtmFlixResult mtmFlixRemoveUser(MtmFlix mtmflix, const char* username){
+    if(!mtmflix || !username){
+        MTMFLIX_NULL_ARGUMENT;
+    }
+    /* Creates a dummy user for compariosn. */
+    User dummy_user = userCreate(username,MTM_MIN_AGE);
+    if(!dummy_user){
+        /* Failed to create dummy user. */
+        return MTMFLIX_OUT_OF_MEMORY;
+    }
+    if(!setIsIn(mtmflix->users,dummy_user)){
+        /* User does not exist. */
+        userDestroy(dummy_user);
+        return MTMFLIX_USER_DOES_NOT_EXIST;
+    }
+    /* If we got here then the user exist in the users-set and need to be
+     * removed from there.*/
+    setRemove(mtmflix->users,dummy_user); // Removing user from users set.
+    /* Now we need to remove this username from every user's friendlist. */
+    removeUsernameFromAllFriendlists(mtmflix->users,username);
+    userDestroy(dummy_user);
+    return MTMFLIX_SUCCESS;
+}
+
 
