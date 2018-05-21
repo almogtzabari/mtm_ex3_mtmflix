@@ -20,7 +20,7 @@ User userCreate(const char* username, int age);
 
 User userCopy (User user);
 void userDestroy (User user);
-int userCompare (User user1, User user2);
+int userCompare (char* username1, char* username2);
 
 
 char* usernameCopy(User user);
