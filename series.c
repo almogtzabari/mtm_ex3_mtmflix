@@ -52,6 +52,7 @@ Series seriesCreate(const char* series_name, int number_of_episodes,
         free(series);
         return NULL;
     }
+    strcpy(name,series_name);
     SeriesResult status;
     int* series_age_limit = seriesInsertAgeLimit(ages, &status);
     if(status != SERIES_SUCCESS){
@@ -102,7 +103,8 @@ char* copySeriesName(char* name){
         /* Name copy memory allocation failed. */
         return NULL;
     }
-    return strcpy(name_copy,name);
+    strcpy(name_copy,name);
+    return name_copy;
 }
 
 /**
