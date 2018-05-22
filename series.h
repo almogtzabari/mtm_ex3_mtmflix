@@ -33,5 +33,8 @@ void seriesDestroyName(char* name);
 
 Genre seriesGetGenre (Series series);
 
+SeriesResult printSeriesDetailsToFile(Series current_series,
+                                      FILE* outputStream);
+
 #endif //MTM_EX3_MTMFLIX_SERIES_H
 

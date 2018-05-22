@@ -6,7 +6,7 @@
 
 
 struct user_t{
-    char* username;
+    const char* username;
     int age;
     List user_friends_list;
     List user_favorite_series;
@@ -27,19 +27,20 @@ User userCreate(const char* username, int age){
         /* User memory allocation failed */
         return NULL;
     }
-    new_user->username=malloc(strlen(username)+1);
-    if(!new_user->username){
+    char* username_copy=malloc(strlen(username)+1);
+    if(!username_copy){
         /* Username memory allocation failed */
         free(new_user);
         return NULL;
     }
-    strcpy(new_user->username,username);
+    strcpy(username_copy,username);
+    new_user->username=(const char*)username_copy;
     new_user->age=age;
     new_user->user_friends_list= listCreate(copyFriendUsername,
             destroyFriendUsername);
     if(!new_user->user_friends_list){
         /* Friend list creation failed */
-        free(new_user->username);
+        free((char*)new_user->username);
         free(new_user);
         return NULL;
     }
@@ -47,7 +48,7 @@ User userCreate(const char* username, int age){
             destroyFavoriteSeriesName);
     if(!new_user->user_favorite_series){
         /* User favorite series list creation failed */
-        free(new_user->username);
+        free((char*)new_user->username);
         listDestroy(new_user->user_friends_list);
         free(new_user);
         return NULL;
@@ -74,13 +75,13 @@ User userCopy (User user){
     new_user->user_friends_list=listCopy(user->user_friends_list);
     if(!new_user->user_friends_list){
         /* List copying failed */
-        free(new_user->username);
+        free((char*)new_user->username);
         return NULL;
     }
     new_user->user_favorite_series=listCopy(user->user_favorite_series);
     if(!new_user->user_favorite_series){
         /* List copying failed */
-        free(new_user->username);
+        free((char*)new_user->username);
         listDestroy(new_user->user_friends_list);
         return NULL;
     }
@@ -97,7 +98,7 @@ User userCopy (User user){
  */
 void userDestroy (User user){
     assert(user);
-    free(user->username);
+    free((char*)user->username);
     listDestroy(user->user_friends_list);
     listDestroy(user->user_favorite_series);
     free(user);
@@ -151,12 +152,44 @@ void destroyUsername (char* friend_username){
     free(friend_username);
 }
 
-List userGetFriendList(User user){
+
+/**
+ ***** Function: removeUsernameFromFriendslist *****
+ * Description: Gets a set of users and a username.
+ * The function removes the given username from all the friend-lists of
+ * each user in the set.
+ * @param users_set - Set of users to remove from their friend-lists.
+ * @param username - Username to remove from their friend-list.
+ * @return
+ * LIST_NULL_ARGUMENT - If one or more of the arguments is NULL.
+ * LIST_SUCCESS - Otherwise.
+ */
+void removeUsernameFromFriendslist(User user,const char* username){
     assert(user);
-    return user->user_friends_list;
+    assert(username);
+    LIST_FOREACH(ListElement,iterator,user->user_friends_list){
+        if(!strcmp((char*)iterator,username)){
+            listRemoveCurrent(user->user_friends_list);
+            break;
+        }
+    }
 }
 
-List userGetFavoriteSeriesList(User user){
+
+/**
+ ***** Function: seriesRemoveFromFavoriteSeriesLists *****
+ * Description: Removes a series from the user favorite series list.
+ * @param user - The user to remove from.
+ * @param series_name - The series to remove.
+ */
+void seriesRemoveFromFavoriteSeriesLists(User user,
+                                         const char *series_name){
     assert(user);
-    return user->user_favorite_series;
+    assert(series_name);
+    LIST_FOREACH(ListElement,iterator,user->user_favorite_series){
+        if(!strcmp((char*)iterator,series_name)){
+            listRemoveCurrent(user->user_favorite_series);
+            break;
+        }
+    }
 }

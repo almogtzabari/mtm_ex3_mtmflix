@@ -9,13 +9,14 @@
 //-----------------------------------------------------------------------//
 
 static int* seriesInsertAgeLimit(int *ages, SeriesResult *status);
+static char* getGenreNameByEnum(Genre genre);
 
 //-----------------------------------------------------------------------//
 //                            STRUCT SERIES                              //
 //-----------------------------------------------------------------------//
 
 struct series_t{
-    char* series_name;
+    const char* series_name;
     int number_of_episodes;
     Genre genre;
     int* ages;
@@ -62,7 +63,7 @@ Series seriesCreate(const char* series_name, int number_of_episodes,
         return NULL;
     }
     series->ages = series_age_limit;
-    series->series_name = name;
+    series->series_name = (const char*)name;
     series->genre = genre;
     series->episode_duration = episode_duration;
     series->number_of_episodes = number_of_episodes;
@@ -93,7 +94,7 @@ Series seriesCopy(Series series){
 
 
 
-char* seriesCopyName(char *name){
+char* seriesCopyName( char *name){
     if(!name){
         /* NULL argument. */
         return NULL;
@@ -113,7 +114,7 @@ char* seriesCopyName(char *name){
  * @param series - Series we want to destroy.
  */
 void seriesDestroy(Series series){
-    free(series->series_name);
+    free((char*)series->series_name);
     free(series->ages);
     free(series);
 }
@@ -183,4 +184,50 @@ static int* seriesInsertAgeLimit(int* ages, SeriesResult *status) {
 
 Genre seriesGetGenre (Series series){
     return series->genre;
+}
+
+/**
+ ***** Function: printSeriesDetailsToFile *****
+ * Description: Gets a series, converts it's genre to a string and prints
+ * it to a file.
+ * @param current_series - The series which it's details will be printed
+ * to the file.
+ * @param outputStream - The file to print to.
+ * @return
+ * SERIES_MEMORY_ALLOCATION_FAILED - In case of memory allocation error.
+ * SERIES_SUCCESS - Printing to file succeeded.
+ */
+SeriesResult printSeriesDetailsToFile(Series current_series,
+                                      FILE* outputStream){
+    char* series_genre_string=getGenreNameByEnum
+            (current_series->genre);
+    if(!series_genre_string){
+        return SERIES_MEMORY_ALLOCATION_FAILED;
+    }
+    /* The returned value is allocated on the stack and should not
+     * be freed */
+    const char* series_details=mtmPrintSeries(current_series->series_name,
+                                        series_genre_string);
+    free(series_genre_string);
+    fprintf(outputStream,"%s\n",series_details);
+    return SERIES_SUCCESS;
+}
+
+/**
+ ***** Function: getGenreNameByEnum *****
+ * Description: Converts genre to the string that represents the genre.
+ * @param genre - A number that represents a genre.
+ * @return
+ * NULL in case of memory allocation error, else the string represents the
+ * number of genre.
+ */
+static char* getGenreNameByEnum(Genre genre){
+    const char* genres[] = { "SCIENCE_FICTION", "DRAMA", "COMEDY", "CRIME",
+                             "MYSTERY","DOCUMENTARY", "ROMANCE", "HORROR"};
+    char* genre_string=malloc(strlen(genres[genre])+1);
+    if(!genre_string){
+        return NULL;
+    }
+    strcpy(genre_string,genres[genre]);
+    return genre_string;
 }

@@ -26,9 +26,10 @@ int userCompare (User user1, User user2);
 char* usernameCopy(User user);
 void destroyUsername (char* friend_username);
 
-List userGetFriendList(User user);
-List userGetFavoriteSeriesList(User user);
 
+void removeUsernameFromFriendslist(User user,const char* username);
+void seriesRemoveFromFavoriteSeriesLists(User user,
+                                         const char *series_name);
 
 #endif //MTM_EX3_MTMFLIX_USER_H
 
