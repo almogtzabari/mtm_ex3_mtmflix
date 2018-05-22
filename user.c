@@ -193,3 +193,29 @@ void seriesRemoveFromFavoriteSeriesLists(User user,
         }
     }
 }
+/**
+ ***** Function: printUserDetailsToFile *****
+ * Description: Gets a user and prints its details to a given file.
+ * @param current_user - The user which his details will be printed to the
+ * file.
+ * @param outputStream - A file to print to.
+ *
+ * @return
+ * USER_OUT_OF_MEMORY - In case of memory allocation error.
+ *
+ */
+UserResult printUserDetailsToFile(User current_user,
+                                      FILE* outputStream) {
+    const char *user_details = mtmPrintUser(current_user->username,
+                                            current_user->age,
+                                            current_user->user_friends_list,
+                                            current_user->
+                                                    user_favorite_series);
+    if (!user_details) {
+        return USER_OUT_OF_MEMORY;
+    }
+    fprintf(outputStream, "%s\n", user_details);
+    return USER_SUCCESS;
+}
+
+
