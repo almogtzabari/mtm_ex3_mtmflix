@@ -10,6 +10,7 @@
 #include <assert.h>
 
 #define NUMBER_OF_GENRES 8
+#define SERIES_NO_AGE_RESTRICTIONS -1
 
 typedef struct series_t* Series;
 

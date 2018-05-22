@@ -186,7 +186,7 @@ MtmFlixResult mtmFlixAddSeries(MtmFlix mtmflix, const char* name,
         /* One of the arguments is NULL */
         return MTMFLIX_NULL_ARGUMENT;
     }
-    
+
     if(!nameIsValid(name)){
         /* The given series name is not valid */
         return MTMFLIX_ILLEGAL_SERIES_NAME;
@@ -202,11 +202,12 @@ MtmFlixResult mtmFlixAddSeries(MtmFlix mtmflix, const char* name,
 
     Series temp_series = seriesCreate(name,episodesNum,genre,ages,
             episodesDuration);
+
     if(!temp_series){
         /* Series creation failed */
         return MTMFLIX_OUT_OF_MEMORY;
     }
-    if(setIsIn(mtmflix->series,temp_series)){
+    if(setIsIn(mtmflix->series,(SetElement)temp_series)){
         /* The series already exists */
         seriesDestroy(temp_series);
         return MTMFLIX_SERIES_ALREADY_EXISTS;
@@ -362,4 +363,53 @@ MtmFlixResult mtmFlixReportUsers(MtmFlix mtmflix, FILE* outputStream){
         }
     }
     return MTMFLIX_SUCCESS;
+}
+
+/**
+ ***** Function: mtmFlixSeriesJoin *****
+ * Description: Gets a username and a series name and put the series in
+ * user's favorite-series-list.
+ *
+ * @param mtmflix - The system of MtmFlix.
+ * @param username - The user to add the series to his favorite series.
+ * @param seriesName - The name of the series we want to add.
+ * @return
+ * MTMFLIX_SUCCESS - Adding succeeded.
+ * MTMFLIX_NULL_ARGUMENT - One or more of the given arguments is NULL.
+ * MTMFLIX_USER_DOES_NOT_EXIST - User doesn't exist in the given system.
+ * MTMFLIX_SERIES_DOES_NOT_EXIST - Series doesn't exist in the given
+ * system.
+ * MTMFLIX_USER_NOT_IN_THE_RIGHT_AGE - User does not meet age restrictions.
+ */
+MtmFlixResult mtmFlixSeriesJoin(MtmFlix mtmflix, const char* username,
+                                const char* seriesName){
+    if(!mtmflix){
+        return MTMFLIX_NULL_ARGUMENT;
+    }
+    User dummy_user = userCreate(username,MTM_MIN_AGE+1);
+    if(!dummy_user){
+        /* Memeory allocation failed  */
+        return MTMFLIX_OUT_OF_MEMORY;
+    }
+    if(!setIsIn(mtmflix->users,(SetElement)dummy_user)){
+        /* User doesn't exist. */
+        userDestroy(dummy_user);
+        return MTMFLIX_USER_DOES_NOT_EXIST;
+    }
+    // todo: free dummy_user
+    Series dummy_series = seriesCreate(seriesName,1,HORROR,NULL,5);
+    if(!dummy_series){
+        /* Memeory allocation failed  */
+        userDestroy(dummy_user);
+        return MTMFLIX_OUT_OF_MEMORY;
+    }
+    if(!setIsIn(mtmflix->series,(SetElement)dummy_series)){
+        /* Series doesn't exist. */
+        userDestroy(dummy_user);
+        seriesDestroy(dummy_series);
+        return MTMFLIX_SERIES_DOES_NOT_EXIST;
+    }
+    //todo: check user's age with series' restrictions.
+    /** I created 3 functions in series.c to help me with this function.*/
+
 }

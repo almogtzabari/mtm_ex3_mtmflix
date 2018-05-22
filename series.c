@@ -146,6 +146,27 @@ void seriesDestroyName(char* name){
 }
 
 
+/** NEW FUNCTIONS */
+//todo: update header file for these functions.
+
+bool seriesHasAgeRestrictions(Series series){
+    if(!series->ages){
+        return false;
+    }
+    return true;
+}
+int seriesGetMaxAge(Series series){
+    assert(!series);
+    assert(series->ages);
+    return series->ages[1];
+}
+int seriesGetMinAge(Series series){
+    assert(!series);
+    assert(series->ages);
+    return series->ages[0];
+}
+
+
 //-----------------------------------------------------------------------//
 //                    STRUCT SERIES STATIC FUNCTIONS                     //
 //-----------------------------------------------------------------------//
