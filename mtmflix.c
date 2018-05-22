@@ -44,6 +44,17 @@ MtmFlix mtmFlixCreate(){
 }
 
 /**
+ ***** Function: mtmFlixDestroy *****
+ * Description: Gets a MtmFlix and free all resources of it.
+ * @param mtmflix - The MtmFlix we want to destroy.
+ */
+void mtmFlixDestroy(MtmFlix mtmflix){
+    setDestroy(mtmflix->users);
+    setDestroy(mtmflix->series);
+    free(mtmflix);
+}
+
+/**
  ***** Function: mtmFlixAddUser *****
  * Description: Adds a username to the MtmFlix if the user doesn't already
  * exist and the given age is legal.
