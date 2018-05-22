@@ -201,7 +201,7 @@ MtmFlixResult mtmFlixAddSeries(MtmFlix mtmflix, const char* name,
     }
 
     Series temp_series = seriesCreate(name,episodesNum,genre,ages,
-            episodeDuration);
+            episodesDuration);
     if(!temp_series){
         /* Series creation failed */
         return MTMFLIX_OUT_OF_MEMORY;
