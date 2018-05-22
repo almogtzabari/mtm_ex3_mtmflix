@@ -208,9 +208,8 @@ UserResult printUserDetailsToFile(User current_user,
                                       FILE* outputStream) {
     const char *user_details = mtmPrintUser(current_user->username,
                                             current_user->age,
-                                            current_user->user_friends_list,
-                                            current_user->
-                                                    user_favorite_series);
+                                            current_user->user_friends_list
+            ,current_user->user_favorite_series);
     if (!user_details) {
         return USER_OUT_OF_MEMORY;
     }

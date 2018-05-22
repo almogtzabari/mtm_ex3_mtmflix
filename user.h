@@ -30,6 +30,8 @@ void destroyUsername (char* friend_username);
 void removeUsernameFromFriendslist(User user,const char* username);
 void seriesRemoveFromFavoriteSeriesLists(User user,
                                          const char *series_name);
+UserResult printUserDetailsToFile(User current_user,
+                                  FILE* outputStream);
 
 #endif //MTM_EX3_MTMFLIX_USER_H
 

@@ -258,7 +258,7 @@ MtmFlixResult mtmFlixRemoveSeries(MtmFlix mtmflix, const char* name){
 
 /**
  ***** Function: mtmFlixReportSeries *****
- * Description: Prints the series name and genre to a file by
+ * Description: Prints all the series name and genres to a file.
  * @param mtmflix - The mtmflix to print the series list from.
  * @param seriesNum - Number of series from a genre to be printed.
  * @param outputStream - A file to print to.
@@ -335,4 +335,19 @@ MtmFlixResult mtmFlixReportSeries(MtmFlix mtmflix, int seriesNum,
         }
     }
     return MTMFLIX_SUCCESS;
+}
+/**
+ ***** Function: mtmFlixReportUsers *****
+ * Description: Prints
+ * @param mtmflix
+ * @param outputStream
+ * @return
+ */
+MtmFlixResult mtmFlixReportUsers(MtmFlix mtmflix, FILE* outputStream){
+    if (!mtmflix || !outputStream){
+        return MTMFLIX_NULL_ARGUMENT;
+    }
+    if(setGetSize(mtmflix->users)==0){
+        return MTMFLIX_NO_USERS;
+    }
 }
