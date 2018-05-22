@@ -125,7 +125,7 @@ void seriesDestroy(Series series){
 int seriesCompare(Series series1, Series series2){
     if(!strcmp(series1->series_name,series2->series_name)){
         /* Series has the same name. This is in order to check if a series
-         * exist in a set. */
+         * exist in a set using its name only. */
         return 0;
     }
     assert(series1 && series2);
