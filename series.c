@@ -42,7 +42,7 @@ struct series_t{
  * @return - New series or NULL in case of fail.
  */
 Series seriesCreate(const char* series_name, int number_of_episodes,
-                    Genre genre, int* ages, double episode_duration){
+                    Genre genre, int* ages, int episode_duration){
 
     Series series = malloc(sizeof(*series));
     if(!series){
