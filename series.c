@@ -268,7 +268,7 @@ static char* getGenreNameByEnum(Genre genre){
  */
 static int getGenrePosition(Genre genre){
 
-    int genres_position = {7,3,0,1,5,2,6,4};
+    int genres_position[NUMBER_OF_GENRES] = {7,3,0,1,5,2,6,4};
     return genres_position[genre];
 
 }
