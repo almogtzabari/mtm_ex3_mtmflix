@@ -202,7 +202,7 @@ void seriesRemoveFromFavoriteSeriesLists(User user,
  *
  * @return
  * USER_OUT_OF_MEMORY - In case of memory allocation error.
- *
+ * USER_SUCCESS - Printing to file succeeded.
  */
 UserResult printUserDetailsToFile(User current_user,
                                       FILE* outputStream) {
@@ -217,5 +217,6 @@ UserResult printUserDetailsToFile(User current_user,
     fprintf(outputStream, "%s\n", user_details);
     return USER_SUCCESS;
 }
+
 
 
