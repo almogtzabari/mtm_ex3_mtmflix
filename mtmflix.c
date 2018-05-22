@@ -181,7 +181,7 @@ static bool nameIsValid(const char *name){
  */
 MtmFlixResult mtmFlixAddSeries(MtmFlix mtmflix, const char* name,
                                int episodesNum, Genre genre, int* ages,
-                               double episodeDuration){
+                               int episodesDuration){
     if(!mtmflix || !name){
         /* One of the arguments is NULL */
         return MTMFLIX_NULL_ARGUMENT;
@@ -195,7 +195,7 @@ MtmFlixResult mtmFlixAddSeries(MtmFlix mtmflix, const char* name,
         /* Number of episodes is 0 or less. */
         return MTMFLIX_ILLEGAL_EPISODES_NUM;
     }
-    if(episodeDuration<0 || episodeDuration==0){
+    if(episodesDuration<0 || episodesDuration==0){
         /* Episode average duration is 0 or less. */
         return MTMFLIX_ILLEGAL_EPISODES_DURATION;
     }
