@@ -338,10 +338,14 @@ MtmFlixResult mtmFlixReportSeries(MtmFlix mtmflix, int seriesNum,
 }
 /**
  ***** Function: mtmFlixReportUsers *****
- * Description: Prints
- * @param mtmflix
- * @param outputStream
+ * Description: Prints all the details of all the users to a file.
+ * @param mtmflix - The mtmflix to print the series list from.
+ * @param outputStream -A file to print to.
  * @return
+ * MTMFLIX_NULL_ARGUMENT - If one or more of the given arguments is NULL.
+ * MTMFLIX_NO_USERS - If there are no users on mtmtflix.
+ * MTMFLIX_OUT_OF_MEMORY - In case of memory allocation error.
+ * MTMFLIX_SUCCESS - Printing has succeeded.
  */
 MtmFlixResult mtmFlixReportUsers(MtmFlix mtmflix, FILE* outputStream){
     if (!mtmflix || !outputStream){
@@ -350,4 +354,12 @@ MtmFlixResult mtmFlixReportUsers(MtmFlix mtmflix, FILE* outputStream){
     if(setGetSize(mtmflix->users)==0){
         return MTMFLIX_NO_USERS;
     }
+    UserResult result;
+    SET_FOREACH(SetElement,current_user,mtmflix->users){
+        result=printUserDetailsToFile(current_user,outputStream);
+        if(result!=USER_SUCCESS){
+            return MTMFLIX_OUT_OF_MEMORY;
+        }
+    }
+    return MTMFLIX_SUCCESS;
 }

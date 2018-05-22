@@ -200,9 +200,7 @@ Genre seriesGetGenre (Series series){
 
 /**
  ***** Function: printSeriesDetailsToFile *****
- * Description: Gets a file and a series and prints its name and genre
- * to a file.
- *
+ * Description:Prints a series name and genre to a file.
  * @param current_series - The series we want to print to the given file.
  * @param outputStream - The file we want to print into.
  * @return
