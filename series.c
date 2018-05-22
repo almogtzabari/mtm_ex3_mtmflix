@@ -30,6 +30,7 @@ struct series_t{
 /**
  ***** Function: seriesCreate *****
  * Description: Creates a new series.
+ *
  * @param series_name - Name of the series.
  * @param number_of_episodes - Number of episodes of the series.
  * @param genre - Genre of the series.
@@ -73,6 +74,7 @@ Series seriesCreate(const char* series_name, int number_of_episodes,
 /**
  ***** Function: seriesCopy *****
  * Description: Creates a copy of the given series.
+ *
  * @param series - A series to create a copy of.
  * @return - A copy of the given series or NULL in case of failure.
  */
@@ -111,6 +113,7 @@ char* seriesCopyName( char *name){
 /**
  ***** Function: seriesDestroy *****
  * Description: Free all allocated memory of a given series.
+ *
  * @param series - Series we want to destroy.
  */
 void seriesDestroy(Series series){
@@ -155,6 +158,7 @@ void seriesDestroyName(char* name){
  * will contain MtmFlix maximum age. If the minimum age in the array is
  * lower than MtmFlix minimum age then the new array will contain MtmFlix
  * minimum age.
+ *
  * @param ages - Array of age limitations. If NULL there are no limitaions.
  * @return - A
  */
@@ -195,6 +199,7 @@ Genre seriesGetGenre (Series series){
  ***** Function: printSeriesDetailsToFile *****
  * Description: Gets a file and a series and prints its name and genre
  * to a file.
+ *
  * @param current_series - The series we want to print to the given file.
  * @param outputStream - The file we want to print into.
  * @return
@@ -218,6 +223,7 @@ SeriesResult printSeriesDetailsToFile(Series current_series,
 /**
  ***** Function: getGenreNameByEnum *****
  * Description: Converts genre to the string that represents the genre.
+ *
  * @param genre - A number that represents a genre.
  * @return
  * NULL in case of memory allocation error, else the string represents the

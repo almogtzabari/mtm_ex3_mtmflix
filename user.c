@@ -127,8 +127,8 @@ int userCompare (User user1, User user2){
 /**
  ***** Function: usernameCopy *****
  * Description: Copying a friend's name.
- * @param user - A friend's name to copy.
  *
+ * @param user - A friend's name to copy.
  * @return
  * A copy of the given friend's name.
  */
@@ -146,6 +146,7 @@ char* usernameCopy(User user){
 /**
  ***** Function: destroyUsername *****
  * Description: Deallocates the memory used for a friend's name.
+ *
  * @param user - A friend's name to destroy.
  */
 void destroyUsername (char* friend_username){
@@ -158,6 +159,7 @@ void destroyUsername (char* friend_username){
  * Description: Gets a set of users and a username.
  * The function removes the given username from all the friend-lists of
  * each user in the set.
+ *
  * @param users_set - Set of users to remove from their friend-lists.
  * @param username - Username to remove from their friend-list.
  * @return
@@ -179,6 +181,7 @@ void removeUsernameFromFriendslist(User user,const char* username){
 /**
  ***** Function: seriesRemoveFromFavoriteSeriesLists *****
  * Description: Removes a series from the user favorite series list.
+ *
  * @param user - The user to remove from.
  * @param series_name - The series to remove.
  */

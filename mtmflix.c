@@ -14,6 +14,7 @@ struct mtmFlix_t{
 
 /**
  ***** mtmFlixCreate *****
+ *
  * Description: Creates a new mtmFlix.
  *
  * @return
@@ -45,7 +46,9 @@ MtmFlix mtmFlixCreate(){
 
 /**
  ***** Function: mtmFlixDestroy *****
+ *
  * Description: Gets a MtmFlix and free all resources of it.
+ *
  * @param mtmflix - The MtmFlix we want to destroy.
  */
 void mtmFlixDestroy(MtmFlix mtmflix){
@@ -56,8 +59,10 @@ void mtmFlixDestroy(MtmFlix mtmflix){
 
 /**
  ***** Function: mtmFlixAddUser *****
+ *
  * Description: Adds a username to the MtmFlix if the user doesn't already
  * exist and the given age is legal.
+ *
  * @param mtmflix - A mtmflix to add the user to.
  * @param username - The username of the user.
  * @param age - The age of the user.
@@ -103,7 +108,9 @@ MtmFlixResult mtmFlixAddUser(MtmFlix mtmflix,
 
 /**
  ***** Function: mtmFlixRemoveUser *****
+ *
  * Description: Removes a given user from the given MtmFlix.
+ *
  * @param mtmflix - The MtmFlix we want to remove the user from.
  * @param username - Username we want to remove.
  * @return
@@ -142,10 +149,11 @@ MtmFlixResult mtmFlixRemoveUser(MtmFlix mtmflix, const char* username){
 
 /**
  ***** Function: nameIsValid *****
+ *
  * Description: Checks if the given name contains only letters or numbers
  * and at least one of them.
- * @param name - Name to check.
  *
+ * @param name - Name to check.
  * @return
  * True if the name contains only letters or numbers and at least one of
  * them.
@@ -168,6 +176,9 @@ static bool nameIsValid(const char *name){
 }
 /**
  ***** Function: mtmFlixAddSeries *****
+ *
+ * Description:
+ *
  * @param mtmflix - A mtmflix to add the series to.
  * @param name - The name of the series.
  * @param episodesNum - The number of episodes of the series.
@@ -235,7 +246,9 @@ MtmFlixResult mtmFlixAddSeries(MtmFlix mtmflix, const char* name,
 
 /**
  ***** Function: mtmFlixRemoveSeries *****
+ *
  * Removes a given series from the given MtmFlix.
+ *
  * @param mtmflix - The MtmFlix we want to remove the series from.
  * @param name - The series name we want to remove.
  * @return
@@ -269,9 +282,11 @@ MtmFlixResult mtmFlixRemoveSeries(MtmFlix mtmflix, const char* name){
 
 /**
  ***** Function: mtmFlixReportSeries *****
+ *
  * Description: Prints series names and genres to a file.
  * The function will print 'seriesNum' series from each genre. The series
  * will be sorted by genre and in each genre sorted by name.
+ *
  * @param mtmflix - The mtmflix to print the series from.
  * @param seriesNum - Number of series to print from each genre.
  * @param outputStream - A file to print to.
