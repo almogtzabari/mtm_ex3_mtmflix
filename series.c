@@ -134,6 +134,7 @@ int seriesCompare(Series series1, Series series2){
     int genre2_position = getGenrePosition(series2->genre);
     int genre_diff = genre2_position-genre1_position;
     if(genre_diff){
+        /* The series has different genres. */
         return genre_diff;
     }
     /* Two series has the same genre. */
