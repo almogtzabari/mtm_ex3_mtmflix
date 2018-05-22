@@ -10,6 +10,7 @@
 
 static int* seriesInsertAgeLimit(int *ages, SeriesResult *status);
 static char* getGenreNameByEnum(Genre genre);
+static int getGenrePosition(Genre genre);
 
 //-----------------------------------------------------------------------//
 //                            STRUCT SERIES                              //
@@ -129,9 +130,10 @@ int seriesCompare(Series series1, Series series2){
         return 0;
     }
     assert(series1 && series2);
-    int genre_diff = strcmp((char*)series1->genre,(char*)series2->genre);
-    if(genre_diff!=0){
-        /* Two series has different genres. */
+    int genre1_position = getGenrePosition(series1->genre);
+    int genre2_position = getGenrePosition(series2->genre);
+    int genre_diff = genre2_position-genre1_position;
+    if(genre_diff){
         return genre_diff;
     }
     /* Two series has the same genre. */
@@ -216,6 +218,9 @@ SeriesResult printSeriesDetailsToFile(Series current_series,
     const char* series_details = mtmPrintSeries(current_series->series_name,
                                         series_genre_string);
     free(series_genre_string);
+    if(!series_details){
+        return SERIES_MEMORY_ALLOCATION_FAILED;
+    }
     fprintf(outputStream,"%s\n",series_details);
     return SERIES_SUCCESS;
 }
@@ -239,3 +244,40 @@ static char* getGenreNameByEnum(Genre genre){
     strcpy(genre_string,genres[genre]);
     return genre_string;
 }
+
+
+/**
+ ***** Function: getGenrePosition *****
+ * Description: Gets a genre and returns its lexicographical position.
+ * ascii value.
+ *
+ * //------ Genre ------ Enum ------ Lex oreder
+ * //  SCIENCE_FICTION     0            7
+ * //  DRAMA               1            3
+ * //  COMEDY              2            0
+ * //  CRIME               3            1
+ * //  MYSTERY             0            5
+ * //  DOCUMENTARY         1            2
+ * //  ROMANCE             2            6
+ * //  HORROR              3            4
+ *
+ * @param genre - The genre we want to get its position.
+ * @return
+ * Integer indicates the position of the genre.
+ */
+static int getGenrePosition(Genre genre){
+
+    int genres_position = {7,3,0,1,5,2,6,4};
+    return genres_position[genre];
+
+}
+
+//------ Genre ------ Enum ------ Lex oreder
+//  SCIENCE_FICTION     0            7
+//  DRAMA               1            3
+//  COMEDY              2            0
+//  CRIME               3            1
+//  MYSTERY             0            5
+//  DOCUMENTARY         1            2
+//  ROMANCE             2            6
+//  HORROR              3            4
