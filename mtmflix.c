@@ -183,11 +183,11 @@ static bool nameIsValid(const char *name){
 MtmFlixResult mtmFlixAddSeries(MtmFlix mtmflix, const char* name,
                                int episodesNum, Genre genre, int* ages,
                                int episodeDuration){
-    if(!mtmflix || !name || !ages){
+    if(!mtmflix || !name){
         /* One of the arguments is NULL */
         return MTMFLIX_NULL_ARGUMENT;
     }
-    printf("sdafasdfsda");
+    
     if(!nameIsValid(name)){
         /* The given series name is not valid */
         return MTMFLIX_ILLEGAL_SERIES_NAME;
@@ -200,6 +200,7 @@ MtmFlixResult mtmFlixAddSeries(MtmFlix mtmflix, const char* name,
         /* Episode average duration is less than 0 */
         return MTMFLIX_ILLEGAL_EPISODES_DURATION;
     }
+
     Series temp_series=seriesCreate(name,episodesNum,genre,ages,
             episodeDuration);
     if(!temp_series){
