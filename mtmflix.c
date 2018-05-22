@@ -104,7 +104,7 @@ MtmFlixResult mtmFlixAddUser(MtmFlix mtmflix,
 //todo: what if the mtmflix->users is NULL?
 MtmFlixResult mtmFlixRemoveUser(MtmFlix mtmflix, const char* username){
     if(!mtmflix || !username){
-        MTMFLIX_NULL_ARGUMENT;
+        return MTMFLIX_NULL_ARGUMENT;
     }
     /* Creates a dummy user for compariosn. */
     User dummy_user = userCreate(username,MTM_MIN_AGE+1);
