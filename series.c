@@ -20,7 +20,7 @@ struct series_t{
     int number_of_episodes;
     Genre genre;
     int* ages;
-    double episode_duration;
+    int episode_duration;
 };
 
 //-----------------------------------------------------------------------//
@@ -40,7 +40,7 @@ struct series_t{
  * @return - New series or NULL in case of fail.
  */
 Series seriesCreate(const char* series_name, int number_of_episodes,
-                    Genre genre, int* ages, double episode_duration){
+                    Genre genre, int* ages, int episode_duration){
 
     Series series = malloc(sizeof(*series));
     if(!series){
@@ -120,6 +120,11 @@ void seriesDestroy(Series series){
 }
 
 int seriesCompare(Series series1, Series series2){
+    if(!strcmp(series1->series_name,series2->series_name){
+        /* Series has the same name. This is in order to check if a series
+         * exist in a set. */
+        return 0;
+    }
     assert(series1 && series2);
     int genre_diff = strcmp((char*)series1->genre,(char*)series2->genre);
     if(genre_diff!=0){
