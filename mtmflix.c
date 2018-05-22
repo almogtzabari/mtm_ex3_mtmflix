@@ -18,7 +18,7 @@ struct mtmFlix_t{
  *
  * @return
  * new mtmFlix in case of success.
- * Null in case of failure.
+ * NULL in case of failure.
  */
 MtmFlix mtmFlixCreate(){
     MtmFlix flix = malloc(sizeof(*flix));
@@ -104,7 +104,7 @@ MtmFlixResult mtmFlixAddUser(MtmFlix mtmflix,
 //todo: what if the mtmflix->users is NULL?
 MtmFlixResult mtmFlixRemoveUser(MtmFlix mtmflix, const char* username){
     if(!mtmflix || !username){
-        MTMFLIX_NULL_ARGUMENT;
+        return MTMFLIX_NULL_ARGUMENT;
     }
     /* Creates a dummy user for compariosn. */
     User dummy_user = userCreate(username,MTM_MIN_AGE+1);
@@ -258,9 +258,11 @@ MtmFlixResult mtmFlixRemoveSeries(MtmFlix mtmflix, const char* name){
 
 /**
  ***** Function: mtmFlixReportSeries *****
- * Description: Prints the series name and genre to a file by
- * @param mtmflix - The mtmflix to print the series list from.
- * @param seriesNum - Number of series from a genre to be printed.
+ * Description: Prints series names and genres to a file.
+ * The function will print 'seriesNum' series from each genre. The series
+ * will be sorted by genre and in each genre sorted by name.
+ * @param mtmflix - The mtmflix to print the series from.
+ * @param seriesNum - Number of series to print from each genre.
  * @param outputStream - A file to print to.
  * @return
  * MTMFLIX_NULL_ARGUMENT - If one or more of the given arguments is NULL.
@@ -279,56 +281,54 @@ MtmFlixResult mtmFlixReportSeries(MtmFlix mtmflix, int seriesNum,
     assert(seriesNum>=0);
     SeriesResult result;
     if(seriesNum==0){
-        /*Should print all the series found in mtmflix*/
+        /*Should print all the series found in mtmflix. */
         SET_FOREACH(SetElement,current_series,mtmflix->series){
-            result=printSeriesDetailsToFile(current_series,outputStream);
-            if(result!=SERIES_SUCCESS){
-                /*Print has failed becuase of memory
-                         * allocation error */
+            // todo: Did you open the file for writing? Did you close it?
+            result = printSeriesDetailsToFile(current_series,outputStream);
+            if(result != SERIES_SUCCESS){
+                /* Print has failed because of memory allocation error. */
                 return MTMFLIX_OUT_OF_MEMORY;
             }
         }
     }
     else {
-        /*Sets the number of series from each genre should be printed */
-        int number_of_series_from_genre=seriesNum;
-        /*Sets the current genre to the first genre in the list */
-        Genre current_genre=seriesGetGenre((Series)setGetFirst
-                (mtmflix->users));
+        int prints_left = seriesNum; // Initializes the number of prints.
+        /* current_genre will store the genre of the series that are
+         * currently being printed. Each time we finished to print a
+         * specific genre the current genre will get the next genre in the
+         * set. */
+        Genre current_genre = seriesGetGenre((Series)setGetFirst
+                (mtmflix->users)); // Initializes to genre of first series.
         SET_FOREACH(SetElement,current_series,mtmflix->series){
-            /*Checks if the current series is still from the same genre*/
-            if(seriesGetGenre((Series)current_series)==current_genre){
-                /*Checks if the current series details should be printed */
-                if (number_of_series_from_genre>0){
-                    result=printSeriesDetailsToFile(current_series,
+            if(seriesGetGenre((Series)current_series) == current_genre){
+                /* Current series has the same genre as current genre. */
+                if (prints_left>0){
+                    /* Still need to print series from that genre. */
+                    result = printSeriesDetailsToFile(current_series,
                             outputStream);
                     if(result!=SERIES_SUCCESS){
-                        /*Print has failed becuase of memory
-                         * allocation error */
+                        /*Print has failed becuase of memory allocation
+                         * error. */
                         return MTMFLIX_OUT_OF_MEMORY;
                     }
-                    number_of_series_from_genre--;
+                    prints_left--;
                 }
                 else {
-                    /*The current series is still from the same genre but
-                     * should not be printed */
+                    /* Current series shouldn't be printed because we
+                     * already printed enough from that genre. */
                     continue;
                 }
             }
             else{
-                /*If we reached here, the current series is from a
-                 * different genre,so we need to print it */
-                /*The current series details will be printed so we have to
-                 * print series from the same genre more seriesNum-1
-                 * times */
-                number_of_series_from_genre=seriesNum-1;
-                /*Setting the new genre to be the current genre */
-                current_genre=seriesGetGenre((Series)current_series);
-                result=printSeriesDetailsToFile(current_series,
+                /* Current series has a new genre. */
+                prints_left = seriesNum; // Initializes the number of prints.
+                /* Updating the current genre to new genre. */
+                current_genre = seriesGetGenre((Series)current_series);
+                result = printSeriesDetailsToFile(current_series,
                         outputStream);
                 if(result!=SERIES_SUCCESS){
-                    /*Print has failed becuase of memory
-                         * allocation error */
+                    /* Print has failed because of memory allocation
+                     * error. */
                     return MTMFLIX_OUT_OF_MEMORY;
                 }
             }

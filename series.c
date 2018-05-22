@@ -193,25 +193,22 @@ Genre seriesGetGenre (Series series){
 
 /**
  ***** Function: printSeriesDetailsToFile *****
- * Description: Gets a series, converts it's genre to a string and prints
- * it to a file.
- * @param current_series - The series which it's details will be printed
- * to the file.
- * @param outputStream - The file to print to.
+ * Description: Gets a file and a series and prints its name and genre
+ * to a file.
+ * @param current_series - The series we want to print to the given file.
+ * @param outputStream - The file we want to print into.
  * @return
  * SERIES_MEMORY_ALLOCATION_FAILED - In case of memory allocation error.
  * SERIES_SUCCESS - Printing to file succeeded.
  */
 SeriesResult printSeriesDetailsToFile(Series current_series,
                                       FILE* outputStream){
-    char* series_genre_string=getGenreNameByEnum
+    char* series_genre_string = getGenreNameByEnum
             (current_series->genre);
     if(!series_genre_string){
         return SERIES_MEMORY_ALLOCATION_FAILED;
     }
-    /* The returned value is allocated on the stack and should not
-     * be freed */
-    const char* series_details=mtmPrintSeries(current_series->series_name,
+    const char* series_details = mtmPrintSeries(current_series->series_name,
                                         series_genre_string);
     free(series_genre_string);
     fprintf(outputStream,"%s\n",series_details);
@@ -229,7 +226,7 @@ SeriesResult printSeriesDetailsToFile(Series current_series,
 static char* getGenreNameByEnum(Genre genre){
     const char* genres[] = { "SCIENCE_FICTION", "DRAMA", "COMEDY", "CRIME",
                              "MYSTERY","DOCUMENTARY", "ROMANCE", "HORROR"};
-    char* genre_string=malloc(strlen(genres[genre])+1);
+    char* genre_string = malloc(strlen(genres[genre])+1);
     if(!genre_string){
         return NULL;
     }
