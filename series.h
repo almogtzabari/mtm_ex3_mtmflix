@@ -9,6 +9,8 @@
 #include "mtm_ex3.h"
 #include <assert.h>
 
+#define NUMBER_OF_GENRES 8
+
 typedef struct series_t* Series;
 
 typedef enum SeriesResult_t {

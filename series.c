@@ -10,6 +10,7 @@
 
 static int* seriesInsertAgeLimit(int *ages, SeriesResult *status);
 static char* getGenreNameByEnum(Genre genre);
+static int getGenrePosition(Genre genre);
 
 //-----------------------------------------------------------------------//
 //                            STRUCT SERIES                              //
@@ -30,6 +31,7 @@ struct series_t{
 /**
  ***** Function: seriesCreate *****
  * Description: Creates a new series.
+ *
  * @param series_name - Name of the series.
  * @param number_of_episodes - Number of episodes of the series.
  * @param genre - Genre of the series.
@@ -73,6 +75,7 @@ Series seriesCreate(const char* series_name, int number_of_episodes,
 /**
  ***** Function: seriesCopy *****
  * Description: Creates a copy of the given series.
+ *
  * @param series - A series to create a copy of.
  * @return - A copy of the given series or NULL in case of failure.
  */
@@ -82,7 +85,7 @@ Series seriesCopy(Series series){
         return NULL;
     }
     Series series_copy = seriesCreate(series->series_name,
-            series->number_of_episodes,series->genre,series->ages,
+                                      series->number_of_episodes,series->genre,series->ages,
                                       series->episode_duration);
 
     if(!series_copy){
@@ -111,6 +114,7 @@ char* seriesCopyName( char *name){
 /**
  ***** Function: seriesDestroy *****
  * Description: Free all allocated memory of a given series.
+ *
  * @param series - Series we want to destroy.
  */
 void seriesDestroy(Series series){
@@ -122,13 +126,15 @@ void seriesDestroy(Series series){
 int seriesCompare(Series series1, Series series2){
     if(!strcmp(series1->series_name,series2->series_name)){
         /* Series has the same name. This is in order to check if a series
-         * exist in a set. */
+         * exist in a set using its name only. */
         return 0;
     }
     assert(series1 && series2);
-    int genre_diff = strcmp((char*)series1->genre,(char*)series2->genre);
-    if(genre_diff!=0){
-        /* Two series has different genres. */
+    int genre1_position = getGenrePosition(series1->genre);
+    int genre2_position = getGenrePosition(series2->genre);
+    int genre_diff = genre2_position-genre1_position;
+    if(genre_diff){
+        /* The series has different genres. */
         return genre_diff;
     }
     /* Two series has the same genre. */
@@ -155,6 +161,7 @@ void seriesDestroyName(char* name){
  * will contain MtmFlix maximum age. If the minimum age in the array is
  * lower than MtmFlix minimum age then the new array will contain MtmFlix
  * minimum age.
+ *
  * @param ages - Array of age limitations. If NULL there are no limitaions.
  * @return - A
  */
@@ -193,27 +200,28 @@ Genre seriesGetGenre (Series series){
 
 /**
  ***** Function: printSeriesDetailsToFile *****
- * Description: Gets a series, converts it's genre to a string and prints
- * it to a file.
- * @param current_series - The series which it's details will be printed
- * to the file.
- * @param outputStream - The file to print to.
+ * Description: Gets a file and a series and prints its name and genre
+ * to a file.
+ *
+ * @param current_series - The series we want to print to the given file.
+ * @param outputStream - The file we want to print into.
  * @return
  * SERIES_MEMORY_ALLOCATION_FAILED - In case of memory allocation error.
  * SERIES_SUCCESS - Printing to file succeeded.
  */
 SeriesResult printSeriesDetailsToFile(Series current_series,
                                       FILE* outputStream){
-    char* series_genre_string=getGenreNameByEnum
+    char* series_genre_string = getGenreNameByEnum
             (current_series->genre);
     if(!series_genre_string){
         return SERIES_MEMORY_ALLOCATION_FAILED;
     }
-    /* The returned value is allocated on the stack and should not
-     * be freed */
-    const char* series_details=mtmPrintSeries(current_series->series_name,
-                                        series_genre_string);
+    const char* series_details = mtmPrintSeries(current_series->series_name,
+                                                series_genre_string);
     free(series_genre_string);
+    if(!series_details){
+        return SERIES_MEMORY_ALLOCATION_FAILED;
+    }
     fprintf(outputStream,"%s\n",series_details);
     return SERIES_SUCCESS;
 }
@@ -221,6 +229,7 @@ SeriesResult printSeriesDetailsToFile(Series current_series,
 /**
  ***** Function: getGenreNameByEnum *****
  * Description: Converts genre to the string that represents the genre.
+ *
  * @param genre - A number that represents a genre.
  * @return
  * NULL in case of memory allocation error, else the string represents the
@@ -229,10 +238,37 @@ SeriesResult printSeriesDetailsToFile(Series current_series,
 static char* getGenreNameByEnum(Genre genre){
     const char* genres[] = { "SCIENCE_FICTION", "DRAMA", "COMEDY", "CRIME",
                              "MYSTERY","DOCUMENTARY", "ROMANCE", "HORROR"};
-    char* genre_string=malloc(strlen(genres[genre])+1);
+    char* genre_string = malloc(strlen(genres[genre])+1);
     if(!genre_string){
         return NULL;
     }
     strcpy(genre_string,genres[genre]);
     return genre_string;
+}
+
+
+/**
+ ***** Function: getGenrePosition *****
+ * Description: Gets a genre and returns its lexicographical position.
+ * ascii value.
+ *
+ * //------ Genre ------ Enum ------ Lex oreder
+ * //  SCIENCE_FICTION     0            7
+ * //  DRAMA               1            3
+ * //  COMEDY              2            0
+ * //  CRIME               3            1
+ * //  MYSTERY             0            5
+ * //  DOCUMENTARY         1            2
+ * //  ROMANCE             2            6
+ * //  HORROR              3            4
+ *
+ * @param genre - The genre we want to get its position.
+ * @return
+ * Integer indicates the position of the genre.
+ */
+static int getGenrePosition(Genre genre){
+
+    int genres_position[NUMBER_OF_GENRES] = {7,3,0,1,5,2,6,4};
+    return genres_position[genre];
+
 }
