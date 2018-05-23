@@ -438,7 +438,20 @@ MtmFlixResult mtmFlixSeriesJoin(MtmFlix mtmflix, const char* username,
     return MTMFLIX_SUCCESS;
 }
 
-//todo: NOT DONE YET
+/**
+ ***** Function: mtmFlixSeriesLeave *****
+ * Description: Gets a mtmflix system, username and series name.
+ * The function removes the series from the given user's favorite list.
+ *
+ * @param mtmflix - The system we are working on.
+ * @param username - The user we want to remove from.
+ * @param seriesName - The series we want to remove.
+ * @return
+ * MTMFLIX_SUCCESS - Function succeeded.
+ * MTMFLIX_NULL_ARGUMENT - At lease one argument is NULL.
+ * MTMFLIX_USER_DOES_NOT_EXIST - User doesn't exist in the system.
+ * MTMFLIX_SERIES_DOES_NOT_EXIST - Series doesn't exist in the system.
+ */
 MtmFlixResult mtmFlixSeriesLeave(MtmFlix mtmflix, const char* username,
                                  const char* seriesName){
     if(!mtmflix || !username || !seriesName){
@@ -469,7 +482,8 @@ MtmFlixResult mtmFlixSeriesLeave(MtmFlix mtmflix, const char* username,
  * MTMFLIX_USER_DOES_NOT_EXIST - At least one of the usernames doesn't
  * exist in the system.
  */
-MtmFlixResult mtmFlixRemoveFriend(MtmFlix mtmflix, const char* username1, const char* username2){
+MtmFlixResult mtmFlixRemoveFriend(MtmFlix mtmflix, const char* username1,
+                                  const char* username2){
     if(!mtmflix || !username1 || username2){
         return MTMFLIX_NULL_ARGUMENT;
     }
