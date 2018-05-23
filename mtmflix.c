@@ -382,7 +382,7 @@ MtmFlixResult mtmFlixReportUsers(MtmFlix mtmflix, FILE* outputStream){
  * system.
  * MTMFLIX_USER_NOT_IN_THE_RIGHT_AGE - User does not meet age restrictions.
  */
- //todo: 32 ROWS!
+ //todo: 42 ROWS!
 MtmFlixResult mtmFlixSeriesJoin(MtmFlix mtmflix, const char* username,
                                 const char* seriesName){
     if(!mtmflix){
