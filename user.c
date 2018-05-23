@@ -5,7 +5,8 @@
 
 static bool checkUserFavoriteSeriesList(Set users_set,char* friend_name,
                                         char* series_name);
-static bool checkIfUserLikedSeries (List favorite_series_list,char* series_name);
+static bool checkIfUserLikedSeries (List favorite_series_list,
+                                    char* series_name);
 
 struct user_t{
     const char* username;
