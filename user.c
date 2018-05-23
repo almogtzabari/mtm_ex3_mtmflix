@@ -383,10 +383,11 @@ double userGetAverageEpisodeDuration(User user, Set series_set,
     SeriesResult series_status;
     LIST_FOREACH(ListElement,current_series_name,
                  user->user_favorite_series){
-        episode_duration+=seriesGetEpisodeDurationByName
-                (current_series_name,series_set,&series_status);
+        episode_duration+= seriesGetDurationByName(current_series_name,
+                                                   series_set,
+                                                   &series_status);
         if(series_status != SERIES_SUCCESS){
-            /* Error in seriesGetEpisodeDurationByName. */
+            /* Error in seriesGetDurationByName. */
             *function_status = USER_OUT_OF_MEMORY;
             return -1; // This value won't be checked.
         }

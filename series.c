@@ -340,7 +340,7 @@ Genre seriesGetGenreByName(char* series_name, Set series_set,
 }
 
 /**
- ***** Function: seriesGetEpisodeDurationByName *****
+ ***** Function: seriesGetDurationByName *****
  * Description: Gets series name, a status and a set of all the series in
  * the system and returns the episode duration of the given series.
  *
@@ -353,8 +353,8 @@ Genre seriesGetGenreByName(char* series_name, Set series_set,
  * name.
  * If fails - Returns -1.
  */
-int seriesGetEpisodeDurationByName(char* series_name, Set series_set,
-                                   SeriesResult* status){
+int seriesGetDurationByName(char *series_name, Set series_set,
+                            SeriesResult *status){
     Series dummy_series = seriesCreate(series_name,1,HORROR,NULL,2);
     if(!dummy_series){
         /* Memory allocation failed. */

@@ -46,8 +46,8 @@ int seriesGetMinAge(Series series);
 char* seriesGetName (Series series);
 Genre seriesGetGenreByName(char* series_name, Set series_set,
                            SeriesResult* status);
-int seriesGetEpisodeDurationByName(char* series_name, Set series_set,
-                                   SeriesResult* status);
+int seriesGetDurationByName(char *series_name, Set series_set,
+                            SeriesResult *status);
 
 #endif //MTM_EX3_MTMFLIX_SERIES_H
 
