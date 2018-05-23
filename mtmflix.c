@@ -252,7 +252,7 @@ MtmFlixResult mtmFlixRemoveSeries(MtmFlix mtmflix, const char* name){
     seriesDestroy(temp_series);
     SET_FOREACH(User,current_user,mtmflix->users){
         /*Removing the series from each user's favorite series list  */
-        seriesRemoveFromFavoriteSeriesLists(current_user, name);
+        seriesRemoveFromFavoriteSeriesLists(current_user,name);
     }
     return MTMFLIX_SUCCESS;
 }
@@ -295,7 +295,7 @@ MtmFlixResult mtmFlixReportSeries(MtmFlix mtmflix, int seriesNum,
         int number_of_series_from_genre=seriesNum;
         /*Sets the current genre to the first genre in the list */
         Genre current_genre=seriesGetGenre((Series)setGetFirst
-                (mtmflix->users));
+                (mtmflix->series));
         SET_FOREACH(SetElement,current_series,mtmflix->series){
             /*Checks if the current series is still from the same genre*/
             if(seriesGetGenre((Series)current_series)==current_genre){
@@ -396,7 +396,6 @@ MtmFlixResult mtmFlixSeriesJoin(MtmFlix mtmflix, const char* username,
         userDestroy(dummy_user);
         return MTMFLIX_USER_DOES_NOT_EXIST;
     }
-    // todo: free dummy_user
     Series dummy_series = seriesCreate(seriesName,1,HORROR,NULL,5);
     if(!dummy_series){
         /* Memeory allocation failed  */
@@ -409,7 +408,44 @@ MtmFlixResult mtmFlixSeriesJoin(MtmFlix mtmflix, const char* username,
         seriesDestroy(dummy_series);
         return MTMFLIX_SERIES_DOES_NOT_EXIST;
     }
-    //todo: check user's age with series' restrictions.
-    /** I created 3 functions in series.c to help me with this function.*/
+    if (seriesHasAgeRestrictions(dummy_series)){
+        /*Series has age restrictions and we need to check if the current
+         * user's age is in range */
+        //todo:Check if equal age is allowed!
+        if((seriesGetMaxAge(dummy_series)<userGetAge(dummy_user)) ||
+           (seriesGetMinAge(dummy_series)>userGetAge(dummy_user))) {
+            /* User's age is not in rage */
+            userDestroy(dummy_user);
+            seriesDestroy(dummy_series);
+            return MTMFLIX_USER_NOT_IN_THE_RIGHT_AGE;
+        }
+    }
+    MtmFlixResult result;
+    SET_FOREACH(SetElement,current_user,mtmflix->users){
+        if(userCompareSetElements(current_user,(SetElement)dummy_user)==0){
+         result = userAddSeriesToSeriesList((User) current_user,
+                                            seriesName);
+            if (result!=MTMFLIX_SUCCESS) {
+             userDestroy(dummy_user);
+             seriesDestroy(dummy_series);
+             return MTMFLIX_OUT_OF_MEMORY;
+            }
+        }
+    }
+    userDestroy(dummy_user);
+    seriesDestroy(dummy_series);
+    return MTMFLIX_SUCCESS;
+}
+
+MtmFlixResult mtmFlixSeriesLeave(MtmFlix mtmflix, const char* username,
+                                 const char* seriesName){
+    if(!mtmflix || !username || !seriesName){
+        return MTMFLIX_NULL_ARGUMENT;
+    }
+    User temp_user=userCreate(username,14);
+    if(!temp_user){
+        /*User creation failed becuase of memory allocation error */
+        return MTMFLIX_OUT_OF_MEMORY;
+    }
 
 }

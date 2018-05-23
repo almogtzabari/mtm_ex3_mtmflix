@@ -17,7 +17,8 @@ typedef struct series_t* Series;
 typedef enum SeriesResult_t {
     SERIES_MEMORY_ALLOCATION_FAILED,
     SERIES_SUCCESS,
-    SERIES_NULL_ARGUMENT
+    SERIES_NULL_ARGUMENT,
+    SERIES_ALREADY_EXISTS
 } SeriesResult;
 
 
@@ -38,6 +39,10 @@ Genre seriesGetGenre (Series series);
 
 SeriesResult printSeriesDetailsToFile(Series current_series,
                                       FILE* outputStream);
+
+bool seriesHasAgeRestrictions(Series series);
+int seriesGetMaxAge(Series series);
+int seriesGetMinAge(Series series);
 
 #endif //MTM_EX3_MTMFLIX_SERIES_H
 

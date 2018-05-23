@@ -217,5 +217,48 @@ UserResult printUserDetailsToFile(User current_user,
     return USER_SUCCESS;
 }
 
+int userGetAge (User user){
+    assert(user);
+    return user->age;
+}
+
+MtmFlixResult userAddSeriesToSeriesList(User user,
+                                        const char *seriesName){
+    assert(user);
+    assert(seriesName);
+    ListResult result;
+    if(listGetSize(user->user_favorite_series)==0){
+        result=listInsertFirst(user->user_favorite_series,
+                        (ListElement)seriesName);
+        if(result!=LIST_SUCCESS){
+            return MTMFLIX_OUT_OF_MEMORY;
+        }
+        return MTMFLIX_SUCCESS;
+    }
+    LIST_FOREACH(ListElement,iterator,user->user_favorite_series){
+        if(!strcmp((char*)iterator,seriesName)){
+            /* The series is already in the list */
+            return MTMFLIX_SUCCESS;
+        }
+        if(strcmp((char*)iterator,seriesName)>0){
+            /*We found the first series in the list that it's name has
+              a bigger value than the given series name */
+            result=listInsertBeforeCurrent(user->user_favorite_series,
+                                    (ListElement)seriesName);
+            if(result!=LIST_SUCCESS){
+                return MTMFLIX_OUT_OF_MEMORY;
+            }
+            return MTMFLIX_SUCCESS;
+        }
+    }
+    /*If we got here the series should be at the end of the list*/
+    result=listInsertLast(user->user_favorite_series,
+                                   (ListElement)seriesName);
+    if(result!=LIST_SUCCESS){
+        return MTMFLIX_OUT_OF_MEMORY;
+    }
+    return MTMFLIX_SUCCESS;
+}
+
 
 

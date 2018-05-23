@@ -10,6 +10,7 @@ typedef enum {
     USER_OUT_OF_MEMORY,
     USER_NULL_ARGUMENT,
     USER_ILLEGAL_VALUE,
+    USER_ALREADY_EXISTS
 } UserResult;
 
 typedef struct user_t* User;
@@ -32,6 +33,10 @@ void seriesRemoveFromFavoriteSeriesLists(User user,
                                          const char *series_name);
 UserResult printUserDetailsToFile(User current_user,
                                   FILE* outputStream);
+
+MtmFlixResult userAddSeriesToSeriesList(User user,
+                                        const char *seriesName);
+int userGetAge (User user);
 
 #endif //MTM_EX3_MTMFLIX_USER_H
 

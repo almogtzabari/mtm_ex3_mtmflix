@@ -132,7 +132,7 @@ int seriesCompare(Series series1, Series series2){
     assert(series1 && series2);
     int genre1_position = getGenrePosition(series1->genre);
     int genre2_position = getGenrePosition(series2->genre);
-    int genre_diff = genre2_position-genre1_position;
+    int genre_diff = genre1_position-genre2_position;
     if(genre_diff){
         /* The series has different genres. */
         return genre_diff;
@@ -241,7 +241,7 @@ SeriesResult printSeriesDetailsToFile(Series current_series,
     if(!series_details){
         return SERIES_MEMORY_ALLOCATION_FAILED;
     }
-    fprintf(outputStream,"%s\n",series_details);
+    fprintf(outputStream,"%s",series_details);
     return SERIES_SUCCESS;
 }
 
