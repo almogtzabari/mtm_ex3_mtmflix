@@ -265,7 +265,14 @@ MtmFlixResult userAddSeriesToSeriesList(User user,
 
 
 
-
+/**
+ ***** Function: howManyFriendsLovedThisShow *****
+ * @param users_set - Set which contains all users in mtmflix.
+ * @param user - A user to recommend to.
+ * @param series_name - A series name to search on friends lists.
+ * @return
+ * The number of 
+ */
 int howManyFriendsLovedThisShow(Set users_set,User user,char* series_name){
     int how_many_loved_this_series=0;
     LIST_FOREACH(ListElement,friend_name,user->user_friends_list){
