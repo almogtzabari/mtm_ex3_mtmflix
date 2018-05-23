@@ -410,29 +410,47 @@ MtmFlixResult mtmFlixSeriesJoin(MtmFlix mtmflix, const char* username,
         seriesDestroy(dummy_series);
         return MTMFLIX_SERIES_DOES_NOT_EXIST;
     }
-    if (seriesHasAgeRestrictions(dummy_series)){
-        /*Series has age restrictions and we need to check if the current
-         * user's age is in range */
-        //todo:Check if equal age is allowed!
-        if((seriesGetMaxAge(dummy_series)<userGetAge(dummy_user)) ||
-           (seriesGetMinAge(dummy_series)>userGetAge(dummy_user))) {
-            /* User's age is not in rage */
-            userDestroy(dummy_user);
-            seriesDestroy(dummy_series);
-            return MTMFLIX_USER_NOT_IN_THE_RIGHT_AGE;
+    bool age_restrictions = false;
+    int series_max_age = -1;
+    int series_min_age = -1;
+    SET_FOREACH(SetElement,current_series,mtmflix->series){
+        if(seriesCompare(dummy_series,current_series)==0){
+            /* We found the series with the given name. */
+            if(seriesHasAgeRestrictions(current_series)){
+                /* Series has age restrictions */
+                age_restrictions = true;
+                series_max_age = seriesGetMaxAge(current_series);
+                series_min_age = seriesGetMinAge(current_series);
+                break;
+            }
         }
     }
     MtmFlixResult result;
     SET_FOREACH(SetElement,current_user,mtmflix->users){
-        if(userCompareSetElements(current_user,(SetElement)dummy_user)==0){
-         result = userAddFavoriteSeries((User) current_user, seriesName);
-            if (result!=MTMFLIX_SUCCESS) {
-             userDestroy(dummy_user);
-             seriesDestroy(dummy_series);
-             return MTMFLIX_OUT_OF_MEMORY;
-            }
-        }
-    }
+         //todo:Check if equal age is allowed!
+         if(userCompare(dummy_user,current_user)==0){
+             /* We found the user with the given name.*/
+             if(age_restrictions){
+                 /* There are age restrictions, therefore we need to check
+                  * user's age in order to add the series. */
+                 if(series_max_age<userGetAge(current_user) ||
+                    (series_min_age>userGetAge(current_user))) {
+                     /* User's age is not in rage */
+                     userDestroy(dummy_user);
+                     seriesDestroy(dummy_series);
+                     return MTMFLIX_USER_NOT_IN_THE_RIGHT_AGE;
+                 }
+             }
+             /* If we got here we need to add the series to the user. */
+             result = userAddFavoriteSeries((User)current_user,seriesName);
+             if (result!=MTMFLIX_SUCCESS) {
+                 userDestroy(dummy_user);
+                 seriesDestroy(dummy_series);
+                 return MTMFLIX_OUT_OF_MEMORY;
+             }
+         }
+     }
+    /* Shouldn't get here! */
     userDestroy(dummy_user);
     seriesDestroy(dummy_series);
     return MTMFLIX_SUCCESS;
