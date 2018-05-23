@@ -3,7 +3,9 @@
 #include <string.h>
 #include "user.h"
 
-
+static bool checkUserFavoriteSeriesList(Set users_set,char* friend_name,
+                                        char* series_name);
+static bool checkIfUserLikedSeries (List favorite_series_list,char* series_name);
 
 struct user_t{
     const char* username;
@@ -275,7 +277,7 @@ int howManyFriendsLovedThisShow(Set users_set,User user,char* series_name){
     return how_many_loved_this_series;
 }
 
-bool checkUserFavoriteSeriesList(Set users_set,char* friend_name,
+static bool checkUserFavoriteSeriesList(Set users_set,char* friend_name,
                                  char* series_name){
     User friend=userCreate(friend_name,MTM_MIN_AGE+1);
     SET_FOREACH(User,current_user,users_set){
@@ -294,7 +296,7 @@ bool checkUserFavoriteSeriesList(Set users_set,char* friend_name,
 }
 
 
-bool checkIfUserLikedSeries (List favorite_series_list,char* series_name){
+static bool checkIfUserLikedSeries (List favorite_series_list,char* series_name){
     /*Checks if the series exists in friend's favorite series list */
     LIST_FOREACH(ListElement,friend_series,favorite_series_list){
         if(strcmp(series_name,(char*)friend_series)==0){
