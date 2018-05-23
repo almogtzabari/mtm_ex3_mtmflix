@@ -381,6 +381,7 @@ MtmFlixResult mtmFlixReportUsers(MtmFlix mtmflix, FILE* outputStream){
  * system.
  * MTMFLIX_USER_NOT_IN_THE_RIGHT_AGE - User does not meet age restrictions.
  */
+ //todo: 32 ROWS!
 MtmFlixResult mtmFlixSeriesJoin(MtmFlix mtmflix, const char* username,
                                 const char* seriesName){
     if(!mtmflix){
@@ -423,8 +424,7 @@ MtmFlixResult mtmFlixSeriesJoin(MtmFlix mtmflix, const char* username,
     MtmFlixResult result;
     SET_FOREACH(SetElement,current_user,mtmflix->users){
         if(userCompareSetElements(current_user,(SetElement)dummy_user)==0){
-         result = userAddSeriesToSeriesList((User) current_user,
-                                            seriesName);
+         result = userAddSeriesToSeriesList((User)current_user,seriesName);
             if (result!=MTMFLIX_SUCCESS) {
              userDestroy(dummy_user);
              seriesDestroy(dummy_series);

@@ -3,8 +3,8 @@
 #include <string.h>
 #include "user.h"
 
-static bool checkUserFavoriteSeriesList(Set users_set,char* friend_name,
-                                        char* series_name);
+static bool friendLikedTheSeries(Set users_set, char *friend_name,
+                                 char *series_name);
 static bool checkIfUserLikedSeries (List favorite_series_list,
                                     char* series_name);
 
@@ -225,6 +225,7 @@ int userGetAge (User user){
     return user->age;
 }
 
+//todo: ADD COMMENTS
 MtmFlixResult userAddSeriesToSeriesList(User user,
                                         const char *seriesName){
     assert(user);
@@ -270,23 +271,34 @@ MtmFlixResult userAddSeriesToSeriesList(User user,
  * @param users_set - Set which contains all users in mtmflix.
  * @param user - A user to recommend to.
  * @param series_name - A series name to search on friends lists.
+ *
  * @return
- * The number of 
+ * The number of friends that loved the show.
  */
 int howManyFriendsLovedThisShow(Set users_set,User user,char* series_name){
     int how_many_loved_this_series=0;
     LIST_FOREACH(ListElement,friend_name,user->user_friends_list){
         /*Checks each friend series list */
-        if(checkUserFavoriteSeriesList(users_set,(char*)friend_name,
-                                       series_name)){
+        if(friendLikedTheSeries(users_set, (char *) friend_name,
+                                series_name)){
             how_many_loved_this_series++;
         }
     }
     return how_many_loved_this_series;
 }
 
-static bool checkUserFavoriteSeriesList(Set users_set,char* friend_name,
-                                 char* series_name){
+/**
+ ***** Function: friendLikedTheSeries *****
+ * Description: searches for the friend in the users list and checks
+ * if he liked the series.
+ * @param users_set - Set which contains all users in mtmflix.
+ * @param friend_name - a friend's name to look in the users set.
+ * @param series_name - A series name to search on this friend's list.
+ * @return
+ * True if the friend liked the series, else false.
+ */
+static bool friendLikedTheSeries(Set users_set, char *friend_name,
+                                 char *series_name){
     User friend=userCreate(friend_name,MTM_MIN_AGE+1);
     SET_FOREACH(User,current_user,users_set){
         /*Searching for the friend in users set */
@@ -303,7 +315,14 @@ static bool checkUserFavoriteSeriesList(Set users_set,char* friend_name,
     return false;
 }
 
-
+/**
+ ***** Function: checkIfUserLikedSeries *****
+ * @param favorite_series_list - Favorite series list of the friend.
+ * @param series_name - A series name to search on this friend's list.
+ * @return
+ * True if the series is found in this friend's favorite series list,
+ * else false.
+ */
 static bool checkIfUserLikedSeries (List favorite_series_list,char* series_name){
     /*Checks if the series exists in friend's favorite series list */
     LIST_FOREACH(ListElement,friend_series,favorite_series_list){
