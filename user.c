@@ -365,6 +365,22 @@ int userHowManySeriesWithGenre(Set series_set, User user, Genre genre){
     return count;
 }
 
+/**
+ ***** Function: userGetAverageEpisodeDuration *****
+ * Description: Gets a user, a status and a set of all the series in the
+ * system. The function returns the average duration of episodes of user's
+ * favorite series.
+ *
+ * @param user - The user we want to check his favorite series for
+ * the calulation.
+ * @param series_set - Set of all the series in the system.
+ * @param function_status - Will hold information of success/failure of the
+ * function.
+ * @return
+ * If succeeded - Average episode duration of all series in user's
+ * favorite-series-list.
+ * If fails - returns -1.
+ */
 double userGetAverageEpisodeDuration(User user, Set series_set,
                                      UserResult* function_status){
     int episode_duration=0;
@@ -377,7 +393,7 @@ double userGetAverageEpisodeDuration(User user, Set series_set,
         if(series_status != SERIES_SUCCESS){
             /* Error in seriesGetEpisodeDurationByName. */
             *function_status = USER_OUT_OF_MEMORY;
-            return 0; // This value won't be checked.
+            return -1; // This value won't be checked.
         }
         number_of_series++;
     }
