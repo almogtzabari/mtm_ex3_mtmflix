@@ -43,6 +43,7 @@ SeriesResult printSeriesDetailsToFile(Series current_series,
 bool seriesHasAgeRestrictions(Series series);
 int seriesGetMaxAge(Series series);
 int seriesGetMinAge(Series series);
+char* seriesGetName (Series series);
 
 #endif //MTM_EX3_MTMFLIX_SERIES_H
 

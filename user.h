@@ -27,7 +27,6 @@ int userCompare (User user1, User user2);
 char* usernameCopy(User user);
 void destroyUsername (char* friend_username);
 
-
 void removeUsernameFromFriendslist(User user,const char* username);
 void seriesRemoveFromFavoriteSeriesLists(User user,
                                          const char *series_name);
@@ -36,7 +35,10 @@ UserResult printUserDetailsToFile(User current_user,
 
 MtmFlixResult userAddSeriesToSeriesList(User user,
                                         const char *seriesName);
+bool checkUserFavoriteSeriesList(Set users_set,char* friend_name,
+                                 char* series_name);
 int userGetAge (User user);
-
+bool checkIfUserLikedSeries (List favorite_series_list,char* series_name);
+int howManyFriendsLovedThisShow(Set users_set,User user,char* series_name);
 #endif //MTM_EX3_MTMFLIX_USER_H
 

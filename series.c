@@ -245,6 +245,16 @@ SeriesResult printSeriesDetailsToFile(Series current_series,
     return SERIES_SUCCESS;
 }
 
+
+char* seriesGetName (Series series){
+    char* series_name_copy=malloc(strlen(series->series_name)+1);
+    if(!series_name_copy){
+        return NULL;
+    }
+    strcpy(series_name_copy,series->series_name);
+    return series_name_copy;
+}
+
 /**
  ***** Function: getGenreNameByEnum *****
  * Description: Converts genre to the string that represents the genre.

@@ -260,8 +260,48 @@ MtmFlixResult userAddSeriesToSeriesList(User user,
     return MTMFLIX_SUCCESS;
 }
 
-int howManyFriendsLovedThisShow(const char* username, const char* seriesName){
 
+
+
+int howManyFriendsLovedThisShow(Set users_set,User user,char* series_name){
+    int how_many_loved_this_series=0;
+    LIST_FOREACH(ListElement,friend_name,user->user_friends_list){
+        /*Checks each friend series list */
+        if(checkUserFavoriteSeriesList(users_set,(char*)friend_name,
+                                       series_name)){
+            how_many_loved_this_series++;
+        }
+    }
+    return how_many_loved_this_series;
+}
+
+bool checkUserFavoriteSeriesList(Set users_set,char* friend_name,
+                                 char* series_name){
+    User friend=userCreate(friend_name,MTM_MIN_AGE+1);
+    SET_FOREACH(User,current_user,users_set){
+        /*Searching for the friend in users set */
+        if(userCompare(friend,current_user)==0){
+           /*Found the friend in users list */
+            if(checkIfUserLikedSeries(current_user->user_favorite_series,
+                                      series_name)){
+                userDestroy(friend);
+                return true;
+            }
+        }
+    }
+    userDestroy(friend);
+    return false;
+}
+
+
+bool checkIfUserLikedSeries (List favorite_series_list,char* series_name){
+    /*Checks if the series exists in friend's favorite series list */
+    LIST_FOREACH(ListElement,friend_series,favorite_series_list){
+        if(strcmp(series_name,(char*)friend_series)==0){
+            return true;
+        }
+    }
+    return false;
 }
 
 

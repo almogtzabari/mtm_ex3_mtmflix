@@ -448,7 +448,8 @@ MtmFlixResult mtmFlixSeriesLeave(MtmFlix mtmflix, const char* username,
         /*User creation failed becuase of memory allocation error */
         return MTMFLIX_OUT_OF_MEMORY;
     }
-    if(!setIsIn(mtmflix->users,(temp_user)){
+    if(!setIsIn(mtmflix->users,(temp_user))){
         userDestroy(temp_user);
     }
 }
+
