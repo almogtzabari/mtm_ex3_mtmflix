@@ -301,3 +301,40 @@ static int getGenrePosition(Genre genre){
     return genres_position[genre];
 
 }
+
+/**
+ ***** Function: seriesGetGenreByName *****
+ * Description: Gets a series name, a set of all the series in the mtmflix
+ * and a status. The function returns the genre of the series with that
+ * name.
+ *
+ * @param series_name - The name of the series we want its genre.
+ * @param series_set - Set of all the series in the system.
+ * @param status - A status that will be updated at the end of the
+ * function indicates if there was a problem.
+ * @return
+ * Genre of the series with the given name.
+ */
+Genre seriesGetGenreByName(char* series_name, Set series_set,
+                           SeriesResult* status){
+    assert(series_name);
+    assert(series_set);
+    Series dummy_series = seriesCreate(series_name,1,HORROR,NULL,4);
+    if(!dummy_series){
+        *status = SERIES_MEMORY_ALLOCATION_FAILED;
+        return HORROR; // This value won't be checked.
+    }
+    SET_FOREACH(SetElement,current_series,series_set){
+        if(seriesCompare(current_series,dummy_series)==0){
+            /* We found the series with the given name. */
+            seriesDestroy(dummy_series);
+            *status = SERIES_SUCCESS;
+            return ((Series)current_series)->genre;
+        }
+    }
+    /* We shouldn't get here. */
+    seriesDestroy(dummy_series);
+    *status = SERIES_MEMORY_ALLOCATION_FAILED; // Series doesn't exist.
+    return HORROR;
+
+}

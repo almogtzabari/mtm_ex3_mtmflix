@@ -314,5 +314,37 @@ static bool checkIfUserLikedSeries (List favorite_series_list,char* series_name)
     return false;
 }
 
+/**
+ ***** Function: userHowManySeriesWithGenre *****
+ * Description: Gets a user and a genre and returns the number of series in
+ * user's favorite-series-list with the same genre.
+ * @param user - The user we want to check his favorite-series-list.
+ * @param genre - The genre we are looking for.
+ * @param series_set - Set of all the series in the mtmflix.
+ * @return
+ * If succeeded - Number of series with same genre in user's
+ * favorite-series-list.
+ * If fails - Will return -1.
+ */
+int userHowManySeriesWithGenre(Set series_set, User user, Genre genre){
+    Genre current_genre;
+    int count=0;
+    SeriesResult status;
+    LIST_FOREACH(ListElement,current_series_name,
+                 user->user_favorite_series){
+        current_genre = seriesGetGenreByName((char*)current_series_name,
+                                             series_set,&status);
+        if(status != SERIES_SUCCESS){
+            /* There was an error with seriesGetGenreByName. */
+            return -1;
+        }
+        if(current_genre == genre){
+            /* Current series has the same genre as the given genre. */
+            count++;
+        }
+    }
+    return count;
+}
+
 
 

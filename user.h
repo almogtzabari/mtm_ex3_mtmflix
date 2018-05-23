@@ -37,5 +37,6 @@ MtmFlixResult userAddSeriesToSeriesList(User user,
                                         const char *seriesName);
 int userGetAge (User user);
 int howManyFriendsLovedThisShow(Set users_set,User user,char* series_name);
+int userHowManySeriesWithGenre(Set series_set, User user, Genre genre);
 #endif //MTM_EX3_MTMFLIX_USER_H
 
