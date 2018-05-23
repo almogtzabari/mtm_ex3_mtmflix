@@ -260,5 +260,9 @@ MtmFlixResult userAddSeriesToSeriesList(User user,
     return MTMFLIX_SUCCESS;
 }
 
+int howManyFriendsLovedThisShow(const char* username, const char* seriesName){
+
+}
+
 
 
