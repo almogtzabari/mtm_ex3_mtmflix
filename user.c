@@ -156,22 +156,19 @@ void destroyUsername (char* friend_username){
 }
 
 
-/**
- ***** Function: removeUsernameFromFriendslist *****
- * Description: Gets a set of users and a username.
- * The function removes the given username from all the friend-lists of
- * each user in the set.
- * @param users_set - Set of users to remove from their friend-lists.
- * @param username - Username to remove from their friend-list.
- * @return
- * LIST_NULL_ARGUMENT - If one or more of the arguments is NULL.
- * LIST_SUCCESS - Otherwise.
+/** //todo: fix comments
+ ***** Function: userRemoveFriend *****
+ * Description: Gets a user and a username.
+ * The function removes the given username from given user's friend list.
+ *
+ * @param user - The user we want to remove from.
+ * @param username - The username we want to remove.
  */
-void removeUsernameFromFriendslist(User user,const char* username){
+void userRemoveFriend(User user, const char *username){
     assert(user);
     assert(username);
-    LIST_FOREACH(ListElement,iterator,user->user_friends_list){
-        if(!strcmp((char*)iterator,username)){
+    LIST_FOREACH(ListElement,current_friend,user->user_friends_list){
+        if(!strcmp((char*)current_friend,username)){
             listRemoveCurrent(user->user_friends_list);
             break;
         }
@@ -180,17 +177,16 @@ void removeUsernameFromFriendslist(User user,const char* username){
 
 
 /**
- ***** Function: seriesRemoveFromFavoriteSeriesLists *****
+ ***** Function: userRemoveFavoriteSeries *****
  * Description: Removes a series from the user favorite series list.
  * @param user - The user to remove from.
  * @param series_name - The series to remove.
  */
-void seriesRemoveFromFavoriteSeriesLists(User user,
-                                         const char *series_name){
+void userRemoveFavoriteSeries(User user, const char *series_name){
     assert(user);
     assert(series_name);
-    LIST_FOREACH(ListElement,iterator,user->user_favorite_series){
-        if(!strcmp((char*)iterator,series_name)){
+    LIST_FOREACH(ListElement,current_friend,user->user_favorite_series){
+        if(!strcmp((char*)current_friend,series_name)){
             listRemoveCurrent(user->user_favorite_series);
             break;
         }
@@ -207,8 +203,8 @@ void seriesRemoveFromFavoriteSeriesLists(User user,
  * USER_OUT_OF_MEMORY - In case of memory allocation error.
  * USER_SUCCESS - Printing to file succeeded.
  */
-UserResult printUserDetailsToFile(User current_user,
-                                      FILE* outputStream) {
+UserResult userPrintDetailsToFile(User current_user,
+                                  FILE *outputStream) {
     const char *user_details = mtmPrintUser(current_user->username,
                                             current_user->age,
                                             current_user->user_friends_list
@@ -226,8 +222,7 @@ int userGetAge (User user){
 }
 
 //todo: ADD COMMENTS
-MtmFlixResult userAddSeriesToSeriesList(User user,
-                                        const char *seriesName){
+MtmFlixResult userAddFavoriteSeries(User user, const char *seriesName){
     assert(user);
     assert(seriesName);
     ListResult result;
@@ -239,12 +234,12 @@ MtmFlixResult userAddSeriesToSeriesList(User user,
         }
         return MTMFLIX_SUCCESS;
     }
-    LIST_FOREACH(ListElement,iterator,user->user_favorite_series){
-        if(!strcmp((char*)iterator,seriesName)){
+    LIST_FOREACH(ListElement,current_friend,user->user_favorite_series){
+        if(!strcmp((char*)current_friend,seriesName)){
             /* The series is already in the list */
             return MTMFLIX_SUCCESS;
         }
-        if(strcmp((char*)iterator,seriesName)>0){
+        if(strcmp((char*)current_friend,seriesName)>0){
             /*We found the first series in the list that it's name has
               a bigger value than the given series name */
             result=listInsertBeforeCurrent(user->user_favorite_series,
@@ -400,4 +395,3 @@ double userGetAverageEpisodeDuration(User user, Set series_set,
     *function_status = USER_SUCCESS;
     return ((double)episode_duration)/((double)number_of_series);
 }
-

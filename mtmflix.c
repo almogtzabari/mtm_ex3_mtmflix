@@ -4,6 +4,7 @@
 #include "utilities.h"
 #include "user.h"
 
+
 static bool nameIsValid(const char *name);
 
 struct mtmFlix_t{
@@ -124,7 +125,7 @@ MtmFlixResult mtmFlixRemoveUser(MtmFlix mtmflix, const char* username){
     /* Now we need to remove this username from every user's friendlist. */
     SET_FOREACH(User,current_user,mtmflix->users){
         /*Removing the username from each user's friend list  */
-        removeUsernameFromFriendslist(current_user,username);
+        userRemoveFriend(current_user, username);
     }
     return MTMFLIX_SUCCESS;
 }
@@ -252,7 +253,7 @@ MtmFlixResult mtmFlixRemoveSeries(MtmFlix mtmflix, const char* name){
     seriesDestroy(temp_series);
     SET_FOREACH(User,current_user,mtmflix->users){
         /*Removing the series from each user's favorite series list  */
-        seriesRemoveFromFavoriteSeriesLists(current_user,name);
+        userRemoveFavoriteSeries(current_user, name);
     }
     return MTMFLIX_SUCCESS;
 }
@@ -357,7 +358,7 @@ MtmFlixResult mtmFlixReportUsers(MtmFlix mtmflix, FILE* outputStream){
     }
     UserResult result;
     SET_FOREACH(SetElement,current_user,mtmflix->users){
-        result=printUserDetailsToFile(current_user,outputStream);
+        result= userPrintDetailsToFile(current_user, outputStream);
         if(result!=USER_SUCCESS){
             return MTMFLIX_OUT_OF_MEMORY;
         }
@@ -424,7 +425,7 @@ MtmFlixResult mtmFlixSeriesJoin(MtmFlix mtmflix, const char* username,
     MtmFlixResult result;
     SET_FOREACH(SetElement,current_user,mtmflix->users){
         if(userCompareSetElements(current_user,(SetElement)dummy_user)==0){
-         result = userAddSeriesToSeriesList((User)current_user,seriesName);
+         result = userAddFavoriteSeries((User) current_user, seriesName);
             if (result!=MTMFLIX_SUCCESS) {
              userDestroy(dummy_user);
              seriesDestroy(dummy_series);
@@ -453,3 +454,53 @@ MtmFlixResult mtmFlixSeriesLeave(MtmFlix mtmflix, const char* username,
     }
 }
 
+/**
+ ***** Function: mtmFlixRemoveFriend *****
+ * Description: Gets two usernames and removes username2 from the friend
+ * list of username1.
+ *
+ * @param mtmflix - The system we are working on.
+ * @param username1 - The username we want to remove a friend from.
+ * @param username2 - The username we want to remove.
+ * @return
+ * MTMFLIX_SUCCESS - Friend removed successfully.
+ * MTMFLIX_OUT_OF_MEMORY - Memory allocation error.
+ * MTMFLIX_NULL_ARGUMENT - At lease one of the arguments is NULL.
+ * MTMFLIX_USER_DOES_NOT_EXIST - At least one of the usernames doesn't
+ * exist in the system.
+ */
+MtmFlixResult mtmFlixRemoveFriend(MtmFlix mtmflix, const char* username1, const char* username2){
+    if(!mtmflix || !username1 || username2){
+        return MTMFLIX_NULL_ARGUMENT;
+    }
+    User dummy_user1 = userCreate(username1,MTM_MIN_AGE+1);
+    User dummy_user2 = userCreate(username2,MTM_MIN_AGE+1);
+    if(!dummy_user1 || !dummy_user2){
+        //todo: check if it's okay to combine the IF like this.
+        userDestroy(dummy_user1);
+        userDestroy(dummy_user2);
+        return MTMFLIX_OUT_OF_MEMORY;
+    }
+    if(!setIsIn(mtmflix->users,dummy_user1) ||
+                            !setIsIn(mtmflix->users,dummy_user2)){
+        /* At least one user doesn't exist in the system. */
+        userDestroy(dummy_user1);
+        userDestroy(dummy_user2);
+        return MTMFLIX_USER_DOES_NOT_EXIST;
+    }
+    /* If we got here both users exist. */
+    SET_FOREACH(SetElement,current_user,mtmflix->users){
+        if(userCompare(dummy_user1,current_user)==0){
+            /* We found user1. */
+            userRemoveFriend(current_user, username2);
+            userDestroy(dummy_user1);
+            userDestroy(dummy_user2);
+            return MTMFLIX_SUCCESS;
+        }
+    }
+    /* If we got here we couldn't find user1 in the users set.
+     * Shouldn't happen! */
+    userDestroy(dummy_user1);
+    userDestroy(dummy_user2);
+    return MTMFLIX_OUT_OF_MEMORY; // Shouldn't get here!
+}
