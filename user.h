@@ -38,5 +38,8 @@ MtmFlixResult userAddSeriesToSeriesList(User user,
 int userGetAge (User user);
 int howManyFriendsLovedThisShow(Set users_set,User user,char* series_name);
 int userHowManySeriesWithGenre(Set series_set, User user, Genre genre);
+double userGetAverageEpisodeDuration(User user, Set series_set,
+                                     UserResult* function_status);
+
 #endif //MTM_EX3_MTMFLIX_USER_H
 

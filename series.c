@@ -338,3 +338,26 @@ Genre seriesGetGenreByName(char* series_name, Set series_set,
     return HORROR;
 
 }
+
+int seriesGetEpisodeDurationByName(char* series_name, Set series_set,
+                                   SeriesResult* status){
+    Series dummy_series = seriesCreate(series_name,1,HORROR,NULL,2);
+    if(!dummy_series){
+        /* Memory allocation failed. */
+        *status = SERIES_MEMORY_ALLOCATION_FAILED;
+        return 0; // This value won't be checked.
+    }
+    SET_FOREACH(SetElement,current_series,series_set){
+        if(seriesCompare(current_series,dummy_series)==0){
+            /* We fount the series with the given name. */
+            *status = SERIES_SUCCESS;
+            seriesDestroy(dummy_series);
+            return ((Series)current_series)->episode_duration;
+        }
+    }
+    /*  Shouldn't get here. */
+    seriesDestroy(dummy_series);
+    *status = SERIES_MEMORY_ALLOCATION_FAILED; // Series doesn't exist.
+    return 0; // This value won't be checked.
+
+}
