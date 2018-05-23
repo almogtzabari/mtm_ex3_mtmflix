@@ -437,6 +437,7 @@ MtmFlixResult mtmFlixSeriesJoin(MtmFlix mtmflix, const char* username,
     return MTMFLIX_SUCCESS;
 }
 
+//todo: NOT DONE YET
 MtmFlixResult mtmFlixSeriesLeave(MtmFlix mtmflix, const char* username,
                                  const char* seriesName){
     if(!mtmflix || !username || !seriesName){
@@ -447,5 +448,7 @@ MtmFlixResult mtmFlixSeriesLeave(MtmFlix mtmflix, const char* username,
         /*User creation failed becuase of memory allocation error */
         return MTMFLIX_OUT_OF_MEMORY;
     }
-
+    if(!setIsIn(mtmflix->users,(temp_user)){
+        userDestroy(temp_user);
+    }
 }
