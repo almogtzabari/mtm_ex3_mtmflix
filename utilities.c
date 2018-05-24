@@ -58,3 +58,10 @@ ListElement copyFriendUsername(ListElement element){
 void destroyFriendUsername(ListElement element){
     destroyUsername((char*)element);
 }
+//-----------------------------------------------------------------------//
+//                       GENERIC FUNCTIONS                               //
+//-----------------------------------------------------------------------//
+
+int genericStrcmp (ListElement element1,ListElement element2){
+    return strcmp((char*)element1,(char*)element2);
+}

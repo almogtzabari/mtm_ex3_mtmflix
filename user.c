@@ -155,6 +155,71 @@ void destroyUsername (char* friend_username){
     free(friend_username);
 }
 
+/////////////////////////////////////////////////////////////////////////
+
+static void userRemoveFromList(List list, const char *username){
+    LIST_FOREACH(ListElement,iterator,list){
+        if(!strcmp((char*)iterator,username)){
+            listRemoveCurrent(list);
+            break;
+        }
+    }
+}
+
+
+void removeFromList(User user,const char* name,int list_type){
+    assert(user);
+    assert(name);
+    if(list_type==1){
+        userRemoveFromList(user->user_friends_list,name);
+    }
+    else{
+        userRemoveFromList(user->user_favorite_series,name);
+    }
+}
+
+
+static MtmFlixResult addToList(List list, const char *name){
+    ListResult result;
+    if(listGetSize(list)==0){
+        result=listInsertFirst(list,(ListElement)name);
+        if(result!=LIST_SUCCESS){
+            return MTMFLIX_OUT_OF_MEMORY;
+        }
+        return MTMFLIX_SUCCESS;
+    }
+    LIST_FOREACH(ListElement,iterator,list) {
+        if (!strcmp((char *) iterator, name)) {
+            /* The name is already in the list */
+            return MTMFLIX_SUCCESS;
+        }
+    }
+    /*If we got here we need to add the name to the list */
+    result=listInsertFirst(list,(ListElement)name);
+    if(result!=LIST_SUCCESS){
+        return MTMFLIX_OUT_OF_MEMORY;
+    }
+    result=listSort(list,genericStrcmp);
+    if(result!=LIST_SUCCESS){
+        return MTMFLIX_OUT_OF_MEMORY;
+    }
+    return MTMFLIX_SUCCESS;
+}
+
+
+MtmFlixResult userAddToList(User user,const char* name,int list_type){
+    assert(user);
+    assert(name);
+    MtmFlixResult result;
+    if(list_type==1){
+        result=addToList(user->user_friends_list,name);
+    }
+    else{
+        result=addToList(user->user_favorite_series,name);
+    }
+    return result;
+}
+/////////////////////////////////////////////////////////////////////////
 
 /** //todo: fix comments
  ***** Function: userRemoveFriend *****
@@ -396,3 +461,6 @@ double userGetAverageEpisodeDuration(User user, Set series_set,
     *function_status = USER_SUCCESS;
     return ((double)episode_duration)/((double)number_of_series);
 }
+
+
+

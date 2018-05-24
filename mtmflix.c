@@ -482,7 +482,17 @@ MtmFlixResult mtmFlixSeriesLeave(MtmFlix mtmflix, const char* username,
     }
     if(!setIsIn(mtmflix->users,(temp_user))){
         userDestroy(temp_user);
+        return MTMFLIX_SERIES_DOES_NOT_EXIST;
     }
+    SET_FOREACH(SetElement,user,mtmflix->users){
+        if(!userCompare(temp_user,user)){
+            /*User to remove from found */
+            userDestroy(temp_user);
+            removeFromList((User)user,seriesName,2);
+            break;
+        }
+    }
+    return MTMFLIX_SUCCESS;
 }
 
 /**
@@ -536,3 +546,5 @@ MtmFlixResult mtmFlixRemoveFriend(MtmFlix mtmflix, const char* username1,
     userDestroy(dummy_user2);
     return MTMFLIX_OUT_OF_MEMORY; // Shouldn't get here!
 }
+
+

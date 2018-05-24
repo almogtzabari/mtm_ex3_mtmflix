@@ -41,6 +41,10 @@ int userCompareSetElements(SetElement element1, SetElement element2);
 
 ListElement copyFriendUsername (ListElement element);
 void destroyFriendUsername(ListElement element);
+//-----------------------------------------------------------------------//
+//                       GENERIC FUNCTIONS                               //
+//-----------------------------------------------------------------------//
 
+int genericStrcmp (ListElement element1,ListElement element2);
 
 #endif //MTM_EX3_MTMFLIX_UTILITIES_H
