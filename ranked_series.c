@@ -62,7 +62,10 @@ void rankedSeriesPrintToFile(int number_of_series_to_print,
     if(number_of_series_to_print==0){
         number_of_series_to_print=setGetSize(ranked_series_set);
     }
-    SET_FOREACH(RankedSeries ,ranked_series,ranked_series_set){
+    SET_FOREACH(RankedSeries,ranked_series,ranked_series_set){
+        if(ranked_series->rank==0){
+            continue;
+        }
         if(number_of_series_to_print>0){
             const char* ranked_series_details=mtmPrintSeries
                     (ranked_series->series_name,

@@ -11,11 +11,18 @@ int main(){
     mtmFlixAddSeries(flix,"Stranger",4,DRAMA,ages,4);
     mtmFlixAddSeries(flix,"Suits",4,DRAMA,NULL,4);
     mtmFlixAddSeries(flix,"GameOfThrones",4,MYSTERY,NULL,4);
+    mtmFlixAddSeries(flix,"Fauda",4,MYSTERY,NULL,4);
+    mtmFlixAddSeries(flix,"Kabab",4,DRAMA,NULL,4);
+    mtmFlixAddSeries(flix,"Shawarma",4,DRAMA,NULL,4);
+    mtmFlixAddSeries(flix,"Shipud",4,DRAMA,NULL,4);
 
 
     mtmFlixSeriesJoin(flix,"Vered","Stranger");
     mtmFlixSeriesJoin(flix,"Vered","Suits");
     mtmFlixSeriesJoin(flix,"Vered","GameOfThrones");
+
+    mtmFlixSeriesJoin(flix,"Orian","Suits");
+    mtmFlixSeriesJoin(flix,"Efraim","Suits");
 
     mtmFlixAddFriend(flix,"Vered","Ariel");
     mtmFlixAddFriend(flix,"Vered","Ligad");
@@ -24,7 +31,7 @@ int main(){
 
 
     FILE* temp=fopen("temp1.txt","w");
-    mtmFlixReportSeries(flix,3,temp);
+    mtmFlixGetRecommendations(flix,"Vered",0,temp);
     fclose(temp);
     return 0;
 }
