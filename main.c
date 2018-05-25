@@ -1,4 +1,7 @@
 #include "mtmflix.h"
+#include "set.h"
+#include "utilities.h"
+
 int main(){
     MtmFlix flix=mtmFlixCreate();
     mtmFlixAddUser(flix,"Vered",57);
@@ -14,7 +17,6 @@ int main(){
     mtmFlixAddSeries(flix,"Kabab",4,DRAMA,NULL,4);
     mtmFlixAddSeries(flix,"Shawarma",4,DRAMA,NULL,4);
     mtmFlixAddSeries(flix,"Shipud",4,DRAMA,NULL,4);
-
 
     mtmFlixSeriesJoin(flix,"Vered","Stranger");
     mtmFlixSeriesJoin(flix,"Vered","GameOfThrones");
@@ -32,8 +34,6 @@ int main(){
     mtmFlixAddFriend(flix,"Vered","Ligad");
     mtmFlixAddFriend(flix,"Vered","Orian");
     mtmFlixAddFriend(flix,"Vered","Efraim");
-
-
     FILE* temp=fopen("temp1.txt","w");
     mtmFlixGetRecommendations(flix,"Vered",0,temp);
     fclose(temp);
