@@ -794,9 +794,9 @@ static void rankSeriesAndAddToRankedSeriesSet(Set users_set,Set series_set,
         return;
     }
     SetResult result=setAdd(ranked_series_set,new_ranked_series);
+    rankedSeriesDestroy(new_ranked_series);
     if(result!=SET_SUCCESS){
         *function_status=MTMFLIX_OUT_OF_MEMORY;
-        rankedSeriesDestroy(new_ranked_series);
         return;
     }
 }
