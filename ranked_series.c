@@ -51,9 +51,31 @@ void rankedSeriesDestroy (RankedSeries ranked_series){
 int rankedSeriesCompare (RankedSeries ranked_series1,
                          RankedSeries ranked_series2){
     if((ranked_series1->rank)!=(ranked_series2->rank)){
-        return (ranked_series1->rank)-(ranked_series2->rank);
+        return (ranked_series2->rank)-(ranked_series1->rank);
     }
     return strcmp(ranked_series1->series_name,ranked_series2->series_name);
 }
 
-rankedSeriesPrintToFile(count,ranked_series_set,outputStream,)
+void rankedSeriesPrintToFile(int number_of_series_to_print,
+                             Set ranked_series_set,
+                             FILE* outputStream,MtmFlixResult* result){
+    if(number_of_series_to_print==0){
+        number_of_series_to_print=setGetSize(ranked_series_set);
+    }
+    SET_FOREACH(RankedSeries ,ranked_series,ranked_series_set){
+        if(number_of_series_to_print>0){
+            const char* ranked_series_details=mtmPrintSeries
+                    (ranked_series->series_name,
+                     ranked_series->series_genre);
+            if(!ranked_series_details){
+                *result=MTMFLIX_OUT_OF_MEMORY;
+                return;
+            }
+            if((fprintf(outputStream,"%s",ranked_series_details)<0){
+                *result=MTMFLIX_OUT_OF_MEMORY;
+                return;
+            }
+        }
+        number_of_series_to_print--;
+    }
+}

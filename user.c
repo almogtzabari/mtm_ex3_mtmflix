@@ -232,7 +232,9 @@ UserResult userPrintDetailsToFile(User current_user,
     if (!user_details) {
         return USER_OUT_OF_MEMORY;
     }
-    fprintf(outputStream, "%s\n", user_details);
+    if(fprintf(outputStream, "%s\n", user_details)<0){
+        return USER_OUT_OF_MEMORY;
+    }
     return USER_SUCCESS;
 }
 

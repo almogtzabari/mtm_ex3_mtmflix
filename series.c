@@ -245,7 +245,9 @@ SeriesResult printSeriesDetailsToFile(Series current_series,
     if(!series_details){
         return SERIES_MEMORY_ALLOCATION_FAILED;
     }
-    fprintf(outputStream,"%s",series_details);
+    if(fprintf(outputStream,"%s",series_details)<0){
+        return SERIES_MEMORY_ALLOCATION_FAILED;
+    }
     return SERIES_SUCCESS;
 }
 
