@@ -682,6 +682,7 @@ MtmFlixResult mtmFlixGetRecommendations(MtmFlix mtmflix, const char* username,
         return MTMFLIX_OUT_OF_MEMORY;
     }
     SET_FOREACH(SetElement,series,mtmflix->series){
+        SetElement iterator=series;
         if(!seriesShouldBeRecommended(series,user,mtmflix,&result)) {
             if(result!=MTMFLIX_SUCCESS) {
                 return MTMFLIX_OUT_OF_MEMORY;
@@ -696,6 +697,7 @@ MtmFlixResult mtmFlixGetRecommendations(MtmFlix mtmflix, const char* username,
         rankSeriesAndAddToRankedSeriesSet(mtmflix->users,mtmflix->series,
                                         user,series,seriesGetGenre(series),
                                         &result,ranked_series_set);
+        series=iterator;
         if(result!=MTMFLIX_SUCCESS){
             setDestroy(ranked_series_set);
             return MTMFLIX_OUT_OF_MEMORY;
