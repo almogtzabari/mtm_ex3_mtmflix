@@ -453,7 +453,7 @@ MtmFlixResult mtmFlixReportUsers(MtmFlix mtmflix, FILE* outputStream){
  */
 MtmFlixResult mtmFlixSeriesJoin(MtmFlix mtmflix, const char* username,
                                 const char* seriesName){
-    if(!mtmflix){
+    if(!mtmflix || !username || !seriesName){
         return MTMFLIX_NULL_ARGUMENT;
     }
     MtmFlixResult result;
@@ -649,7 +649,7 @@ MtmFlixResult mtmFlixAddFriend(MtmFlix mtmflix, const char* username1,
  */
 MtmFlixResult mtmFlixRemoveFriend(MtmFlix mtmflix, const char* username1,
                                   const char* username2){
-    if(!mtmflix || !username1 || username2){
+    if(!mtmflix || !username1 || !username2){
         return MTMFLIX_NULL_ARGUMENT;
     }
     MtmFlixResult result;
