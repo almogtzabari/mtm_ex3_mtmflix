@@ -33,3 +33,27 @@ RankedSeries rankedSeriesCreate (int rank,char* series_name,
     return new_ranked_series;
 }
 
+RankedSeries rankedSeriesCopy (RankedSeries ranked_series){
+    RankedSeries ranked_series_copy=rankedSeriesCreate(ranked_series->rank,
+            ranked_series->series_name,ranked_series->series_genre);
+    if(!ranked_series_copy){
+        return NULL;
+    }
+    return ranked_series_copy;
+}
+
+void rankedSeriesDestroy (RankedSeries ranked_series){
+    free(ranked_series->series_genre);
+    free(ranked_series->series_name);
+    free(ranked_series);
+}
+
+int rankedSeriesCompare (RankedSeries ranked_series1,
+                         RankedSeries ranked_series2){
+    if((ranked_series1->rank)!=(ranked_series2->rank)){
+        return (ranked_series1->rank)-(ranked_series2->rank);
+    }
+    return strcmp(ranked_series1->series_name,ranked_series2->series_name);
+}
+
+rankedSeriesPrintToFile(count,ranked_series_set,outputStream,)

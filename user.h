@@ -42,7 +42,7 @@ int howManyFriendsLovedThisSeries(Set users_set, User user,
                                   char *series_name);
 int userHowManySeriesWithGenre(Set series_set, User user, Genre genre);
 double userGetAverageEpisodeDuration(User user, Set series_set,
-                                     UserResult* function_status);
+                                     MtmFlixResult* function_status);
 
 bool isInUsersFavoriteSeriesList(User user,char* series_name);
 void removeFromList(User user,const char* name,UserList list_type);

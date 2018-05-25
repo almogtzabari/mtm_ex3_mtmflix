@@ -213,8 +213,13 @@ static int* seriesInsertAgeLimit(int* ages, SeriesResult *status) {
     *status = SERIES_SUCCESS;
     return NULL;
 }
+int seriesGetEpisodeDuration (Series series){
+    assert(series);
+    return series->episode_duration;
+}
 
 Genre seriesGetGenre (Series series){
+    assert(series);
     return series->genre;
 }
 

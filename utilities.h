@@ -9,7 +9,7 @@
 #include "list.h"
 #include "mtmflix.h"
 #include "mtm_ex3.h"
-
+#include "ranked_series.h"
 
 //-----------------------------------------------------------------------//
 //                       SERIES SET FUNCTIONS                            //
@@ -33,6 +33,14 @@ void destroyFavoriteSeriesName(ListElement element);
 SetElement userCopySetElement(SetElement element1);
 void userDestroySetElememnt(SetElement element1);
 int userCompareSetElements(SetElement element1, SetElement element2);
+
+//-----------------------------------------------------------------------//
+//                       Ranked series SET FUNCTIONS                     //
+//-----------------------------------------------------------------------//
+
+SetElement rankedSeriesCopySetElement(SetElement element1);
+void rankedSeriesDestroySetElement(SetElement element1);
+int rankedSeriesCompareSetElement(SetElement element1, SetElement element2);
 
 
 //-----------------------------------------------------------------------//

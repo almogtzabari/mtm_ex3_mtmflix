@@ -48,6 +48,7 @@ Genre seriesGetGenreByName(char* series_name, Set series_set,
                            SeriesResult* status);
 int seriesGetDurationByName(char *series_name, Set series_set,
                             SeriesResult *status);
+int seriesGetEpisodeDuration (Series series);
 
 #endif //MTM_EX3_MTMFLIX_SERIES_H
 

@@ -363,7 +363,7 @@ int userHowManySeriesWithGenre(Set series_set, User user, Genre genre){
  * If fails - returns -1.
  */
 double userGetAverageEpisodeDuration(User user, Set series_set,
-                                     UserResult* function_status){
+                                     MtmFlixResult* function_status){
     int episode_duration=0;
     int number_of_series=0;
     SeriesResult series_status;
@@ -374,12 +374,12 @@ double userGetAverageEpisodeDuration(User user, Set series_set,
                                                    &series_status);
         if(series_status != SERIES_SUCCESS){
             /* Error in seriesGetDurationByName. */
-            *function_status = USER_OUT_OF_MEMORY;
+            *function_status = MTMFLIX_OUT_OF_MEMORY;
             return -1; // This value won't be checked.
         }
         number_of_series++;
     }
-    *function_status = USER_SUCCESS;
+    *function_status = MTMFLIX_SUCCESS;
     return ((double)episode_duration)/((double)number_of_series);
 }
 

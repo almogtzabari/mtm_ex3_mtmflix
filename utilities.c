@@ -46,6 +46,24 @@ int userCompareSetElements(SetElement element1, SetElement element2){
     return userCompare((User)element1,(User)element2);
 }
 
+//-----------------------------------------------------------------------//
+//                     Ranked series SET FUNCTIONS                       //
+//-----------------------------------------------------------------------//
+
+SetElement rankedSeriesCopySetElement(SetElement element1){
+    return rankedSeriesCopy((RankedSeries)element1);
+}
+
+void rankedSeriesDestroySetElement (SetElement element1){
+     rankedSeriesDestroy((RankedSeries)element1);
+}
+
+int rankedSeriesCompareSetElement(SetElement element1,
+                                  SetElement element2){
+    return rankedSeriesCompare((RankedSeries)element1,
+                               (RankedSeries)element2);
+}
+
 
 //-----------------------------------------------------------------------//
 //                       USERS LIST FUNCTIONS                            //
