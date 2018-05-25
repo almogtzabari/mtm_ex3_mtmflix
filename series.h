@@ -39,7 +39,7 @@ Genre seriesGetGenre (Series series);
 
 SeriesResult printSeriesDetailsToFile(Series current_series,
                                       FILE* outputStream);
-
+char* getGenreNameByEnum(Genre genre);
 bool seriesHasAgeRestrictions(Series series);
 int seriesGetMaxAge(Series series);
 int seriesGetMinAge(Series series);

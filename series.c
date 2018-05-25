@@ -9,7 +9,6 @@
 //-----------------------------------------------------------------------//
 
 static int* seriesInsertAgeLimit(int *ages, SeriesResult *status);
-static char* getGenreNameByEnum(Genre genre);
 static int getGenrePosition(Genre genre);
 
 //-----------------------------------------------------------------------//
@@ -156,12 +155,12 @@ bool seriesHasAgeRestrictions(Series series){
     return true;
 }
 int seriesGetMaxAge(Series series){
-    assert(!series);
+    assert(series);
     assert(series->ages);
     return series->ages[1];
 }
 int seriesGetMinAge(Series series){
-    assert(!series);
+    assert(series);
     assert(series->ages);
     return series->ages[0];
 }
@@ -264,7 +263,7 @@ char* seriesGetName (Series series){
  * NULL in case of memory allocation error, else the string represents the
  * number of genre.
  */
-static char* getGenreNameByEnum(Genre genre){
+char* getGenreNameByEnum(Genre genre){
     const char* genres[] = { "SCIENCE_FICTION", "DRAMA", "COMEDY", "CRIME",
                              "MYSTERY","DOCUMENTARY", "ROMANCE", "HORROR"};
     char* genre_string = malloc(strlen(genres[genre])+1);

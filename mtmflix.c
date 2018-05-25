@@ -4,8 +4,24 @@
 #include "utilities.h"
 #include "user.h"
 
-
+static bool userCanWatchSeries(MtmFlix mtmflix, User user,
+                               Series series);
 static bool nameIsValid(const char *name);
+static MtmFlixResult usersExist(MtmFlix mtmflix, const char* username1,
+                                const char* username2);
+static MtmFlixResult userAndSeriesExist(MtmFlix mtmflix,
+                                        const char *username,
+                                        const char *seriesName);
+static User getUserByUsername(char* username,MtmFlixResult* result,
+                              Set users_set);
+static int rankSeries(Set users_set,User user,char* series_name,
+                      Set series_set,Genre genre,
+                      UserResult* function_status,
+                      int current_series_duration);
+static bool seriesShouldBeRecommended(Series series,User user,
+                                      MtmFlix mtmflix,
+                                      MtmFlixResult* result);
+
 
 struct mtmFlix_t{
     Set users;
@@ -125,7 +141,7 @@ MtmFlixResult mtmFlixRemoveUser(MtmFlix mtmflix, const char* username){
     /* Now we need to remove this username from every user's friendlist. */
     SET_FOREACH(User,current_user,mtmflix->users){
         /*Removing the username from each user's friend list  */
-        userRemoveFriend(current_user, username);
+        removeFromList(current_user, username,1);
     }
     return MTMFLIX_SUCCESS;
 }
@@ -187,7 +203,6 @@ MtmFlixResult mtmFlixAddSeries(MtmFlix mtmflix, const char* name,
         /* One of the arguments is NULL */
         return MTMFLIX_NULL_ARGUMENT;
     }
-
     if(!nameIsValid(name)){
         /* The given series name is not valid */
         return MTMFLIX_ILLEGAL_SERIES_NAME;
@@ -200,10 +215,8 @@ MtmFlixResult mtmFlixAddSeries(MtmFlix mtmflix, const char* name,
         /* Episode average duration is 0 or less. */
         return MTMFLIX_ILLEGAL_EPISODES_DURATION;
     }
-
     Series temp_series = seriesCreate(name,episodesNum,genre,ages,
             episodesDuration);
-
     if(!temp_series){
         /* Series creation failed */
         return MTMFLIX_OUT_OF_MEMORY;
@@ -253,7 +266,7 @@ MtmFlixResult mtmFlixRemoveSeries(MtmFlix mtmflix, const char* name){
     seriesDestroy(temp_series);
     SET_FOREACH(User,current_user,mtmflix->users){
         /*Removing the series from each user's favorite series list  */
-        userRemoveFavoriteSeries(current_user, name);
+        removeFromList(current_user,name,2);
     }
     return MTMFLIX_SUCCESS;
 }
@@ -382,78 +395,104 @@ MtmFlixResult mtmFlixReportUsers(MtmFlix mtmflix, FILE* outputStream){
  * system.
  * MTMFLIX_USER_NOT_IN_THE_RIGHT_AGE - User does not meet age restrictions.
  */
- //todo: 42 ROWS!
 MtmFlixResult mtmFlixSeriesJoin(MtmFlix mtmflix, const char* username,
                                 const char* seriesName){
     if(!mtmflix){
         return MTMFLIX_NULL_ARGUMENT;
     }
+    MtmFlixResult result;
+    /*Checks if both user and series exist in mtmflix */
+    result= userAndSeriesExist(mtmflix,username,seriesName);
+    if(result!=MTMFLIX_SUCCESS){
+        return result;
+    }
+    /*If we got here both user and series exist in mtmflix */
     User dummy_user = userCreate(username,MTM_MIN_AGE+1);
     if(!dummy_user){
-        /* Memeory allocation failed  */
+        /* Memory allocation failed  */
         return MTMFLIX_OUT_OF_MEMORY;
-    }
-    if(!setIsIn(mtmflix->users,(SetElement)dummy_user)){
-        /* User doesn't exist. */
-        userDestroy(dummy_user);
-        return MTMFLIX_USER_DOES_NOT_EXIST;
     }
     Series dummy_series = seriesCreate(seriesName,1,HORROR,NULL,5);
     if(!dummy_series){
-        /* Memeory allocation failed  */
+        /* Memory allocation failed  */
         userDestroy(dummy_user);
         return MTMFLIX_OUT_OF_MEMORY;
     }
-    if(!setIsIn(mtmflix->series,(SetElement)dummy_series)){
-        /* Series doesn't exist. */
+    if(!userCanWatchSeries(mtmflix, dummy_user, dummy_series)){
+        /*If we got here user can't add the series because of age
+          limitations */
         userDestroy(dummy_user);
         seriesDestroy(dummy_series);
-        return MTMFLIX_SERIES_DOES_NOT_EXIST;
+        return MTMFLIX_USER_NOT_IN_THE_RIGHT_AGE;
     }
-    bool age_restrictions = false;
-    int series_max_age = -1;
-    int series_min_age = -1;
-    SET_FOREACH(SetElement,current_series,mtmflix->series){
-        if(seriesCompare(dummy_series,current_series)==0){
-            /* We found the series with the given name. */
-            if(seriesHasAgeRestrictions(current_series)){
-                /* Series has age restrictions */
-                age_restrictions = true;
-                series_max_age = seriesGetMaxAge(current_series);
-                series_min_age = seriesGetMinAge(current_series);
-                break;
-            }
-        }
-    }
-    MtmFlixResult result;
+    seriesDestroy(dummy_series);
     SET_FOREACH(SetElement,current_user,mtmflix->users){
          //todo:Check if equal age is allowed!
          if(userCompare(dummy_user,current_user)==0){
-             /* We found the user with the given name.*/
-             if(age_restrictions){
-                 /* There are age restrictions, therefore we need to check
-                  * user's age in order to add the series. */
-                 if(series_max_age<userGetAge(current_user) ||
-                    (series_min_age>userGetAge(current_user))) {
-                     /* User's age is not in rage */
-                     userDestroy(dummy_user);
-                     seriesDestroy(dummy_series);
-                     return MTMFLIX_USER_NOT_IN_THE_RIGHT_AGE;
-                 }
-             }
-             /* If we got here we need to add the series to the user. */
-             result = userAddFavoriteSeries((User)current_user,seriesName);
+             /* We found the user with the given name so we need to add the
+              * series to this user.*/
+             result = AddToList((User)current_user,seriesName,
+                     FAVORITE_SERIES_LIST);
              if (result!=MTMFLIX_SUCCESS) {
                  userDestroy(dummy_user);
-                 seriesDestroy(dummy_series);
                  return MTMFLIX_OUT_OF_MEMORY;
              }
          }
      }
-    /* Shouldn't get here! */
+    /* If we got here we couldn't find the user in the users set.
+    * Shouldn't happen! */
     userDestroy(dummy_user);
-    seriesDestroy(dummy_series);
     return MTMFLIX_SUCCESS;
+}
+
+/**
+ ***** Static function : userCanWatchSeries *****
+ * Description: Checks if a user can add a series to his favorite series
+ * list by the series age limitations.
+ * @param mtmflix - The system of MtmFlix.
+ * @param user - The user that want to add the show.
+ * @param series - The show that the user wants to add.
+ *
+ * @return
+ * True - If the series has no age limitations or the user's age is in
+ * range of the age limitations of the series, else false.
+ */
+static bool userCanWatchSeries(MtmFlix mtmflix, User user,
+                               Series series) {
+    int series_max_age = -1;
+    int series_min_age = -1;
+    SET_FOREACH(SetElement, current_series, mtmflix->series) {
+        if (seriesCompare(series,current_series) == 0) {
+            /* We found the series with the given name. */
+            if (seriesHasAgeRestrictions(current_series)) {
+                /* Series has age restrictions */
+                series_max_age = seriesGetMaxAge(current_series);
+                series_min_age = seriesGetMinAge(current_series);
+                break;
+            }
+            else {
+                /*The series has no age limitations and the user can add
+                  it*/
+                return true;
+            }
+        }
+    }
+    /*If we got here the series has age limitations and we need to check
+      if the user can add it to his favorite series list */
+    SET_FOREACH(SetElement,current_user,mtmflix->users) {
+        //todo:Check if equal age is allowed!
+        if (userCompare(user,current_user) == 0) {
+            /* We found the user with the given name.*/
+            if (series_max_age < userGetAge(current_user) ||
+                (series_min_age > userGetAge(current_user))) {
+                /* User's age is not in rage */
+                return false;
+            }
+        }
+    }
+    /*If we got here the user can add the series to his favorite series
+      list*/
+    return true;
 }
 
 /**
@@ -475,23 +514,71 @@ MtmFlixResult mtmFlixSeriesLeave(MtmFlix mtmflix, const char* username,
     if(!mtmflix || !username || !seriesName){
         return MTMFLIX_NULL_ARGUMENT;
     }
+    MtmFlixResult result;
+    /* Checks if both user and series exist in mtmflix. */
+    result= userAndSeriesExist(mtmflix, username, seriesName);
+    if(result!=MTMFLIX_SUCCESS){
+        /*We get here in case the user or the series doesn't exist in the
+          mtmflix or in case of memory allocation error*/
+        return result;
+    }
     User temp_user=userCreate(username,14);
     if(!temp_user){
-        /*User creation failed becuase of memory allocation error */
+        /*User creation failed because of memory allocation error */
         return MTMFLIX_OUT_OF_MEMORY;
     }
-    if(!setIsIn(mtmflix->users,(temp_user))){
-        userDestroy(temp_user);
-        return MTMFLIX_SERIES_DOES_NOT_EXIST;
-    }
     SET_FOREACH(SetElement,user,mtmflix->users){
-        if(!userCompare(temp_user,user)){
+        if(userCompare(temp_user,user)==0){
             /*User to remove from found */
-            userDestroy(temp_user);
-            removeFromList((User)user,seriesName,2);
+            removeFromList((User)user,seriesName,FAVORITE_SERIES_LIST);
             break;
         }
     }
+    userDestroy(temp_user);
+    return MTMFLIX_SUCCESS;
+}
+
+/**
+ ***** Function: mtmFlixAddFriend *****
+ * @param mtmflix - The system we are working on.
+ * @param username1 - The user to add to his friend list.
+ * @param username2 - The user to add to.
+ *
+ * @return
+ * MTMFLIX_NULL_ARGUMENT - At least one of the arguments is NULL.
+ * MTMFLIX_USER_DOES_NOT_EXIST - At least one of the users doesn't exist.
+ * MTMFLIX_OUT_OF_MEMORY - In case of memory allocation error.
+ * MTMFLIX_SUCCESS= - Adding friend succeeded.
+ */
+MtmFlixResult mtmFlixAddFriend(MtmFlix mtmflix, const char* username1,
+                               const char* username2){
+    if(!mtmflix || !username1 || !username2){
+        return MTMFLIX_NULL_ARGUMENT;
+    }
+    MtmFlixResult result;
+    /*Checks if both users exist in the mtmflix */
+    result=usersExist(mtmflix,username1,username2);
+    if(result!=MTMFLIX_SUCCESS){
+        return result;
+    }
+    /*If we got here both users exist in mtmflix */
+    User dummy_user = userCreate(username1,MTM_MIN_AGE+1);
+    if(!dummy_user){
+        /* Memory allocation failed  */
+        return MTMFLIX_OUT_OF_MEMORY;
+    }
+    SET_FOREACH(SetElement,current_user,mtmflix->users){
+        if(userCompare(dummy_user,current_user)==0){
+            /* We found the user with the given name so we need to add
+             * username2 to this user's friend list.*/
+            result = AddToList((User)current_user,username2,FRIENDS_LIST);
+            if (result!=MTMFLIX_SUCCESS) {
+                userDestroy(dummy_user);
+                return result;
+            }
+        }
+    }
+    userDestroy(dummy_user);
     return MTMFLIX_SUCCESS;
 }
 
@@ -506,7 +593,7 @@ MtmFlixResult mtmFlixSeriesLeave(MtmFlix mtmflix, const char* username,
  * @return
  * MTMFLIX_SUCCESS - Friend removed successfully.
  * MTMFLIX_OUT_OF_MEMORY - Memory allocation error.
- * MTMFLIX_NULL_ARGUMENT - At lease one of the arguments is NULL.
+ * MTMFLIX_NULL_ARGUMENT - At least one of the arguments is NULL.
  * MTMFLIX_USER_DOES_NOT_EXIST - At least one of the usernames doesn't
  * exist in the system.
  */
@@ -515,36 +602,202 @@ MtmFlixResult mtmFlixRemoveFriend(MtmFlix mtmflix, const char* username1,
     if(!mtmflix || !username1 || username2){
         return MTMFLIX_NULL_ARGUMENT;
     }
+    MtmFlixResult result;
+    /*Checks if both users exist in the mtmflix */
+    result=usersExist(mtmflix,username1,username2);
+    if(result!=MTMFLIX_SUCCESS){
+        return result;
+    }
+    /* If we got here both users exist. */
     User dummy_user1 = userCreate(username1,MTM_MIN_AGE+1);
+    SET_FOREACH(SetElement,current_user,mtmflix->users){
+        if(userCompare(dummy_user1,current_user)==0){
+            /* We found user1. */
+            removeFromList(current_user,username2,FRIENDS_LIST);
+
+        }
+    }
+    userDestroy(dummy_user1);
+    return MTMFLIX_SUCCESS;
+}
+
+MtmFlixResult mtmFlixGetRecommendations(MtmFlix mtmflix, const char* username,
+                                        int count, FILE* outputStream){
+    if(!mtmflix || !username || !outputStream){
+        return MTMFLIX_NULL_ARGUMENT;
+    }
+    if(count<0){
+        return MTMFLIX_ILLEGAL_NUMBER;
+    }
+    MtmFlixResult result;
+    User user=getUserByUsername((char*)username,&result,mtmflix->users);
+    if(result!=MTMFLIX_SUCCESS){
+        /*We get here in case of memory allocation error or in case the
+         * user with the given username doesn't exist */
+        return result;
+    }
+    SET_FOREACH(SetElement,series,mtmflix->series){
+        if(!seriesShouldBeRecommended(series,user,mtmflix,&result)) {
+            if(result!=MTMFLIX_SUCCESS) {
+                return MTMFLIX_OUT_OF_MEMORY;
+            }
+            continue;
+        }
+        if(result!=MTMFLIX_SUCCESS) {
+            return MTMFLIX_OUT_OF_MEMORY;
+        }
+    /*If we got here the currect series should be added to the set of
+     * recommended series */
+
+
+    }
+
+}
+
+static bool seriesShouldBeRecommended(Series series,User user,
+                                               MtmFlix mtmflix,
+                                      MtmFlixResult* result) {
+    char *series_name = seriesGetName(series);
+    SeriesResult series_result;
+    if (!series_name) {
+        *result=MTMFLIX_OUT_OF_MEMORY;
+        return false;
+    }
+    int current_series_duration = seriesGetDurationByName
+            (series_name, mtmflix->series, &series_result);
+    if (series_result != SERIES_SUCCESS) {
+        free(series_name);
+        *result=MTMFLIX_OUT_OF_MEMORY;
+        return false;
+    }
+    if ((isInUsersFavoriteSeriesList(user, series_name)) ||
+        (!userCanWatchSeries(mtmflix, user, series))) {
+        /*If we get here the series is already in the user's favorite
+          series list or the user's age is not in the range of age
+          limitations of the series. This series shouldn't be
+          recommended*/
+        free(series_name);
+        *result=MTMFLIX_SUCCESS;
+        return false;
+    }
+    *result=MTMFLIX_SUCCESS;
+    return true;
+}
+
+
+
+static int rankSeries(Set users_set,User user,char* series_name,
+                       Set series_set,Genre genre,
+                       UserResult* function_status,
+                       int current_series_duration){
+    int number_of_series_from_same_genre=
+            userHowManySeriesWithGenre(series_set,user,genre);
+    double user_average_episode_duration=
+            userGetAverageEpisodeDuration(user,series_set,function_status);
+    int number_of_friends_loved_this_series=
+            howManyFriendsLovedThisSeries(users_set,user,series_name);
+    double rank=((double)number_of_series_from_same_genre*
+            number_of_friends_loved_this_series)/(1);
+}
+
+
+/**
+ ***** Function: usersExist *****
+ * Description: Checks if the users exist in mtmflix.
+ * @param mtmflix - The mtmflix to check in.
+ * @param username1 - A username to check.
+ * @param username2 - A username to check.
+ *
+ * @return
+ * MTMFLIX_OUT_OF_MEMORY - In case of memory allocation failure.
+ * MTMFLIX_USER_DOES_NOT_EXIST - If one of the users doesn't exist in
+ * the mtmflix.
+ * MTMFLIX_SUCCESS - If both of the users exist in the mtmflix.
+ */
+static MtmFlixResult usersExist(MtmFlix mtmflix, const char* username1,
+                              const char* username2){
+    User dummy_user1 = userCreate(username1,MTM_MIN_AGE+1);
+    if(!dummy_user1){
+        return MTMFLIX_OUT_OF_MEMORY;;
+    }
     User dummy_user2 = userCreate(username2,MTM_MIN_AGE+1);
-    if(!dummy_user1 || !dummy_user2){
-        //todo: check if it's okay to combine the IF like this.
+    if(!dummy_user2){
         userDestroy(dummy_user1);
-        userDestroy(dummy_user2);
         return MTMFLIX_OUT_OF_MEMORY;
     }
     if(!setIsIn(mtmflix->users,dummy_user1) ||
-                            !setIsIn(mtmflix->users,dummy_user2)){
+       !setIsIn(mtmflix->users,dummy_user2)){
         /* At least one user doesn't exist in the system. */
         userDestroy(dummy_user1);
         userDestroy(dummy_user2);
         return MTMFLIX_USER_DOES_NOT_EXIST;
+
     }
-    /* If we got here both users exist. */
-    SET_FOREACH(SetElement,current_user,mtmflix->users){
-        if(userCompare(dummy_user1,current_user)==0){
-            /* We found user1. */
-            userRemoveFriend(current_user, username2);
-            userDestroy(dummy_user1);
-            userDestroy(dummy_user2);
-            return MTMFLIX_SUCCESS;
-        }
-    }
-    /* If we got here we couldn't find user1 in the users set.
-     * Shouldn't happen! */
     userDestroy(dummy_user1);
     userDestroy(dummy_user2);
-    return MTMFLIX_OUT_OF_MEMORY; // Shouldn't get here!
+    return MTMFLIX_SUCCESS;
 }
 
+/**
+ ***** Function: userAndSeiesExist *****
+ * @param mtmflix - The mtmflix to check in.
+ * @param username - A username to check.
+ * @param seriesName - A series name to check.
+ *
+ * @return
+ * MTMFLIX_OUT_OF_MEMORY - In case of memory allocation failure.
+ * MTMFLIX_USER_DOES_NOT_EXIST - If the user doesn't exist in
+ * the mtmflix.
+ * MTMFLIX_SERIES_DOES_NOT_EXIST - If the series doesn't exist in
+ * the mtmflix.
+ * MTMFLIX_SUCCESS -If both user and series exist in the mtmflix.
+ */
+static MtmFlixResult userAndSeriesExist(MtmFlix mtmflix,
+                                        const char *username,
+                                        const char *seriesName){
+    User dummy_user = userCreate(username,MTM_MIN_AGE+1);
+    if(!dummy_user){
+        /* Memory allocation failed  */
+        return MTMFLIX_OUT_OF_MEMORY;
+    }
+    if(!setIsIn(mtmflix->users,(SetElement)dummy_user)){
+        /* User doesn't exist. */
+        userDestroy(dummy_user);
+        return MTMFLIX_USER_DOES_NOT_EXIST;
+    }
+    Series dummy_series = seriesCreate(seriesName,1,HORROR,NULL,5);
+    if(!dummy_series){
+        /* Memory allocation failed  */
+        userDestroy(dummy_user);
+        return MTMFLIX_OUT_OF_MEMORY;
+    }
+    if(!setIsIn(mtmflix->series,(SetElement)dummy_series)){
+        /* Series doesn't exist. */
+        userDestroy(dummy_user);
+        seriesDestroy(dummy_series);
+        return MTMFLIX_SERIES_DOES_NOT_EXIST;
+    }
+    userDestroy(dummy_user);
+    seriesDestroy(dummy_series);
+    return MTMFLIX_SUCCESS;
+}
+
+static User getUserByUsername(char* username,MtmFlixResult* result,
+                              Set users_set){
+    User temp_user=userCreate(username,MTM_MIN_AGE+1);
+    if(!temp_user){
+        *result=MTMFLIX_OUT_OF_MEMORY;
+        return NULL;
+    }
+    SET_FOREACH(SetElement,user,users_set){
+        if(userCompare(user,temp_user)==0){
+            userDestroy(temp_user);
+            *result=MTMFLIX_SUCCESS;
+            return (User)user;
+        }
+    }
+    userDestroy(temp_user);
+    *result=MTMFLIX_USER_DOES_NOT_EXIST;
+    return NULL;
+}
 

@@ -3,6 +3,9 @@
 #include <string.h>
 #include "user.h"
 
+
+static void userRemoveFromList(List list, const char *username);
+static MtmFlixResult addToList(List list, const char *name);
 static bool friendLikedTheSeries(Set users_set, char *friend_name,
                                  char *series_name);
 static bool checkIfUserLikedSeries (List favorite_series_list,
@@ -124,25 +127,22 @@ int userCompare (User user1, User user2){
     return strcmp(user1->username,user2->username);
 }
 
-
-
-
 /**
  ***** Function: usernameCopy *****
  * Description: Copying a friend's name.
- * @param user - A friend's name to copy.
+ * @param username - A friend's name to copy.
  *
  * @return
  * A copy of the given friend's name.
  */
-char* usernameCopy(User user){
-    assert(user);
-    char* username_copy=malloc(strlen(user->username)+1);
+char* usernameCopy(char* username){
+    assert(username);
+    char* username_copy=malloc(strlen(username)+1);
     if(!username_copy){
         /* Memory allocation failed */
         return NULL;
     }
-    strcpy(username_copy,user->username);
+    strcpy(username_copy,username);
     return username_copy;
 }
 
@@ -155,7 +155,17 @@ void destroyUsername (char* friend_username){
     free(friend_username);
 }
 
-/////////////////////////////////////////////////////////////////////////
+
+void removeFromList(User user,const char* name,UserList list_type){
+    assert(user);
+    assert(name);
+    if(list_type==FRIENDS_LIST){
+        userRemoveFromList(user->user_friends_list,name);
+    }
+    else{
+        userRemoveFromList(user->user_favorite_series,name);
+    }
+}
 
 static void userRemoveFromList(List list, const char *username){
     LIST_FOREACH(ListElement,iterator,list){
@@ -167,29 +177,24 @@ static void userRemoveFromList(List list, const char *username){
 }
 
 
-void removeFromList(User user,const char* name,int list_type){
+MtmFlixResult AddToList(User user,const char *name, UserList list_type){
     assert(user);
     assert(name);
-    if(list_type==1){
-        userRemoveFromList(user->user_friends_list,name);
+    MtmFlixResult result;
+    if(list_type==FRIENDS_LIST){
+        result=addToList(user->user_friends_list,name);
     }
     else{
-        userRemoveFromList(user->user_favorite_series,name);
+        result=addToList(user->user_favorite_series,name);
     }
+    return result;
 }
 
 
 static MtmFlixResult addToList(List list, const char *name){
     ListResult result;
-    if(listGetSize(list)==0){
-        result=listInsertFirst(list,(ListElement)name);
-        if(result!=LIST_SUCCESS){
-            return MTMFLIX_OUT_OF_MEMORY;
-        }
-        return MTMFLIX_SUCCESS;
-    }
     LIST_FOREACH(ListElement,iterator,list) {
-        if (!strcmp((char *) iterator, name)) {
+        if (!strcmp((char*) iterator, name)) {
             /* The name is already in the list */
             return MTMFLIX_SUCCESS;
         }
@@ -207,56 +212,6 @@ static MtmFlixResult addToList(List list, const char *name){
 }
 
 
-MtmFlixResult userAddToList(User user,const char* name,int list_type){
-    assert(user);
-    assert(name);
-    MtmFlixResult result;
-    if(list_type==1){
-        result=addToList(user->user_friends_list,name);
-    }
-    else{
-        result=addToList(user->user_favorite_series,name);
-    }
-    return result;
-}
-/////////////////////////////////////////////////////////////////////////
-
-/** //todo: fix comments
- ***** Function: userRemoveFriend *****
- * Description: Gets a user and a username.
- * The function removes the given username from given user's friend list.
- *
- * @param user - The user we want to remove from.
- * @param username - The username we want to remove.
- */
-void userRemoveFriend(User user, const char *username){
-    assert(user);
-    assert(username);
-    LIST_FOREACH(ListElement,current_friend,user->user_friends_list){
-        if(!strcmp((char*)current_friend,username)){
-            listRemoveCurrent(user->user_friends_list);
-            break;
-        }
-    }
-}
-
-
-/**
- ***** Function: userRemoveFavoriteSeries *****
- * Description: Removes a series from the user favorite series list.
- * @param user - The user to remove from.
- * @param series_name - The series to remove.
- */
-void userRemoveFavoriteSeries(User user, const char *series_name){
-    assert(user);
-    assert(series_name);
-    LIST_FOREACH(ListElement,current_friend,user->user_favorite_series){
-        if(!strcmp((char*)current_friend,series_name)){
-            listRemoveCurrent(user->user_favorite_series);
-            break;
-        }
-    }
-}
 /**
  ***** Function: printUserDetailsToFile *****
  * Description: Gets a user and prints its details to a given file.
@@ -286,56 +241,21 @@ int userGetAge (User user){
     return user->age;
 }
 
-//todo: ADD COMMENTS
-MtmFlixResult userAddFavoriteSeries(User user, const char *seriesName){
-    assert(user);
-    assert(seriesName);
-    ListResult result;
-    if(listGetSize(user->user_favorite_series)==0){
-        result=listInsertFirst(user->user_favorite_series,
-                        (ListElement)seriesName);
-        if(result!=LIST_SUCCESS){
-            return MTMFLIX_OUT_OF_MEMORY;
-        }
-        return MTMFLIX_SUCCESS;
-    }
-    LIST_FOREACH(ListElement,current_friend,user->user_favorite_series){
-        if(!strcmp((char*)current_friend,seriesName)){
-            /* The series is already in the list */
-            return MTMFLIX_SUCCESS;
-        }
-        if(strcmp((char*)current_friend,seriesName)>0){
-            /*We found the first series in the list that it's name has
-              a bigger value than the given series name */
-            result=listInsertBeforeCurrent(user->user_favorite_series,
-                                    (ListElement)seriesName);
-            if(result!=LIST_SUCCESS){
-                return MTMFLIX_OUT_OF_MEMORY;
-            }
-            return MTMFLIX_SUCCESS;
-        }
-    }
-    /*If we got here the series should be at the end of the list*/
-    result=listInsertLast(user->user_favorite_series,
-                                   (ListElement)seriesName);
-    if(result!=LIST_SUCCESS){
-        return MTMFLIX_OUT_OF_MEMORY;
-    }
-    return MTMFLIX_SUCCESS;
-}
+
 
 
 
 /**
- ***** Function: howManyFriendsLovedThisShow *****
+ ***** Function: howManyFriendsLovedThisSeries *****
  * @param users_set - Set which contains all users in mtmflix.
  * @param user - A user to recommend to.
  * @param series_name - A series name to search on friends lists.
  *
  * @return
- * The number of friends that loved the show.
+ * The number of friends that loved the series.
  */
-int howManyFriendsLovedThisShow(Set users_set,User user,char* series_name){
+int howManyFriendsLovedThisSeries(Set users_set, User user,
+                                  char *series_name){
     int how_many_loved_this_series=0;
     LIST_FOREACH(ListElement,friend_name,user->user_friends_list){
         /*Checks each friend series list */
@@ -371,6 +291,7 @@ static bool friendLikedTheSeries(Set users_set, char *friend_name,
             }
         }
     }
+    /*Should get here */
     userDestroy(friend);
     return false;
 }
@@ -461,6 +382,21 @@ double userGetAverageEpisodeDuration(User user, Set series_set,
     *function_status = USER_SUCCESS;
     return ((double)episode_duration)/((double)number_of_series);
 }
+
+bool isInUsersFavoriteSeriesList(User user,char* series_name){
+    LIST_FOREACH(ListElement,series,user->user_favorite_series){
+        if(strcmp(series,series_name)==0){
+            /*If we get here series is found in user's favorite series
+              list*/
+            return true;
+        }
+    }
+    return false;
+}
+
+
+
+
 
 
 

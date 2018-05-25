@@ -52,7 +52,7 @@ int userCompareSetElements(SetElement element1, SetElement element2){
 //-----------------------------------------------------------------------//
 
 ListElement copyFriendUsername(ListElement element){
-    return usernameCopy((User)element);
+    return usernameCopy((char*)element);
 }
 
 void destroyFriendUsername(ListElement element){
