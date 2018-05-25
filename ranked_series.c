@@ -8,7 +8,7 @@ struct ranked_series_t{
     char* series_genre;
 };
 
-RankedSeries rankedSeriesCreate (int rank,char* series_name,
+RankedSeries rankedSeriesCreate (int rank, char* series_name,
                                  char* series_genre){
     RankedSeries new_ranked_series=malloc(sizeof(*new_ranked_series));
     if(!new_ranked_series){
@@ -71,7 +71,7 @@ void rankedSeriesPrintToFile(int number_of_series_to_print,
                 *result=MTMFLIX_OUT_OF_MEMORY;
                 return;
             }
-            if((fprintf(outputStream,"%s",ranked_series_details)<0){
+            if((fprintf(outputStream,"%s",ranked_series_details)<0)){
                 *result=MTMFLIX_OUT_OF_MEMORY;
                 return;
             }

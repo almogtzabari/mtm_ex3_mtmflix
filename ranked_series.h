@@ -7,8 +7,8 @@
 
 typedef struct ranked_series_t* RankedSeries;
 
-RankedSeries rankedSeriesCreate (int rank,const char* series_name,
-                                 const char* series_genre);
+RankedSeries rankedSeriesCreate (int rank,char* series_name,
+                                 char* series_genre);
 
 RankedSeries rankedSeriesCopy (RankedSeries ranked_series);
 
