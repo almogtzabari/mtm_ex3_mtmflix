@@ -34,6 +34,7 @@ int main(){
     mtmFlixAddFriend(flix,"Vered","Ligad");
     mtmFlixAddFriend(flix,"Vered","Orian");
     mtmFlixAddFriend(flix,"Vered","Efraim");
+    mtmFlixDestroy(flix);
     FILE* temp=fopen("temp1.txt","w");
     mtmFlixGetRecommendations(flix,"Vered",0,temp);
     fclose(temp);
