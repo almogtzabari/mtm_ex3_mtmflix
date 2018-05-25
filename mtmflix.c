@@ -77,6 +77,18 @@ MtmFlix mtmFlixCreate(){
     return flix;
 }
 
+/**
+ ***** Function: *****
+ * Description: Frees all allocated memory of a given MtmFlix.
+ *
+ * @param mtmflix - MtmFlix we want to destroy.
+ */
+void mtmFlixDestroy(MtmFlix mtmflix){
+    setDestroy(mtmflix->series);
+    setDestroy(mtmflix->users);
+    free(mtmflix);
+}
+
 /** Rows: 19
  ***** Function: mtmFlixAddUser *****
  * Description: Adds a username to the MtmFlix if the user doesn't already
