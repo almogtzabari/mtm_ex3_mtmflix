@@ -9,8 +9,7 @@ int main(){
 
     int ages [2]= {29,100};
     mtmFlixAddSeries(flix,"Stranger",4,DRAMA,ages,4);
-    mtmFlixAddSeries(flix,"Suits",4,DRAMA,NULL,4);
-    mtmFlixAddSeries(flix,"GameOfThrones",4,MYSTERY,NULL,4);
+    mtmFlixAddSeries(flix,"GameOfThrones",4,MYSTERY,NULL,7);
     mtmFlixAddSeries(flix,"Fauda",4,MYSTERY,NULL,4);
     mtmFlixAddSeries(flix,"Kabab",4,DRAMA,NULL,4);
     mtmFlixAddSeries(flix,"Shawarma",4,DRAMA,NULL,4);
@@ -18,11 +17,16 @@ int main(){
 
 
     mtmFlixSeriesJoin(flix,"Vered","Stranger");
-    mtmFlixSeriesJoin(flix,"Vered","Suits");
     mtmFlixSeriesJoin(flix,"Vered","GameOfThrones");
 
-    mtmFlixSeriesJoin(flix,"Orian","Suits");
-    mtmFlixSeriesJoin(flix,"Efraim","Suits");
+    mtmFlixSeriesJoin(flix,"Orian","Kabab");
+    mtmFlixSeriesJoin(flix,"Orian","Shawarma");
+    mtmFlixSeriesJoin(flix,"Orian","Shipud");
+
+    mtmFlixSeriesJoin(flix,"Efraim","Kabab");
+    mtmFlixSeriesJoin(flix,"Efraim","Shawarma");
+    mtmFlixSeriesJoin(flix,"Efraim","Shipud");
+
 
     mtmFlixAddFriend(flix,"Vered","Ariel");
     mtmFlixAddFriend(flix,"Vered","Ligad");
