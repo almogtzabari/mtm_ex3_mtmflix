@@ -669,7 +669,13 @@ MtmFlixResult mtmFlixGetRecommendations(MtmFlix mtmflix, const char* username,
         return MTMFLIX_ILLEGAL_NUMBER;
     }
     MtmFlixResult result;
-    User user = getUserByUsername((char*)username,&result,mtmflix->users);
+    Set users_set_copy = setCopy(mtmflix->users);
+    Set series_set_copy = setCopy(mtmflix->series);
+    if(!series_set_copy || !users_set_copy){
+        /* Memory allocation failed. */
+        return MTMFLIX_OUT_OF_MEMORY;
+    }
+    User user = getUserByUsername((char*)username,&result,users_set_copy);
     if(result!=MTMFLIX_SUCCESS){
         /*We get here in case of memory allocation error or in case the
          * user with the given username doesn't exist */
@@ -682,7 +688,6 @@ MtmFlixResult mtmFlixGetRecommendations(MtmFlix mtmflix, const char* username,
         return MTMFLIX_OUT_OF_MEMORY;
     }
     SET_FOREACH(SetElement,series,mtmflix->series){
-        SetElement iterator=series;
         if(!seriesShouldBeRecommended(series,user,mtmflix,&result)) {
             if(result!=MTMFLIX_SUCCESS) {
                 return MTMFLIX_OUT_OF_MEMORY;
@@ -694,10 +699,9 @@ MtmFlixResult mtmFlixGetRecommendations(MtmFlix mtmflix, const char* username,
         }
     /*If we got here the current series should be added to the set of
      * recommended series */
-        rankSeriesAndAddToRankedSeriesSet(mtmflix->users,mtmflix->series,
+        rankSeriesAndAddToRankedSeriesSet(users_set_copy,series_set_copy,
                                         user,series,seriesGetGenre(series),
                                         &result,ranked_series_set);
-        series=iterator;
         if(result!=MTMFLIX_SUCCESS){
             setDestroy(ranked_series_set);
             return MTMFLIX_OUT_OF_MEMORY;
