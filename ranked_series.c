@@ -28,7 +28,7 @@ RankedSeries rankedSeriesCreate (int rank, char* series_name,
         return NULL;
     }
     strcpy(series_genre_copy,series_genre);
-    new_ranked_series->series_genre;
+    new_ranked_series->series_genre=series_genre_copy;
     new_ranked_series->rank=rank;
     return new_ranked_series;
 }
