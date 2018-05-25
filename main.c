@@ -15,22 +15,11 @@ int main(){
     mtmFlixAddSeries(flix,"GameOfThrones",4,DRAMA,NULL,7);
     mtmFlixAddSeries(flix,"Fauda",4,DRAMA,NULL,4);
     mtmFlixAddSeries(flix,"Kabab",4,DRAMA,NULL,4);
-//    mtmFlixAddSeries(flix,"Shawarma",4,DRAMA,NULL,4);
-//    mtmFlixAddSeries(flix,"Shipud",4,DRAMA,NULL,4);
 
     mtmFlixSeriesJoin(flix,"Ariel","Stranger");
     mtmFlixSeriesJoin(flix,"Vered","GameOfThrones");
     mtmFlixSeriesJoin(flix,"Vered","Fauda");
     mtmFlixSeriesJoin(flix,"Vered","Kabab");
-//
-//    mtmFlixSeriesJoin(flix,"Orian","Kabab");
-//    mtmFlixSeriesJoin(flix,"Orian","Shawarma");
-//    mtmFlixSeriesJoin(flix,"Orian","Shipud");
-//
-//    mtmFlixSeriesJoin(flix,"Efraim","Kabab");
-//    mtmFlixSeriesJoin(flix,"Efraim","Shawarma");
-//    mtmFlixSeriesJoin(flix,"Efraim","Shipud");
-
 
     mtmFlixAddFriend(flix,"Vered","Ariel");
     mtmFlixAddFriend(flix,"Vered","Ligad");
