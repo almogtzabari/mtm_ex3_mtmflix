@@ -43,6 +43,9 @@ RankedSeries rankedSeriesCopy (RankedSeries ranked_series){
 }
 
 void rankedSeriesDestroy (RankedSeries ranked_series){
+    if(!ranked_series){
+        return;
+    }
     free(ranked_series->series_genre);
     free(ranked_series->series_name);
     free(ranked_series);
@@ -59,6 +62,7 @@ int rankedSeriesCompare (RankedSeries ranked_series1,
 void rankedSeriesPrintToFile(int number_of_series_to_print,
                              Set ranked_series_set,
                              FILE* outputStream,MtmFlixResult* result){
+    int x = setGetSize(ranked_series_set);
     if(number_of_series_to_print==0){
         number_of_series_to_print=setGetSize(ranked_series_set);
     }

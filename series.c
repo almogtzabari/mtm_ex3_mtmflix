@@ -117,6 +117,9 @@ char* seriesCopyName( char *name){
  * @param series - Series we want to destroy.
  */
 void seriesDestroy(Series series){
+    if(!series){
+        return;
+    }
     free((char*)series->series_name);
     free(series->ages);
     free(series);

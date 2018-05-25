@@ -103,7 +103,9 @@ User userCopy (User user){
  * @param user - A user to destroy.
  */
 void userDestroy (User user){
-    assert(user);
+    if(!user){
+        return;
+    }
     free((char*)user->username);
     listDestroy(user->user_friends_list);
     listDestroy(user->user_favorite_series);
@@ -382,6 +384,10 @@ double userGetAverageEpisodeDuration(User user, Set series_set,
         number_of_series++;
     }
     *function_status = MTMFLIX_SUCCESS;
+    if(number_of_series == 0){
+        /* User doesn't have any series in his favorite list. */
+        return 0;
+    }
     return ((double)episode_duration)/((double)number_of_series);
 }
 

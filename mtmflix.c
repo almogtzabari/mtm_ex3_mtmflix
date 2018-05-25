@@ -704,6 +704,7 @@ MtmFlixResult mtmFlixGetRecommendations(MtmFlix mtmflix, const char* username,
             if(result!=MTMFLIX_SUCCESS) {
                 return MTMFLIX_OUT_OF_MEMORY;
             }
+            char* check = seriesGetName(series);
             continue;
         }
         if(result!=MTMFLIX_SUCCESS) {
@@ -759,8 +760,13 @@ static int rankSeries(Set users_set,User user,
         *function_status=MTMFLIX_OUT_OF_MEMORY;
         return -1;
     }
+    Set series_set_copy = setCopy(series_set);
+    if(!series_set_copy){
+        return -1;
+    }
     double average_list_episode_duration=
             userGetAverageEpisodeDuration(user,series_set,function_status);
+    setDestroy(series_set_copy);
     if(*function_status!=MTMFLIX_SUCCESS){
         return -1;
     }
@@ -768,6 +774,7 @@ static int rankSeries(Set users_set,User user,
             howManyFriendsLovedThisSeries(users_set,user,series_name);
     int current_series_episode_duration=seriesGetEpisodeDuration(series);
     double rank=((double)same_genre*number_of_friends_loved_this_series);
+    // todo: rank should be int.
     rank/=(1+abs(current_series_episode_duration-(int)
             (average_list_episode_duration)));
     return (int)rank;
