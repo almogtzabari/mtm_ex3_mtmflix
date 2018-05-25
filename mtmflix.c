@@ -628,6 +628,7 @@ MtmFlixResult mtmFlixRemoveFriend(MtmFlix mtmflix, const char* username1,
     return MTMFLIX_SUCCESS;
 }
 
+//todo:31 lines
 MtmFlixResult mtmFlixGetRecommendations(MtmFlix mtmflix, const char* username,
                                         int count, FILE* outputStream){
     if(!mtmflix || !username || !outputStream){
@@ -670,6 +671,7 @@ MtmFlixResult mtmFlixGetRecommendations(MtmFlix mtmflix, const char* username,
         }
     }
     rankedSeriesPrintToFile(count,ranked_series_set,outputStream,&result);
+    setDestroy(ranked_series_set);
     if(result!=MTMFLIX_SUCCESS){
         return MTMFLIX_OUT_OF_MEMORY;
     }
@@ -677,10 +679,9 @@ MtmFlixResult mtmFlixGetRecommendations(MtmFlix mtmflix, const char* username,
 }
 
 static bool seriesShouldBeRecommended(Series series,User user,
-                                               MtmFlix mtmflix,
+                                      MtmFlix mtmflix,
                                       MtmFlixResult* result) {
     char *series_name = seriesGetName(series);
-    SeriesResult series_result;
     if (!series_name) {
         *result=MTMFLIX_OUT_OF_MEMORY;
         return false;
