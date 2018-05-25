@@ -5,6 +5,9 @@
 #include "utilities.h"
 #include "user.h"
 
+//-----------------------------------------------------------------------//
+//                MTMFLIX: STATIC FUNCTIONS DECLARATIONS                 //
+//-----------------------------------------------------------------------//
 
 static bool userCanWatchSeries(MtmFlix mtmflix, User user,
                                Series series);
@@ -29,6 +32,9 @@ static int rankSeries(Set users_set,User user,
                       char* series_name,Series series,Set series_set,
                       Genre genre,MtmFlixResult* function_status);
 
+//-----------------------------------------------------------------------//
+//                       MTMFLIX: STRUCT                                 //
+//-----------------------------------------------------------------------//
 
 struct mtmFlix_t{
     Set users;
@@ -36,7 +42,11 @@ struct mtmFlix_t{
 };
 
 
-/**
+//-----------------------------------------------------------------------//
+//                       MTMFLIX: FUNCTIONS                              //
+//-----------------------------------------------------------------------//
+
+/** Rows: 14
  ***** mtmFlixCreate *****
  * Description: Creates a new mtmFlix.
  *
@@ -67,37 +77,45 @@ MtmFlix mtmFlixCreate(){
     return flix;
 }
 
-/**
+/** Rows:
  ***** Function: mtmFlixAddUser *****
  * Description: Adds a username to the MtmFlix if the user doesn't already
  * exist and the given age is legal.
+ *
  * @param mtmflix - A mtmflix to add the user to.
  * @param username - The username of the user.
  * @param age - The age of the user.
  * @return
  * MTMFLIX_SUCCESS - Adding the user succeeded.
- * MTMFLIX_NULL_ARGUMENT - If one or more of the given arguments is NULL.
+ * MTMFLIX_NULL_ARGUMENT - If at least of the given arguments is NULL.
  * MTMFLIX_OUT_OF_MEMORY - In case of memory allocation error.
  * MTMFLIX_USERNAME_ALREADY_USED - In case the given username is already in
  * use.
  * MTMFLIX_ILLEGAL_USERNAME - In case the given username is an empty string
- * or contains an illegal character (Not a number or a letter).
+ * or contains an illegal characters(only numbers and letters are allowed).
  * MTMFLIX_ILLEGAL_AGE - In case the given age is not bigger than
  * MTM_MIN_AGE and smaller than MTM_MAX_AGE.
  */
 MtmFlixResult mtmFlixAddUser(MtmFlix mtmflix,
                              const char* username, int age){
     if(!mtmflix || !username){
+        /* At least one of the arguments is NULL. */
         return MTMFLIX_NULL_ARGUMENT;
     }
     if(!nameIsValid(username)){
+        /* Invalid username. Only numbers and letters are allowed. */
         return MTMFLIX_ILLEGAL_USERNAME;
     }
     if(age<=MTM_MIN_AGE || age>=MTM_MAX_AGE){
+        /* User does not meet age requirements.  */
         return MTMFLIX_ILLEGAL_AGE;
     }
-    User temp_user=userCreate(username,age);
+    /* In order to check whether a user with that name already exist we
+     * need to use the userCompare function. Since the userCompare
+     * function has to get two users we need to create a temporary user. */
+    User temp_user = userCreate(username,age);
     if(!temp_user){
+        /* Failed to allocate memory for the temporary user.  */
         return MTMFLIX_OUT_OF_MEMORY;
     }
     if(setIsIn(mtmflix->users,temp_user)){
