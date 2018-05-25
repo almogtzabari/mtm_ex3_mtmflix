@@ -274,7 +274,7 @@ MtmFlixResult mtmFlixAddSeries(MtmFlix mtmflix, const char* name,
     return MTMFLIX_SUCCESS;
 }
 
-/** Rows:
+/** Rows: 13
  ***** Function: mtmFlixRemoveSeries *****
  * Description: Removes a given series from the given MtmFlix.
  *
@@ -302,21 +302,25 @@ MtmFlixResult mtmFlixRemoveSeries(MtmFlix mtmflix, const char* name){
         seriesDestroy(temp_series);
         return MTMFLIX_SERIES_DOES_NOT_EXIST;
     }
-    setRemove(mtmflix->series,temp_series);
+    /* Series exist and should be removed. */
+    setRemove(mtmflix->series,temp_series); // Removes series from system.
     seriesDestroy(temp_series);
     SET_FOREACH(User,current_user,mtmflix->users){
         /*Removing the series from each user's favorite series list  */
-        removeFromList(current_user,name,2);
+        removeFromList(current_user,name,FAVORITE_SERIES_LIST);
     }
     return MTMFLIX_SUCCESS;
 }
 
-/**
+/** Rows:
  ***** Function: mtmFlixReportSeries *****
- * Description: Prints all the series name and genres to a file.
- * @param mtmflix - The mtmflix to print the series list from.
+ * Description: Prints name and genre of series in MtmFlix to a file. Only
+ * the 'seriesNum' first from each genre will be printed.
+ *
+ * @param mtmflix - MtmFlix to print the series from.
  * @param seriesNum - Number of series from a genre to be printed.
  * @param outputStream - A file to print to.
+ *
  * @return
  * MTMFLIX_NULL_ARGUMENT - If one or more of the given arguments is NULL.
  * MTMFLIX_NO_SERIES - If there are no series on mtmtflix.
