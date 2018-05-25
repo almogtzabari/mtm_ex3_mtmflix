@@ -503,23 +503,17 @@ MtmFlixResult mtmFlixSeriesJoin(MtmFlix mtmflix, const char* username,
  */
 static bool userCanWatchSeries(MtmFlix mtmflix, User user,
                                Series series) {
-    int series_max_age = -1;
-    int series_min_age = -1;
-    SET_FOREACH(SetElement, current_series, mtmflix->series) {
-        if (seriesCompare(series,current_series) == 0) {
-            /* We found the series with the given name. */
-            if (seriesHasAgeRestrictions(current_series)) {
-                /* Series has age restrictions */
-                series_max_age = seriesGetMaxAge(current_series);
-                series_min_age = seriesGetMinAge(current_series);
-                break;
-            }
-            else {
-                /*The series has no age limitations and the user can add
-                  it*/
-                return true;
-            }
-        }
+    int series_max_age;
+    int series_min_age;
+    if (seriesHasAgeRestrictions(series)) {
+        /* Series has age restrictions */
+        series_max_age = seriesGetMaxAge(series);
+        series_min_age = seriesGetMinAge(series);
+    }
+    else {
+        /*The series has no age limitations and the user can add
+          it*/
+        return true;
     }
     /*If we got here the series has age limitations and we need to check
       if the user can add it to his favorite series list */

@@ -7,4 +7,4 @@ add_executable(mtm_ex3_mtmflix main.c mtmflix.c user.h set.h list.h
         utilities.h ranked_series.c ranked_series.h)
 target_link_libraries(mtm_ex3_mtmflix ${CMAKE_SOURCE_DIR}/libmtm.a
         ${CMAKE_SOURCE_DIR}/libmtm_ex3.a)
-set(CMAKE_C_FLAGS "-std=c99 -Wall -Werror -pedantic-errors -DNDEBUG")
+#set(CMAKE_C_FLAGS "-std=c99 -Wall -Werror -pedantic-errors -DNDEBUG")
