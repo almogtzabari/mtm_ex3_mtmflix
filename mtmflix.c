@@ -77,7 +77,7 @@ MtmFlix mtmFlixCreate(){
     return flix;
 }
 
-/** Rows:
+/** Rows: 19
  ***** Function: mtmFlixAddUser *****
  * Description: Adds a username to the MtmFlix if the user doesn't already
  * exist and the given age is legal.
@@ -85,16 +85,15 @@ MtmFlix mtmFlixCreate(){
  * @param mtmflix - A mtmflix to add the user to.
  * @param username - The username of the user.
  * @param age - The age of the user.
+ *
  * @return
- * MTMFLIX_SUCCESS - Adding the user succeeded.
- * MTMFLIX_NULL_ARGUMENT - If at least of the given arguments is NULL.
- * MTMFLIX_OUT_OF_MEMORY - In case of memory allocation error.
- * MTMFLIX_USERNAME_ALREADY_USED - In case the given username is already in
- * use.
- * MTMFLIX_ILLEGAL_USERNAME - In case the given username is an empty string
- * or contains an illegal characters(only numbers and letters are allowed).
- * MTMFLIX_ILLEGAL_AGE - In case the given age is not bigger than
- * MTM_MIN_AGE and smaller than MTM_MAX_AGE.
+ * MTMFLIX_SUCCESS - User added successfully.
+ * MTMFLIX_NULL_ARGUMENT - At least one of the given arguments is NULL.
+ * MTMFLIX_OUT_OF_MEMORY - Any memory allocation fail.
+ * MTMFLIX_USERNAME_ALREADY_USED - Given username is already in use.
+ * MTMFLIX_ILLEGAL_USERNAME - Given username is an empty string or contains
+ * forbidden characters.
+ * MTMFLIX_ILLEGAL_AGE - User does not meet age requirements.
  */
 MtmFlixResult mtmFlixAddUser(MtmFlix mtmflix,
                              const char* username, int age){
@@ -110,42 +109,50 @@ MtmFlixResult mtmFlixAddUser(MtmFlix mtmflix,
         /* User does not meet age requirements.  */
         return MTMFLIX_ILLEGAL_AGE;
     }
-    /* In order to check whether a user with that name already exist we
-     * need to use the userCompare function. Since the userCompare
-     * function has to get two users we need to create a temporary user. */
+    /* In order to add a user to the users set and in order to check
+     * whether a user with that name already exist we need to use the
+     * userCompare function. Since the userCompare function has to get two
+     * users we need to create a temporary user. */
     User temp_user = userCreate(username,age);
     if(!temp_user){
         /* Failed to allocate memory for the temporary user.  */
         return MTMFLIX_OUT_OF_MEMORY;
     }
     if(setIsIn(mtmflix->users,temp_user)){
+        /* User is already exist in the system. */
         userDestroy(temp_user);
         return MTMFLIX_USERNAME_ALREADY_USED;
     }
+    /* If we got here then the user isn't in the system yet and he meets
+     * all the requirements. Now we'll add him. */
     SetResult result;
-    result=setAdd(mtmflix->users,temp_user);
+    result = setAdd(mtmflix->users,temp_user);
     if(result!=SET_SUCCESS){
+        /* Failed to add user to users set. */
         userDestroy(temp_user);
         return MTMFLIX_OUT_OF_MEMORY;
     }
+    /* If we got here then user added successfully. */
     userDestroy(temp_user);
     return MTMFLIX_SUCCESS;
 }
 
-/**
+/** Rows: 14
  ***** Function: mtmFlixRemoveUser *****
  * Description: Removes a given user from the given MtmFlix.
- * @param mtmflix - The MtmFlix we want to remove the user from.
+ *
+ * @param mtmflix - MtmFlix we want to remove the user from.
  * @param username - Username we want to remove.
+ *
  * @return
- * MTMFLIX_NULL_ARGUMENT - If one or more of the given arguments is NULL.
- * MTMFLIX_USER_DOES_NOT_EXIST - If the user does not exist in the MtmFlix.
- * MTMFLIX_SUCCESS - If user removed from MtmFlix.
+ * MTMFLIX_NULL_ARGUMENT - At least one of the given arguments is NULL.
+ * MTMFLIX_USER_DOES_NOT_EXIST - User does not exist in the MtmFlix.
+ * MTMFLIX_SUCCESS - User removed successfully.
  *
  */
-//todo: what if the mtmflix->users is NULL?
 MtmFlixResult mtmFlixRemoveUser(MtmFlix mtmflix, const char* username){
     if(!mtmflix || !username){
+        /* At least one of the arguments is NULL. */
         return MTMFLIX_NULL_ARGUMENT;
     }
     /* Creates a dummy user for compariosn. */
@@ -154,82 +161,84 @@ MtmFlixResult mtmFlixRemoveUser(MtmFlix mtmflix, const char* username){
         /* Failed to create dummy user. */
         return MTMFLIX_OUT_OF_MEMORY;
     }
+    assert(mtmflix->users);
     if(!setIsIn(mtmflix->users,dummy_user)){
         /* User does not exist. */
         userDestroy(dummy_user);
         return MTMFLIX_USER_DOES_NOT_EXIST;
     }
-    /* If we got here then the user exist in the users-set and need to be
-     * removed from there.*/
-    setRemove(mtmflix->users,dummy_user); // Removing user from users set.
+    /* If we got here then the user exist in the users set and need to be
+     * removed.*/
+    setRemove(mtmflix->users,dummy_user); // Removes user from users set.
     userDestroy(dummy_user);
     /* Now we need to remove this username from every user's friendlist. */
     SET_FOREACH(User,current_user,mtmflix->users){
         /*Removing the username from each user's friend list  */
-        removeFromList(current_user, username,1);
+        removeFromList(current_user, username,FRIENDS_LIST);
     }
     return MTMFLIX_SUCCESS;
 }
 
-/**
+/** Rows: 9
  ***** Function: nameIsValid *****
  * Description: Checks if the given name contains only letters or numbers
- * and at least one of them.
+ * and is not an empty string.
+ *
  * @param name - Name to check.
  *
  * @return
- * True if the name contains only letters or numbers and at least one of
- * them.
+ * True - Name is valid.
+ * False - Name is invalid.
  */
 static bool nameIsValid(const char *name){
     assert(name);
     if(!(*name)){
-        /*Username is an empty string */
+        /* Username is an empty string. */
         return false;
     }
     while(*name){
         if(*name<'0' || (*name>'9' && *name<'A') ||
                 (*name>'Z' && *name<'a') || *name>'z'){
-            /* Username contains an illegal character */
+            /* Username contains an illegal character. */
             return false;
         }
         name++;
     }
     return true;
 }
-/**
+
+/** Rows: 22
  ***** Function: mtmFlixAddSeries *****
- * @param mtmflix - A mtmflix to add the series to.
- * @param name - The name of the series.
- * @param episodesNum - The number of episodes of the series.
- * @param genre - The genre of the series.
- * @param ages - The age limitations of the series. If NULL there are no
+ * Description: Adds a series to MtmFlix.
+ *
+ * @param mtmflix - A MtmFlix to add the series to.
+ * @param name - Name of the series.
+ * @param episodesNum - Number of episodes of the series.
+ * @param genre - Genre of the series.
+ * @param ages - Age limitations of the series. If NULL there are no
  * age limitations.
- * @param episodeDuration - The average length of an episode of the series.
+ * @param episodeDuration - Average length of episode of the series.
  *
  * @return
- * MTMFLIX_SUCCESS - Adding the series succeeded.
- * MTMFLIX_NULL_ARGUMENT - If one or more of the given arguments is NULL.
- * MTMFLIX_OUT_OF_MEMORY - In case of memory allocation error.
- * MTMFLIX_ILLEGAL_SERIES_NAME - In case the given series name is an empty
- * string or contains an illegal character (Not a number or a letter).
- * MTMFLIX_SERIES_ALREADY_EXISTS - In case the given series already exists
- * in the mtmflix.
- * MTMFLIX_ILLEGAL_EPISODES_NUM - In case the number of episodes is less
- * than 0.
- * MTMFLIX_ILLEGAL_EPISODES_DURATION - In case the average duration of an
- * episode is less than 0.
+ * MTMFLIX_SUCCESS - Series added successfully.
+ * MTMFLIX_NULL_ARGUMENT - At least one of the given arguments is NULL.
+ * MTMFLIX_OUT_OF_MEMORY - Any memory allocation error.
+ * MTMFLIX_ILLEGAL_SERIES_NAME - Given series' name is an empty string
+ * or contains forbidden characters (only letters and numbers are allowed).
+ * MTMFLIX_SERIES_ALREADY_EXISTS - Given series already exists.
+ * MTMFLIX_ILLEGAL_EPISODES_NUM - Number of episodes <= 0.
+ * MTMFLIX_ILLEGAL_EPISODES_DURATION - Average duration of an episode <= 0.
  *
  */
 MtmFlixResult mtmFlixAddSeries(MtmFlix mtmflix, const char* name,
                                int episodesNum, Genre genre, int* ages,
                                int episodesDuration){
     if(!mtmflix || !name){
-        /* One of the arguments is NULL */
+        /* At least one of the given arguments is NULL. */
         return MTMFLIX_NULL_ARGUMENT;
     }
     if(!nameIsValid(name)){
-        /* The given series name is not valid */
+        /* Given series name is not valid */
         return MTMFLIX_ILLEGAL_SERIES_NAME;
     }
     if(episodesNum<1){
@@ -237,13 +246,13 @@ MtmFlixResult mtmFlixAddSeries(MtmFlix mtmflix, const char* name,
         return MTMFLIX_ILLEGAL_EPISODES_NUM;
     }
     if(episodesDuration<0 || episodesDuration==0){
-        /* Episode average duration is 0 or less. */
+        /* Episode average duration <= 0 . */
         return MTMFLIX_ILLEGAL_EPISODES_DURATION;
     }
     Series temp_series = seriesCreate(name,episodesNum,genre,ages,
             episodesDuration);
     if(!temp_series){
-        /* Series creation failed */
+        /* failed to allocate memory for the temporary series. */
         return MTMFLIX_OUT_OF_MEMORY;
     }
     if(setIsIn(mtmflix->series,(SetElement)temp_series)){
@@ -251,39 +260,45 @@ MtmFlixResult mtmFlixAddSeries(MtmFlix mtmflix, const char* name,
         seriesDestroy(temp_series);
         return MTMFLIX_SERIES_ALREADY_EXISTS;
     }
+    /* If we got here then the series doesn't exist yet and also meets all
+     * the requirements. Now we'll add it. */
     SetResult result;
-    result = setAdd(mtmflix->series,temp_series);
+    result = setAdd(mtmflix->series,temp_series); // Adds series.
     if(result!=SET_SUCCESS){
         /* Adding series failed */
         seriesDestroy(temp_series);
         return MTMFLIX_OUT_OF_MEMORY;
     }
+    /* Series addded successfully. */
     seriesDestroy(temp_series);
     return MTMFLIX_SUCCESS;
 }
 
-/**
+/** Rows:
  ***** Function: mtmFlixRemoveSeries *****
- * Removes a given series from the given MtmFlix.
- * @param mtmflix - The MtmFlix we want to remove the series from.
- * @param name - The series name we want to remove.
+ * Description: Removes a given series from the given MtmFlix.
+ *
+ * @param mtmflix - MtmFlix we want to remove the series from.
+ * @param name - Name of the series we want to remove.
+ *
  * @return
- * MTMFLIX_NULL_ARGUMENT - If one or more of the given arguments is NULL.
- * MTMFLIX_OUT_OF_MEMORY - In case of memory allocation error.
- * MTMFLIX_USER_DOES_NOT_EXIST - The series does not exist in the MtmFlix.
- * MTMFLIX_SUCCESS - If the series removed successfully from MtmFlix.
+ * MTMFLIX_NULL_ARGUMENT - At least one of the given arguments is NULL.
+ * MTMFLIX_OUT_OF_MEMORY - Any memory allocation error.
+ * MTMFLIX_USER_DOES_NOT_EXIST - Series does not exist in the MtmFlix.
+ * MTMFLIX_SUCCESS - Series removed successfully.
  */
 MtmFlixResult mtmFlixRemoveSeries(MtmFlix mtmflix, const char* name){
     if (!mtmflix || !name){
+        /* At least one of the given arguments is NULL. */
         return MTMFLIX_NULL_ARGUMENT;
     }
     Series temp_series = seriesCreate(name,1,DRAMA,NULL,1);
     if(!temp_series){
-        /* Failed to create temp_series */
+        /* Failed to allocate memory for temporary series. */
         return MTMFLIX_OUT_OF_MEMORY;
     }
     if(!setIsIn(mtmflix->series,temp_series)){
-        /*The given series does not exist */
+        /* Given series does not exist */
         seriesDestroy(temp_series);
         return MTMFLIX_SERIES_DOES_NOT_EXIST;
     }
@@ -656,7 +671,7 @@ MtmFlixResult mtmFlixGetRecommendations(MtmFlix mtmflix, const char* username,
         return MTMFLIX_ILLEGAL_NUMBER;
     }
     MtmFlixResult result;
-    User user=getUserByUsername((char*)username,&result,mtmflix->users);
+    User user = getUserByUsername((char*)username,&result,mtmflix->users);
     if(result!=MTMFLIX_SUCCESS){
         /*We get here in case of memory allocation error or in case the
          * user with the given username doesn't exist */
@@ -772,7 +787,6 @@ static void rankSeriesAndAddToRankedSeriesSet(Set users_set,Set series_set,
     free(series_genre_string);
     if(!new_ranked_series){
         *function_status=MTMFLIX_OUT_OF_MEMORY;
-        rankedSeriesDestroy(new_ranked_series);
         return;
     }
     SetResult result=setAdd(ranked_series_set,new_ranked_series);
