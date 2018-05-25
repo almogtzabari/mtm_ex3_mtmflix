@@ -704,7 +704,6 @@ MtmFlixResult mtmFlixGetRecommendations(MtmFlix mtmflix, const char* username,
             if(result!=MTMFLIX_SUCCESS) {
                 return MTMFLIX_OUT_OF_MEMORY;
             }
-            char* check = seriesGetName(series);
             continue;
         }
         if(result!=MTMFLIX_SUCCESS) {
