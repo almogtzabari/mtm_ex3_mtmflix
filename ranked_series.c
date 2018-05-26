@@ -2,15 +2,27 @@
 #include <memory.h>
 #include "ranked_series.h"
 
+
+//-----------------------------------------------------------------------//
+//                        RANKED SERIES: STRUCT                          //
+//-----------------------------------------------------------------------//
+
+
 struct ranked_series_t{
     int rank;
     char* series_name;
     char* series_genre;
 };
 
+
+//-----------------------------------------------------------------------//
+//                        RANKED SERIES: FUNCTIONS                       //
+//-----------------------------------------------------------------------//
+
 /**
  ***** Function : rankedSeriesCreate *****
  * Description : Creates a new ranked series.
+ *
  * @param rank - Series rank.
  * @param series_name - Series name.
  * @param series_genre - Series genre.
@@ -45,12 +57,14 @@ RankedSeries rankedSeriesCreate (int rank, char* series_name,
 }
 
 /**
- ***** Description : rankedSeriesCopy *****
- * @param ranked_series - A ranked series to copy.
+ ***** Function : rankedSeriesCopy *****
+ * Description: Creates a copy of a given ranked series.
+ *
+ * @param ranked_series - Ranked series to create a copy of.
  *
  * @return
- * NULL in case of memory allocation error, else a copy of the given ranked
- * series.
+ * NULL - Any memory error.
+ * Copy of given ranked series - Else.
  */
 RankedSeries rankedSeriesCopy (RankedSeries ranked_series){
     RankedSeries ranked_series_copy=rankedSeriesCreate(ranked_series->rank,
@@ -64,7 +78,8 @@ RankedSeries rankedSeriesCopy (RankedSeries ranked_series){
 /**
  ***** Function : rankedSeriesDestroy *****
  * Description: Deallocates all recources of a ranked series.
- * @param ranked_series
+ *
+ * @param ranked_series - Ranked series to destroy.
  */
 void rankedSeriesDestroy (RankedSeries ranked_series){
     if(!ranked_series){
@@ -79,6 +94,7 @@ void rankedSeriesDestroy (RankedSeries ranked_series){
  ***** Function : rankedSeriesCompare *****
  * Description : Compares between to ranked series by their rank, if the
  * rank is equal, the comparison is made by their names.
+ *
  * @param ranked_series1 - A ranked series to compare.
  * @param ranked_series2 - A ranked series to compare.
  *
@@ -98,8 +114,11 @@ int rankedSeriesCompare (RankedSeries ranked_series1,
 
 /**
  ***** Function : rankedSeriesPrintToFile *****
+ * Description: Prints ranked series to file.
+ *
  * @param number_of_series_to_print - The number of series to print to
- * file, if the number is 0 we need to print all the rabked series.
+ * file from each genre. If the number is 0 we need to print all the Ranked
+ * series.
  * @param ranked_series_set - Set of all ranked series.
  * @param outputStream - A file to print to.
  * @param result - The status of the function, in case of memory allocation
