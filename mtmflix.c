@@ -191,7 +191,7 @@ MtmFlixResult mtmFlixRemoveUser(MtmFlix mtmflix, const char* username){
     /* Now we need to remove this username from every user's friendlist. */
     SET_FOREACH(User,current_user,mtmflix->users){
         /*Removing the username from each user's friend list  */
-        removeFromList(current_user, username,FRIENDS_LIST);
+        removeFromList(current_user, (char*)username,FRIENDS_LIST);
     }
     return MTMFLIX_SUCCESS;
 }
@@ -258,7 +258,7 @@ MtmFlixResult mtmFlixAddSeries(MtmFlix mtmflix, const char* name,
         /* Given series name is not valid */
         return MTMFLIX_ILLEGAL_SERIES_NAME;
     }
-    Series temp_series = seriesCreate(name,episodesNum,genre,ages,
+    Series temp_series = seriesCreate((char*)name,episodesNum,genre,ages,
                                       episodesDuration);
     if(!temp_series){
         /* failed to allocate memory for the temporary series. */
@@ -312,7 +312,7 @@ MtmFlixResult mtmFlixRemoveSeries(MtmFlix mtmflix, const char* name){
         /* At least one of the given arguments is NULL. */
         return MTMFLIX_NULL_ARGUMENT;
     }
-    Series temp_series = seriesCreate(name,1,DRAMA,NULL,1);
+    Series temp_series = seriesCreate((char*)name,1,DRAMA,NULL,1);
     if(!temp_series){
         /* Failed to allocate memory for temporary series. */
         return MTMFLIX_OUT_OF_MEMORY;
@@ -327,7 +327,7 @@ MtmFlixResult mtmFlixRemoveSeries(MtmFlix mtmflix, const char* name){
     seriesDestroy(temp_series);
     SET_FOREACH(User,current_user,mtmflix->users){
         /*Removing the series from each user's favorite series list  */
-        removeFromList(current_user,name,FAVORITE_SERIES_LIST);
+        removeFromList(current_user,(char*)name,FAVORITE_SERIES_LIST);
     }
     return MTMFLIX_SUCCESS;
 }
@@ -476,7 +476,7 @@ MtmFlixResult mtmFlixSeriesJoin(MtmFlix mtmflix, const char* username,
         /* Memory allocation failed  */
         return MTMFLIX_OUT_OF_MEMORY;
     }
-    Series dummy_series = seriesCreate(seriesName,1,HORROR,NULL,5);
+    Series dummy_series = seriesCreate((char*)seriesName,1,HORROR,NULL,5);
     if(!dummy_series){
         /* Memory allocation failed  */
         userDestroy(dummy_user);
@@ -503,7 +503,7 @@ MtmFlixResult mtmFlixSeriesJoin(MtmFlix mtmflix, const char* username,
          if(userCompare(dummy_user,current_user)==0){
              /* We found the user with the given name so we need to add the
               * series to this user.*/
-             result = AddToList((User)current_user,seriesName,
+             result = AddToList((User)current_user,(char*)seriesName,
                      FAVORITE_SERIES_LIST);
              if (result!=MTMFLIX_SUCCESS) {
                  userDestroy(dummy_user);
@@ -615,7 +615,7 @@ MtmFlixResult mtmFlixSeriesLeave(MtmFlix mtmflix, const char* username,
     SET_FOREACH(SetElement,user,mtmflix->users){
         if(userCompare(temp_user,user)==0){
             /*User to remove from found */
-            removeFromList((User)user,seriesName,FAVORITE_SERIES_LIST);
+            removeFromList((User)user,(char*)seriesName,FAVORITE_SERIES_LIST);
             break;
         }
     }
@@ -660,7 +660,7 @@ MtmFlixResult mtmFlixAddFriend(MtmFlix mtmflix, const char* username1,
         if(userCompare(dummy_user,current_user)==0){
             /* We found the user with the given name so we need to add
              * username2 to this user's friend list.*/
-            result = AddToList((User)current_user,username2,FRIENDS_LIST);
+            result = AddToList((User)current_user,(char*)username2,FRIENDS_LIST);
             if (result!=MTMFLIX_SUCCESS) {
                 userDestroy(dummy_user);
                 return result;
@@ -702,7 +702,7 @@ MtmFlixResult mtmFlixRemoveFriend(MtmFlix mtmflix, const char* username1,
     SET_FOREACH(SetElement,current_user,mtmflix->users){
         if(userCompare(dummy_user1,current_user)==0){
             /* We found user1. */
-            removeFromList(current_user,username2,FRIENDS_LIST);
+            removeFromList(current_user,(char*)username2,FRIENDS_LIST);
 
         }
     }
@@ -940,7 +940,7 @@ static MtmFlixResult userAndSeriesExist(MtmFlix mtmflix,
         userDestroy(dummy_user);
         return MTMFLIX_USER_DOES_NOT_EXIST;
     }
-    Series dummy_series = seriesCreate(seriesName,1,HORROR,NULL,5);
+    Series dummy_series = seriesCreate((char*)seriesName,1,HORROR,NULL,5);
     if(!dummy_series){
         /* Memory allocation failed  */
         userDestroy(dummy_user);
