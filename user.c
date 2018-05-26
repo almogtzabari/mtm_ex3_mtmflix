@@ -4,15 +4,15 @@
 #include "user.h"
 
 
-static void userRemoveFromList(List list, const char *username);
-static MtmFlixResult addToUsersList(List list, const char *name);
+static void userRemoveFromList(List list,char *username);
+static MtmFlixResult addToUsersList(List list,char *name);
 static bool friendLikedTheSeries(Set users_set, char *friend_name,
                                  char *series_name);
 static bool checkIfUserLikedSeries (List favorite_series_list,
                                     char* series_name);
 
 struct user_t{
-    const char* username;
+    char* username;
     int age;
     List user_friends_list;
     List user_favorite_series;
@@ -86,13 +86,13 @@ User userCopy (User user){
     new_user->user_friends_list=listCopy(user->user_friends_list);
     if(!new_user->user_friends_list){
         /* List copying failed */
-        free((char*)new_user->username);
+        free(new_user->username);
         return NULL;
     }
     new_user->user_favorite_series=listCopy(user->user_favorite_series);
     if(!new_user->user_favorite_series){
         /* List copying failed */
-        free((char*)new_user->username);
+        free(new_user->username);
         listDestroy(new_user->user_friends_list);
         return NULL;
     }
@@ -111,7 +111,7 @@ void userDestroy (User user){
     if(!user){
         return;
     }
-    free((char*)(user->username));
+    free((user->username));
     listDestroy(user->user_friends_list);
     listDestroy(user->user_favorite_series);
     free(user);
@@ -163,7 +163,7 @@ void destroyUsername (char* friend_username){
 }
 
 
-void removeFromList(User user,const char* name,UserList list_type){
+void removeFromList(User user,char* name,UserList list_type){
     assert(user);
     assert(name);
     if(list_type==FRIENDS_LIST){
@@ -174,7 +174,7 @@ void removeFromList(User user,const char* name,UserList list_type){
     }
 }
 
-static void userRemoveFromList(List list, const char *username){
+static void userRemoveFromList(List list, char *username){
     LIST_FOREACH(ListElement,iterator,list){
         if(!strcmp((char*)iterator,username)){
             listRemoveCurrent(list);
@@ -184,7 +184,7 @@ static void userRemoveFromList(List list, const char *username){
 }
 
 
-MtmFlixResult AddToList(User user,const char *name, UserList list_type){
+MtmFlixResult AddToList(User user,char *name, UserList list_type){
     assert(user);
     assert(name);
     MtmFlixResult result;
@@ -198,7 +198,7 @@ MtmFlixResult AddToList(User user,const char *name, UserList list_type){
 }
 
 
-static MtmFlixResult addToUsersList(List list, const char *name){
+static MtmFlixResult addToUsersList(List list,char *name){
     ListResult result;
     LIST_FOREACH(ListElement,iterator,list) {
         if (!strcmp((char*) iterator, name)) {

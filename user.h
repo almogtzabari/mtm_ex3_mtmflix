@@ -45,8 +45,8 @@ double userGetAverageEpisodeDuration(User user, Set series_set,
                                      MtmFlixResult* function_status);
 
 bool isInUsersFavoriteSeriesList(User user,char* series_name);
-void removeFromList(User user,const char* name,UserList list_type);
-MtmFlixResult AddToList(User user, const char *name,UserList list_type);
+void removeFromList(User user,char* name,UserList list_type);
+MtmFlixResult AddToList(User user,char *name,UserList list_type);
 
 #endif //MTM_EX3_MTMFLIX_USER_H
 
