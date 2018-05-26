@@ -384,3 +384,52 @@ int seriesGetDurationByName(char *series_name, Set series_set,
     return -1; // This value won't be checked.
 
 }
+
+/**
+ ***** Function: seriesGetCopyByName *****
+ * Description: Gets a name of a series and a set of mtmflix series and
+ * returns a copy of the series with the given name.
+ *
+ * @param series_set - Set of series of mtmflix.
+ * @param series_name - Name of the series we want to create a copy of.
+ * @param status - Success/fail.
+ * @return
+ * A copy of the series with the given name.
+ */
+Series seriesGetCopyByName(Set series_set, char* series_name,
+                           SeriesResult* status){
+    Series dummy_series = seriesCreate(series_name,1,HORROR,NULL,1);
+    if(!dummy_series){
+        *status = SERIES_MEMORY_ALLOCATION_FAILED;
+        return NULL;
+    }
+    Set series_set_copy = setCopy(series_set);
+    if(!series_set_copy){
+        *status = SERIES_MEMORY_ALLOCATION_FAILED;
+        seriesDestroy(dummy_series);
+        return NULL;
+    }
+    SET_FOREACH(Series,current_series,series_set_copy){
+        if(seriesCompare(current_series,dummy_series)==0){
+            Series wanted_series = seriesCopy(current_series);
+            if(!wanted_series){
+                /* Failed to copy wanted series. */
+                *status = SERIES_MEMORY_ALLOCATION_FAILED;
+                seriesDestroy(dummy_series);
+                setDestroy(series_set_copy);
+                return NULL;
+            }
+            /* If we got here then we found our series and successfully
+             * created a copy.*/
+            *status = SERIES_SUCCESS;
+            seriesDestroy(dummy_series);
+            setDestroy(series_set_copy);
+            return wanted_series;
+        }
+    }
+    /* If we got here then we didn't find the series with the given name.*/
+    *status = SERIES_MEMORY_ALLOCATION_FAILED;
+    seriesDestroy(dummy_series);
+    setDestroy(series_set_copy);
+    return NULL;
+}
