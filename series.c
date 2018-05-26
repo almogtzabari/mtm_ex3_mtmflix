@@ -16,7 +16,7 @@ static int getGenrePosition(Genre genre);
 //-----------------------------------------------------------------------//
 
 struct series_t{
-    const char* series_name;
+    char* series_name;
     int number_of_episodes;
     Genre genre;
     int* ages;
@@ -40,7 +40,7 @@ struct series_t{
  * @param episode_duration - Average duration of episode in series.
  * @return - New series or NULL in case of fail.
  */
-Series seriesCreate(const char* series_name, int number_of_episodes,
+Series seriesCreate(char* series_name, int number_of_episodes,
                     Genre genre, int* ages, int episode_duration){
 
     Series series = malloc(sizeof(*series));
@@ -64,7 +64,7 @@ Series seriesCreate(const char* series_name, int number_of_episodes,
         return NULL;
     }
     series->ages = series_age_limit;
-    series->series_name = (const char*)name;
+    series->series_name = name;
     series->genre = genre;
     series->episode_duration = episode_duration;
     series->number_of_episodes = number_of_episodes;
@@ -96,12 +96,12 @@ Series seriesCopy(Series series){
 
 
 
-char* seriesCopyName( char *name){
+char* seriesCopyName(char *name){
     if(!name){
         /* NULL argument. */
         return NULL;
     }
-    char* name_copy = malloc(sizeof(strlen(name))+1);
+    char* name_copy = malloc(strlen(name)+1);
     if(!name_copy){
         /* Name copy memory allocation failed. */
         return NULL;
@@ -120,7 +120,7 @@ void seriesDestroy(Series series){
     if(!series){
         return;
     }
-    free((char*)series->series_name);
+    free(series->series_name);
     free(series->ages);
     free(series);
 }
@@ -383,53 +383,4 @@ int seriesGetDurationByName(char *series_name, Set series_set,
     *status = SERIES_MEMORY_ALLOCATION_FAILED; // Series doesn't exist.
     return -1; // This value won't be checked.
 
-}
-
-/**
- ***** Function: seriesGetCopyByName *****
- * Description: Gets a name of a series and a set of mtmflix series and
- * returns a copy of the series with the given name.
- *
- * @param series_set - Set of series of mtmflix.
- * @param series_name - Name of the series we want to create a copy of.
- * @param status - Success/fail.
- * @return
- * A copy of the series with the given name.
- */
-Series seriesGetCopyByName(Set series_set, char* series_name,
-                           SeriesResult* status){
-    Series dummy_series = seriesCreate(series_name,1,HORROR,NULL,1);
-    if(!dummy_series){
-        *status = SERIES_MEMORY_ALLOCATION_FAILED;
-        return NULL;
-    }
-    Set series_set_copy = setCopy(series_set);
-    if(!series_set_copy){
-        *status = SERIES_MEMORY_ALLOCATION_FAILED;
-        seriesDestroy(dummy_series);
-        return NULL;
-    }
-    SET_FOREACH(Series,current_series,series_set_copy){
-        if(seriesCompare(current_series,dummy_series)==0){
-            Series wanted_series = seriesCopy(current_series);
-            if(!wanted_series){
-                /* Failed to copy wanted series. */
-                *status = SERIES_MEMORY_ALLOCATION_FAILED;
-                seriesDestroy(dummy_series);
-                setDestroy(series_set_copy);
-                return NULL;
-            }
-            /* If we got here then we found our series and successfully
-             * created a copy.*/
-            *status = SERIES_SUCCESS;
-            seriesDestroy(dummy_series);
-            setDestroy(series_set_copy);
-            return wanted_series;
-        }
-    }
-    /* If we got here then we didn't find the series with the given name.*/
-    *status = SERIES_MEMORY_ALLOCATION_FAILED;
-    seriesDestroy(dummy_series);
-    setDestroy(series_set_copy);
-    return NULL;
 }
