@@ -30,7 +30,7 @@ void seriesDestroy(Series series);
 
 int seriesCompare(Series series1, Series series2);
 
-Series seriesCreate(const char* series_name, int number_of_episodes,
+Series seriesCreate(char* series_name, int number_of_episodes,
                     Genre genre, int* ages, int episode_duration);
 
 void seriesDestroyName(char* name);
