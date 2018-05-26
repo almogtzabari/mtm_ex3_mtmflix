@@ -13,20 +13,25 @@
 
 static bool userCanWatchSeries(MtmFlix mtmflix, User user,
                                Series series,SeriesResult* status);
+
 static bool nameIsValid(const char *name);
+
 static MtmFlixResult usersExist(MtmFlix mtmflix, const char* username1,
                                 const char* username2);
+
 static MtmFlixResult userAndSeriesExist(MtmFlix mtmflix,
                                         const char *username,
                                         const char *seriesName);
+
 static User getUserByUsername(char* username,MtmFlixResult* result,
                               Set users_set);
+
 static void rankSeriesAndAddToRankedSeriesSet(Set users_set,Set series_set,
-                                              User user,Series series,
-                                              Genre genre,
-                                              MtmFlixResult* function_status,
-                                              Set ranked_series_set);
+  User user,Series series, Genre genre, MtmFlixResult* function_status,
+                                                    Set ranked_series_set);
+
 static double doubleAbs (double number);
+
 static MtmFlixResult rankAllSeriesForUser(MtmFlix mtmflix,User user,
                                   Set ranked_series_set,FILE* outputStream,
                                    int count,Set series_set);
@@ -34,6 +39,7 @@ static MtmFlixResult rankAllSeriesForUser(MtmFlix mtmflix,User user,
 static bool seriesShouldBeRecommended(Series series,User user,
                                       MtmFlix mtmflix,
                                       MtmFlixResult* result);
+
 static int rankSeries(Set users_set,User user,
                       char* series_name,Series series,Set series_set,
                       Genre genre,MtmFlixResult* function_status);

@@ -5,14 +5,14 @@
 
 
 //-----------------------------------------------------------------------//
-//                   STATIC FUNCTIONS DECALARATIONS                      //
+//                SERIES: STATIC FUNCTIONS DECLARATIONS                  //
 //-----------------------------------------------------------------------//
 
 static int* seriesInsertAgeLimit(int *ages, SeriesResult *status);
 static int getGenrePosition(Genre genre);
 
 //-----------------------------------------------------------------------//
-//                            STRUCT SERIES                              //
+//                            SERIES: STRUCT                             //
 //-----------------------------------------------------------------------//
 
 struct series_t{
@@ -24,10 +24,10 @@ struct series_t{
 };
 
 //-----------------------------------------------------------------------//
-//                       STRUCT SERIES FUNCTIONS                         //
+//                       SERIES: FUNCTIONS                               //
 //-----------------------------------------------------------------------//
 
-/**
+/** Rows: 20
  ***** Function: seriesCreate *****
  * Description: Creates a new series.
  *
@@ -38,6 +38,7 @@ struct series_t{
  * First cell is the minimum age and the second cell is maximum age.
  * If ages is NULL there is no age limitaions.
  * @param episode_duration - Average duration of episode in series.
+ *
  * @return - New series or NULL in case of fail.
  */
 Series seriesCreate(char* series_name, int number_of_episodes,
@@ -71,7 +72,7 @@ Series seriesCreate(char* series_name, int number_of_episodes,
     return series;
 }
 
-/**
+/** Rows: 8
  ***** Function: seriesCopy *****
  * Description: Creates a copy of the given series.
  *
@@ -84,8 +85,8 @@ Series seriesCopy(Series series){
         return NULL;
     }
     Series series_copy = seriesCreate(series->series_name,
-                                      series->number_of_episodes,series->genre,series->ages,
-                                      series->episode_duration);
+               series->number_of_episodes,series->genre,series->ages,
+                                                 series->episode_duration);
 
     if(!series_copy){
         /* Series create failed. */
@@ -94,8 +95,16 @@ Series seriesCopy(Series series){
     return series_copy;
 }
 
-
-
+/** Rows: 7
+ ***** Function: seriesCopyName *****
+ * Description: Creates a copy of the given series name.
+ *
+ * @param name - Name we want to copy.
+ *
+ * @return
+ * If success - A copy of the given name.
+ * Else - NULL.
+ */
 char* seriesCopyName(char *name){
     if(!name){
         /* NULL argument. */
@@ -110,7 +119,7 @@ char* seriesCopyName(char *name){
     return name_copy;
 }
 
-/**
+/** Rows: 5
  ***** Function: seriesDestroy *****
  * Description: Free all allocated memory of a given series.
  *
@@ -125,6 +134,18 @@ void seriesDestroy(Series series){
     free(series);
 }
 
+/** Rows: 9
+ ***** Function: seriesCompare *****
+ * Description: Compare between two series.
+ *
+ * @param series1 - First series to compare.
+ * @param series2 - second series to compare.
+ *
+ * @return
+ * Postive Number - Series1 is bigger then series2.
+ * Negative Number - Series2 is bigger then series1.
+ * Zero - Series are equal.
+ */
 int seriesCompare(Series series1, Series series2){
     if(!strcmp(series1->series_name,series2->series_name)){
         /* Series has the same name. This is in order to check if a series
@@ -143,25 +164,57 @@ int seriesCompare(Series series1, Series series2){
     return strcmp(series1->series_name,series2->series_name);
 }
 
+/** Rows: 1
+ ***** Function: seriesDestroyName *****
+ * Description: Free all allocated memory for the name of a series.
+ *
+ * @param name - Name we want to destroy.
+ */
 void seriesDestroyName(char* name){
     free(name);
 }
 
-
-/** NEW FUNCTIONS */
-//todo: update header file for these functions.
-
+/** Rows: 3
+ ***** Function: seriesHasAgeRestrictions *****
+ * Description: Returns whether or not a series has age restrictions.
+ *
+ * @param series - Series we want to check if has age restrictions.
+ *
+ * @return
+ * True - Has age restrictions.
+ * False - Doesn't have age restrictions.
+ */
 bool seriesHasAgeRestrictions(Series series){
     if(!series->ages){
         return false;
     }
     return true;
 }
+
+/** Rows: 1
+ ***** Function: seriesGetMaxAge *****
+ * Description: Returns the maximum age allowed of given series.
+ *
+ * @param series - Series we want to get its max age restrictions.
+ *
+ * @return
+ * Integer - Maximum age allowed for given series.
+ */
 int seriesGetMaxAge(Series series){
     assert(series);
     assert(series->ages);
     return series->ages[1];
 }
+
+/** Rows: 1
+ ***** Function: seriesGetMinAge *****
+ * Description: Returns the minimum age allowed of given series.
+ *
+ * @param series - Series we want to get its min age restrictions.
+ *
+ * @return
+ * Integer - Minimum age allowed for given series.
+ */
 int seriesGetMinAge(Series series){
     assert(series);
     assert(series->ages);
@@ -170,10 +223,10 @@ int seriesGetMinAge(Series series){
 
 
 //-----------------------------------------------------------------------//
-//                    STRUCT SERIES STATIC FUNCTIONS                     //
+//                      SERIES: STATIC FUNCTIONS                         //
 //-----------------------------------------------------------------------//
 
-/** //todo: what about bad min/max input?
+/**
  ***** Function: seriesSetAgeLimit *****
  * Description: This function will be used at seriesCreate.
  * The function gets an array of ages or NULL. If NULL, there are no age
