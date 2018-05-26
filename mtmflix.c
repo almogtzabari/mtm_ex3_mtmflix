@@ -646,6 +646,10 @@ MtmFlixResult mtmFlixAddFriend(MtmFlix mtmflix, const char* username1,
     if(result!=MTMFLIX_SUCCESS){
         return result;
     }
+    if(strcmp(username1,username2)==0){
+        /* The user is trying to add himself */
+        return MTMFLIX_SUCCESS;
+    }
     /*If we got here both users exist in mtmflix */
     User dummy_user = userCreate(username1,MTM_MIN_AGE+1);
     if(!dummy_user){
