@@ -5,6 +5,7 @@
 //                       SERIES SET FUNCTIONS                            //
 //-----------------------------------------------------------------------//
 
+
 SetElement seriesCopySetElement(SetElement element){
     return seriesCopy((Series)element);
 }
@@ -21,6 +22,7 @@ void seriesDestroySetElement(SetElement element){
 //                       SERIES LIST FUNCTIONS                           //
 //-----------------------------------------------------------------------//
 
+
 ListElement copyFavoriteSeriesName(ListElement element){
     return seriesCopyName((char*)element);
 }
@@ -28,7 +30,6 @@ ListElement copyFavoriteSeriesName(ListElement element){
 void destroyFavoriteSeriesName(ListElement element){
     seriesDestroyName((char*)element);
 }
-
 
 //-----------------------------------------------------------------------//
 //                       USERS SET FUNCTIONS                             //
@@ -64,7 +65,6 @@ int rankedSeriesCompareSetElement(SetElement element1,
                                (RankedSeries)element2);
 }
 
-
 //-----------------------------------------------------------------------//
 //                       USERS LIST FUNCTIONS                            //
 //-----------------------------------------------------------------------//
@@ -76,6 +76,7 @@ ListElement copyFriendUsername(ListElement element){
 void destroyFriendUsername(ListElement element){
     destroyUsername((char*)element);
 }
+
 //-----------------------------------------------------------------------//
 //                       GENERIC FUNCTIONS                               //
 //-----------------------------------------------------------------------//
