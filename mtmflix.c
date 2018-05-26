@@ -116,18 +116,10 @@ MtmFlixResult mtmFlixAddUser(MtmFlix mtmflix,
         /* At least one of the arguments is NULL. */
         return MTMFLIX_NULL_ARGUMENT;
     }
-    if(!nameIsValid(username)){
-        /* Invalid username. Only numbers and letters are allowed. */
-        return MTMFLIX_ILLEGAL_USERNAME;
-    }
-    if(age<=MTM_MIN_AGE || age>=MTM_MAX_AGE){
-        /* User does not meet age requirements.  */
-        return MTMFLIX_ILLEGAL_AGE;
-    }
     /* In order to add a user to the users set and in order to check
-     * whether a user with that name already exist we need to use the
-     * userCompare function. Since the userCompare function has to get two
-     * users we need to create a temporary user. */
+    * whether a user with that name already exist we need to use the
+    * userCompare function. Since the userCompare function has to get two
+    * users we need to create a temporary user. */
     User temp_user = userCreate(username,age);
     if(!temp_user){
         /* Failed to allocate memory for the temporary user.  */
@@ -137,6 +129,16 @@ MtmFlixResult mtmFlixAddUser(MtmFlix mtmflix,
         /* User is already exist in the system. */
         userDestroy(temp_user);
         return MTMFLIX_USERNAME_ALREADY_USED;
+    }
+    if(!nameIsValid(username)){
+        /* Invalid username. Only numbers and letters are allowed. */
+        userDestroy(temp_user);
+        return MTMFLIX_ILLEGAL_USERNAME;
+    }
+    if(age<MTM_MIN_AGE || age>MTM_MAX_AGE){
+        /* User does not meet age requirements.  */
+        userDestroy(temp_user);
+        return MTMFLIX_ILLEGAL_AGE;
     }
     /* If we got here then the user isn't in the system yet and he meets
      * all the requirements. Now we'll add him. */
