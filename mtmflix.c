@@ -25,7 +25,7 @@ static void rankSeriesAndAddToRankedSeriesSet(Set users_set,Set series_set,
                                               MtmFlixResult* function_status,
                                               Set ranked_series_set);
 static double doubleAbs (double number);
-MtmFlixResult rankAllSeriesForUser(MtmFlix mtmflix,User user,
+static MtmFlixResult rankAllSeriesForUser(MtmFlix mtmflix,User user,
                                   Set ranked_series_set,FILE* outputStream,
                                    int count,Set series_set_copy);
 
@@ -711,7 +711,14 @@ MtmFlixResult mtmFlixRemoveFriend(MtmFlix mtmflix, const char* username1,
     return MTMFLIX_SUCCESS;
 }
 
-
+/** Rows: 25
+ *
+ * @param mtmflix
+ * @param username
+ * @param count
+ * @param outputStream
+ * @return
+ */
 MtmFlixResult mtmFlixGetRecommendations(MtmFlix mtmflix, const char* username,
                                         int count, FILE* outputStream){
     if(!mtmflix || !username || !outputStream){
@@ -752,7 +759,17 @@ MtmFlixResult mtmFlixGetRecommendations(MtmFlix mtmflix, const char* username,
     return MTMFLIX_SUCCESS;
 }
 
-MtmFlixResult rankAllSeriesForUser(MtmFlix mtmflix,User user,
+/** Rows: 18
+ *
+ * @param mtmflix
+ * @param user
+ * @param ranked_series_set
+ * @param outputStream
+ * @param count
+ * @param series_set_copy
+ * @return
+ */
+static MtmFlixResult rankAllSeriesForUser(MtmFlix mtmflix,User user,
                                   Set ranked_series_set,FILE* outputStream,
                                    int count,Set series_set_copy){
     MtmFlixResult result;
