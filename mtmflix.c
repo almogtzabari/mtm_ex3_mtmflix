@@ -269,10 +269,12 @@ MtmFlixResult mtmFlixAddSeries(MtmFlix mtmflix, const char* name,
     }
     if(episodesNum<1){
         /* Number of episodes is 0 or less. */
+        seriesDestroy(temp_series);
         return MTMFLIX_ILLEGAL_EPISODES_NUM;
     }
     if(episodesDuration<0 || episodesDuration==0){
         /* Episode average duration <= 0 . */
+        seriesDestroy(temp_series);
         return MTMFLIX_ILLEGAL_EPISODES_DURATION;
     }
 
@@ -769,7 +771,7 @@ MtmFlixResult mtmFlixGetRecommendations(MtmFlix mtmflix, const char* username,
 static bool seriesShouldBeRecommended(Series series,User user,
                                       MtmFlix mtmflix,
                                       MtmFlixResult* result) {
-    char *series_name = seriesGetName(series);
+    char *series_name = seriesGetName(series); //todo: free series_name
     if (!series_name) {
         *result=MTMFLIX_OUT_OF_MEMORY;
         return false;
@@ -780,6 +782,7 @@ static bool seriesShouldBeRecommended(Series series,User user,
         /* UserCanWatch failed. */
         free(series_name);
         *result = MTMFLIX_OUT_OF_MEMORY;
+        free(series_name);
         return false;
     }
     if ((isInUsersFavoriteSeriesList(user, series_name)) || !user_can_watch) {
