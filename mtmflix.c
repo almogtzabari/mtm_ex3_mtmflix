@@ -328,7 +328,7 @@ MtmFlixResult mtmFlixRemoveSeries(MtmFlix mtmflix, const char* name){
     return MTMFLIX_SUCCESS;
 }
 
-/** Rows:
+/** Rows:30
  ***** Function: mtmFlixReportSeries *****
  * Description: Prints name and genre of series in MtmFlix to a file. Only
  * the 'seriesNum' first from each genre will be printed.
@@ -411,7 +411,7 @@ MtmFlixResult mtmFlixReportSeries(MtmFlix mtmflix, int seriesNum,
     }
     return MTMFLIX_SUCCESS;
 }
-/**
+/**Rows:9
  ***** Function: mtmFlixReportUsers *****
  * Description: Prints all the details of all the users to a file.
  * @param mtmflix - The mtmflix to print the series list from.
@@ -778,6 +778,7 @@ static bool seriesShouldBeRecommended(Series series,User user,
     bool user_can_watch = userCanWatchSeries(mtmflix, user, series,&status);
     if(status!=SERIES_SUCCESS){
         /* UserCanWatch failed. */
+        free(series_name);
         *result = MTMFLIX_OUT_OF_MEMORY;
         return false;
     }
@@ -790,6 +791,7 @@ static bool seriesShouldBeRecommended(Series series,User user,
         *result=MTMFLIX_SUCCESS;
         return false;
     }
+    free(series_name);
     *result=MTMFLIX_SUCCESS;
     return true;
 }
