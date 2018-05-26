@@ -443,7 +443,7 @@ MtmFlixResult mtmFlixReportUsers(MtmFlix mtmflix, FILE* outputStream){
     return MTMFLIX_SUCCESS;
 }
 
-/** Rows:
+/** Rows: 30
  ***** Function: mtmFlixSeriesJoin *****
  * Description: Gets a username and a series name and put the series in
  * user's favorite-series-list.
@@ -481,8 +481,8 @@ MtmFlixResult mtmFlixSeriesJoin(MtmFlix mtmflix, const char* username,
     }
     SeriesResult status;
     if(!userCanWatchSeries(mtmflix, dummy_user, dummy_series,&status)){
-        /* User can't watch series or userCanWatchSeries had a memory
-         * fail. */
+        /* User can't watch series because of age limitations or
+         * userCanWatchSeries had a memory fail. */
         if(status!=SERIES_SUCCESS){
             /* Memory fail: userCanWatchSeries memory fail. */
             userDestroy(dummy_user);
