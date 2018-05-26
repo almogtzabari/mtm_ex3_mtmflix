@@ -20,33 +20,39 @@ typedef enum {
 
 typedef struct user_t* User;
 
+//-----------------------------------------------------------------------//
+//                   USERS: FUNCTIONS DECLARATIONS                       //
+//-----------------------------------------------------------------------//
 
 User userCreate(const char* username, int age);
 
-
 User userCopy (User user);
+
 void userDestroy (User user);
+
 int userCompare (User user1, User user2);
 
-
 char* usernameCopy(char* user);
+
 void destroyUsername (char* friend_username);
 
-
-UserResult userPrintDetailsToFile(User current_user,
-                                  FILE *outputStream);
-
+UserResult userPrintDetailsToFile(User current_user, FILE *outputStream);
 
 int userGetAge (User user);
+
 int howManyFriendsLovedThisSeries(Set users_set, User user,
                                   char *series_name);
+
 int userHowManySeriesWithGenre(Set series_set, User user, Genre genre);
+
 double userGetAverageEpisodeDuration(User user, Set series_set,
                                      MtmFlixResult* function_status);
 
 bool isInUsersFavoriteSeriesList(User user,char* series_name);
+
 void removeFromList(User user,char* name,UserList list_type);
-MtmFlixResult addNameToUsersList(User user, char *name, UserList list_type);
+
+MtmFlixResult addNameToUsersList(User user,char *name,UserList list_type);
 
 #endif //MTM_EX3_MTMFLIX_USER_H
 
