@@ -27,7 +27,7 @@ static void rankSeriesAndAddToRankedSeriesSet(Set users_set,Set series_set,
 static double doubleAbs (double number);
 static MtmFlixResult rankAllSeriesForUser(MtmFlix mtmflix,User user,
                                   Set ranked_series_set,FILE* outputStream,
-                                   int count,Set series_set_copy);
+                                   int count,Set series_set);
 
 static bool seriesShouldBeRecommended(Series series,User user,
                                       MtmFlix mtmflix,
@@ -35,6 +35,8 @@ static bool seriesShouldBeRecommended(Series series,User user,
 static int rankSeries(Set users_set,User user,
                       char* series_name,Series series,Set series_set,
                       Genre genre,MtmFlixResult* function_status);
+
+#define ILLEGAL_VALUE -1
 
 //-----------------------------------------------------------------------//
 //                       MTMFLIX: STRUCT                                 //
@@ -759,206 +761,66 @@ MtmFlixResult mtmFlixGetRecommendations(MtmFlix mtmflix, const char* username,
     return MTMFLIX_SUCCESS;
 }
 
-/** Rows: 18
- *
- * @param mtmflix
- * @param user
- * @param ranked_series_set
- * @param outputStream
- * @param count
- * @param series_set_copy
- * @return
- */
-static MtmFlixResult rankAllSeriesForUser(MtmFlix mtmflix,User user,
-                                  Set ranked_series_set,FILE* outputStream,
-                                   int count,Set series_set_copy){
-    MtmFlixResult result;
-    SET_FOREACH(SetElement,series,mtmflix->series){
-        if(!seriesShouldBeRecommended(series,user,mtmflix,&result)) {
-            if(result!=MTMFLIX_SUCCESS) {
-                return MTMFLIX_OUT_OF_MEMORY;
-            }
-            /* Series shouldn't be recommended. */
-            continue;
-        }
-        if(result!=MTMFLIX_SUCCESS) {
-            return MTMFLIX_OUT_OF_MEMORY;
-        }
-        /*If we got here the current series should be added to the set of
-         * recommended series */
-        rankSeriesAndAddToRankedSeriesSet(mtmflix->users,series_set_copy,
-                                          user,series,
-                                          seriesGetGenre(series),
-                                          &result,ranked_series_set);
-        if(result!=MTMFLIX_SUCCESS){
-            return MTMFLIX_OUT_OF_MEMORY;
-        }
-    }
-    rankedSeriesPrintToFile(count,ranked_series_set,outputStream,&result);
-    if(result!=MTMFLIX_SUCCESS){
-        return MTMFLIX_OUT_OF_MEMORY;
-    }
-    return MTMFLIX_SUCCESS;
-}
 
-static bool seriesShouldBeRecommended(Series series,User user,
-                                      MtmFlix mtmflix,
-                                      MtmFlixResult* result) {
-    char *series_name = seriesGetName(series); //todo: free series_name
-    if (!series_name) {
+//-----------------------------------------------------------------------//
+//                       MTMFLIX: STATIC FUNCTIONS                       //
+//-----------------------------------------------------------------------//
+
+/** Rows: 12
+ ***** Static function: getUserByUsername *****
+ * Description: Gets a name of user and a set of users.
+ * Returns the user with that name in the given users set.
+ *
+ * Notice: This resets the iterator of given set.
+ *
+ * @param username - Name of user we want to get.
+ * @param result - Success/failure of the function.
+ * @param users_set - Users set we are looking in.
+ *
+ * @return
+ * MTMFLIX_OUT_OF_MEMORY - Any memory error.
+ * MTMFLIX_SUCCESS - Sucess.
+ * MTMFLIX_USER_DOES_NOT_EXIST - User does not exist in the given set.
+ */
+static User getUserByUsername(char* username,MtmFlixResult* result,
+                              Set users_set){
+    /* Creating a temp user for comparison. */
+    User temp_user = userCreate(username,MTM_MIN_AGE+1);
+    if(!temp_user){
+        /* Couldn't create temp user. */
         *result=MTMFLIX_OUT_OF_MEMORY;
-        return false;
+        return NULL;
     }
-    SeriesResult status;
-    bool user_can_watch = userCanWatchSeries(mtmflix, user, series,&status);
-    if(status!=SERIES_SUCCESS){
-        /* UserCanWatch failed. */
-        free(series_name);
-        *result = MTMFLIX_OUT_OF_MEMORY;
-        free(series_name);
-        return false;
+    SET_FOREACH(SetElement,user,users_set){
+        if(userCompare(user,temp_user)==0){
+            /* We found the user with the given name. */
+            userDestroy(temp_user);
+            *result=MTMFLIX_SUCCESS;
+            return (User)user;
+        }
     }
-    if ((isInUsersFavoriteSeriesList(user, series_name)) || !user_can_watch) {
-        /*If we get here the series is already in the user's favorite
-          series list or the user's age is not in the range of age
-          limitations of the series. This series shouldn't be
-          recommended*/
-        free(series_name);
-        *result=MTMFLIX_SUCCESS;
-        return false;
-    }
-    free(series_name);
-    *result=MTMFLIX_SUCCESS;
-    return true;
+    /* User with the given username does not exist in the given set. */
+    userDestroy(temp_user);
+    *result=MTMFLIX_USER_DOES_NOT_EXIST;
+    return NULL;
 }
 
-
-
-static int rankSeries(Set users_set,User user,
-                      char* series_name,Series series,Set series_set,
-                      Genre genre,MtmFlixResult* function_status){
-    int same_genre=userHowManySeriesWithGenre(series_set,user,genre);
-    if(same_genre==-1){
-        *function_status=MTMFLIX_OUT_OF_MEMORY;
-        return -1;
-    }
-    Set series_set_copy = setCopy(series_set);
-    if(!series_set_copy){
-        return -1;
-    }
-    double average_list_episode_duration=
-            userGetAverageEpisodeDuration(user,series_set,function_status);
-    setDestroy(series_set_copy);
-    if(*function_status!=MTMFLIX_SUCCESS){
-        return -1;
-    }
-    int number_of_friends_loved_this_series=
-            howManyFriendsLovedThisSeries(users_set,user,series_name);
-    int current_series_episode_duration=seriesGetEpisodeDuration(series);
-    double rank=(same_genre*number_of_friends_loved_this_series);
-    rank/=(1+doubleAbs((double)current_series_episode_duration-
-            (average_list_episode_duration)));
-    return (int)rank;
-}
-
-static double doubleAbs (double number){
-    if(number<0){
-        return (-number);
-    }
-    return number;
-}
-
-
-static void rankSeriesAndAddToRankedSeriesSet(Set users_set,Set series_set,
-                                              User user,Series series,
-                                              Genre genre,
-                                              MtmFlixResult* function_status,
-                                              Set ranked_series_set){
-    char* series_name=seriesGetName(series);
-    if(!series_name){
-        *function_status=MTMFLIX_OUT_OF_MEMORY;
-        return;
-    }
-    char* series_genre_string=getGenreNameByEnum(seriesGetGenre(series));
-    if(!series_genre_string){
-        free(series_name);
-        *function_status=MTMFLIX_OUT_OF_MEMORY;
-        return;
-    }
-    int rank=rankSeries(users_set,user,series_name,series,series_set,
-            genre,function_status);
-    if(*function_status!=MTMFLIX_SUCCESS){
-        free(series_name);
-        free(series_genre_string);
-        return;
-    }
-    RankedSeries new_ranked_series=rankedSeriesCreate
-            (rank,series_name,series_genre_string);
-    free(series_name);
-    free(series_genre_string);
-    if(!new_ranked_series){
-        *function_status=MTMFLIX_OUT_OF_MEMORY;
-        return;
-    }
-    SetResult result=setAdd(ranked_series_set,new_ranked_series);
-    rankedSeriesDestroy(new_ranked_series);
-    if(result!=SET_SUCCESS){
-        *function_status=MTMFLIX_OUT_OF_MEMORY;
-        return;
-    }
-}
-
-
-/**
- ***** Function: usersExist *****
- * Description: Checks if the users exist in mtmflix.
- * @param mtmflix - The mtmflix to check in.
- * @param username1 - A username to check.
- * @param username2 - A username to check.
+/** Rows: 17
+ ***** Static function: userAndSeriesExist *****
+ * Description: Gets a mtmflix, a name of a user and a name of a series
+ * and returns whether or not they exist in the given mtmflix.
+ * First the function checks the user and then the series.
  *
- * @return
- * MTMFLIX_OUT_OF_MEMORY - In case of memory allocation failure.
- * MTMFLIX_USER_DOES_NOT_EXIST - If one of the users doesn't exist in
- * the mtmflix.
- * MTMFLIX_SUCCESS - If both of the users exist in the mtmflix.
- */
-static MtmFlixResult usersExist(MtmFlix mtmflix, const char* username1,
-                              const char* username2){
-    User dummy_user1 = userCreate(username1,MTM_MIN_AGE+1);
-    if(!dummy_user1){
-        return MTMFLIX_OUT_OF_MEMORY;;
-    }
-    User dummy_user2 = userCreate(username2,MTM_MIN_AGE+1);
-    if(!dummy_user2){
-        userDestroy(dummy_user1);
-        return MTMFLIX_OUT_OF_MEMORY;
-    }
-    if(!setIsIn(mtmflix->users,dummy_user1) ||
-       !setIsIn(mtmflix->users,dummy_user2)){
-        /* At least one user doesn't exist in the system. */
-        userDestroy(dummy_user1);
-        userDestroy(dummy_user2);
-        return MTMFLIX_USER_DOES_NOT_EXIST;
-
-    }
-    userDestroy(dummy_user1);
-    userDestroy(dummy_user2);
-    return MTMFLIX_SUCCESS;
-}
-
-/**
- ***** Function: userAndSeiesExist *****
  * @param mtmflix - The mtmflix to check in.
  * @param username - A username to check.
  * @param seriesName - A series name to check.
  *
  * @return
- * MTMFLIX_OUT_OF_MEMORY - In case of memory allocation failure.
- * MTMFLIX_USER_DOES_NOT_EXIST - If the user doesn't exist in
+ * MTMFLIX_OUT_OF_MEMORY - Any memory error.
+ * MTMFLIX_USER_DOES_NOT_EXIST - User doesn't exist in the mtmflix.
+ * MTMFLIX_SERIES_DOES_NOT_EXIST - Series doesn't exist in
  * the mtmflix.
- * MTMFLIX_SERIES_DOES_NOT_EXIST - If the series doesn't exist in
- * the mtmflix.
- * MTMFLIX_SUCCESS -If both user and series exist in the mtmflix.
+ * MTMFLIX_SUCCESS - Both user and series exist in the mtmflix.
  */
 static MtmFlixResult userAndSeriesExist(MtmFlix mtmflix,
                                         const char *username,
@@ -985,27 +847,276 @@ static MtmFlixResult userAndSeriesExist(MtmFlix mtmflix,
         seriesDestroy(dummy_series);
         return MTMFLIX_SERIES_DOES_NOT_EXIST;
     }
+    /* Both user and series exist. */
     userDestroy(dummy_user);
     seriesDestroy(dummy_series);
     return MTMFLIX_SUCCESS;
 }
 
-static User getUserByUsername(char* username,MtmFlixResult* result,
-                              Set users_set){
-    User temp_user=userCreate(username,MTM_MIN_AGE+1);
-    if(!temp_user){
-        *result=MTMFLIX_OUT_OF_MEMORY;
-        return NULL;
+/** Rows: 15
+ ***** Static function: usersExist *****
+ * Description: Gets two usernames and checks if the users exist in
+ * the mtmflix.
+ *
+ * @param mtmflix - The mtmflix to check in.
+ * @param username1 - A username to check.
+ * @param username2 - A username to check.
+ *
+ * @return
+ * MTMFLIX_OUT_OF_MEMORY - Any memory error.
+ * MTMFLIX_USER_DOES_NOT_EXIST - At least one users doesn't exist.
+ * MTMFLIX_SUCCESS - Both of the users exist in the mtmflix.
+ */
+static MtmFlixResult usersExist(MtmFlix mtmflix, const char* username1,
+                                const char* username2){
+    /* Creating temporary users for comparison. */
+    User dummy_user1 = userCreate(username1,MTM_MIN_AGE);
+    if(!dummy_user1){
+        return MTMFLIX_OUT_OF_MEMORY;;
     }
-    SET_FOREACH(SetElement,user,users_set){
-        if(userCompare(user,temp_user)==0){
-            userDestroy(temp_user);
-            *result=MTMFLIX_SUCCESS;
-            return (User)user;
-        }
+    User dummy_user2 = userCreate(username2,MTM_MIN_AGE);
+    if(!dummy_user2){
+        userDestroy(dummy_user1);
+        return MTMFLIX_OUT_OF_MEMORY;
     }
-    userDestroy(temp_user);
-    *result=MTMFLIX_USER_DOES_NOT_EXIST;
-    return NULL;
+    if(!setIsIn(mtmflix->users,dummy_user1) ||
+       !setIsIn(mtmflix->users,dummy_user2)){
+        /* At least one user doesn't exist in the system. */
+        userDestroy(dummy_user1);
+        userDestroy(dummy_user2);
+        return MTMFLIX_USER_DOES_NOT_EXIST;
+
+    }
+    /* Both users exist. */
+    userDestroy(dummy_user1);
+    userDestroy(dummy_user2);
+    return MTMFLIX_SUCCESS;
 }
 
+/** rows: 27
+ ***** Static function: rankSeriesAndAddToRankedSeriesSet *****
+ * Description: Ranks the given series (single series) and inserts it to a
+ * ranked series set.
+ *
+ * Notice: This resets the iterator of the series set and users set.
+ *
+ * @param users_set - Set of all the users in the mtmflix.
+ * @param series_set - Set of all the series in the mtmflix.
+ * @param user - User we want to rank according to.
+ * @param series - Series we want to rank.
+ * @param genre
+ * @param function_status
+ * @param ranked_series_set
+ */
+static void rankSeriesAndAddToRankedSeriesSet(Set users_set,Set series_set,
+                                              User user,Series series,
+                                              Genre genre,
+                                              MtmFlixResult* function_status,
+                                              Set ranked_series_set){
+    char* series_name = seriesGetName(series);
+    if(!series_name){
+        /* Failed to copy name. */
+        *function_status=MTMFLIX_OUT_OF_MEMORY;
+        return;
+    }
+    char* series_genre_string=getGenreNameByEnum(seriesGetGenre(series));
+    if(!series_genre_string){
+        free(series_name);
+        *function_status=MTMFLIX_OUT_OF_MEMORY;
+        return;
+    }
+    int rank=rankSeries(users_set,user,series_name,series,series_set,
+                        genre,function_status); // Ranking the series.
+    if(*function_status!=MTMFLIX_SUCCESS){
+        /* Failed to rank. */
+        free(series_name);
+        free(series_genre_string);
+        return;
+    }
+    /* Creating a ranked series and inserts it to the set
+     * of ranked series.*/
+    RankedSeries new_ranked_series = rankedSeriesCreate
+                                 (rank,series_name,series_genre_string);
+    free(series_name);
+    free(series_genre_string);
+    if(!new_ranked_series){
+        *function_status=MTMFLIX_OUT_OF_MEMORY;
+        return;
+    }
+    SetResult result = setAdd(ranked_series_set,new_ranked_series);
+    rankedSeriesDestroy(new_ranked_series); // Destroying copy.
+    if(result!=SET_SUCCESS){
+        *function_status=MTMFLIX_OUT_OF_MEMORY;
+        return;
+    }
+}
+
+/** rows: 3
+ ***** Static function: doubleAbs *****
+ * Description: Gets a number (double) and returns its distance from zero
+ * AKA absolute value.
+ *
+ * @param number - Number we check.
+ *
+ * @return
+ * Distance of the number from zero.
+ */
+static double doubleAbs (double number){
+    if(number<0){
+        return (-number);
+    }
+    return number;
+}
+
+/** Rows: 19
+ ***** Static function: rankSeries *****
+ * Description: Ranks the given series according to the given user.
+ *
+ * @param users_set - Set of all users in the mtmflix.
+ * @param user - User we want to rank the sereis according to.
+ * @param series_name - Name of the series we want to rank. This will save
+ * us the trouble of making another copy of the name of the series.
+ * @param series - Series we want to rank.
+ * @param series_set - Set of all the series in the mtmflix.
+ * @param genre - Genre of the series we rank.
+ * @param function_status - Will hold success/fail status of the function.
+ *
+ * @return
+ * ILLEGAL_VALUE - In case of any error.
+ * Else - The rank of the series.
+ */
+static int rankSeries(Set users_set,User user,
+                      char* series_name,Series series,Set series_set,
+                      Genre genre,MtmFlixResult* function_status){
+    /* "G" - Checks how many series from user's favorite list has the same
+     * genre as the given series.*/
+    int same_genre = userHowManySeriesWithGenre(series_set,user,genre);
+    if(same_genre == ILLEGAL_VALUE){
+        /* Failed to check how many from the same genre. */
+        *function_status=MTMFLIX_OUT_OF_MEMORY;
+        return ILLEGAL_VALUE;
+    }
+    /* Creating a copy of the series set in order to not ruin the iterator
+     * for the caller function. */
+    Set series_set_copy = setCopy(series_set);
+    if(!series_set_copy){
+        return ILLEGAL_VALUE;
+    }
+    /* "L" - Checks the average episode duration of all of user's favorite
+     * series. */
+    double average_list_episode_duration=
+       userGetAverageEpisodeDuration(user,series_set_copy,function_status);
+    setDestroy(series_set_copy);
+    if(*function_status!=MTMFLIX_SUCCESS){
+        /* Failed to check average episode duration of all series in user's
+         * favorite series list. */
+        return ILLEGAL_VALUE;
+    }
+    /* "F" - Checks how many friends loved this series. */
+    int number_of_friends_loved_this_series=
+            howManyFriendsLovedThisSeries(users_set,user,series_name);
+    /* "CUR" - Checks current series episode duration. */
+    int current_series_episode_duration = seriesGetEpisodeDuration(series);
+    double rank=(same_genre*number_of_friends_loved_this_series);
+    rank/=(1+doubleAbs((double)current_series_episode_duration-
+                       (average_list_episode_duration)));
+    return (int)rank;
+}
+
+/** Rows: 18
+ ***** Static function: seriesShouldBeRecommended *****
+ * Description: Returns whether or not the given series should be ranked
+ * for given user. The function checks if the user meet the age
+ * requirements of the series, and if so, checks if the series is already
+ * in his favorite list.
+ *
+ * @param series - Series we check.
+ * @param user - User we check according to.
+ * @param mtmflix - The mtmflix in which it all happens.
+ * @param result - Will hold success/fail status of the function.
+ *
+ * @return
+ */
+static bool seriesShouldBeRecommended(Series series,User user,
+                                      MtmFlix mtmflix,
+                                      MtmFlixResult* result) {
+    char *series_name = seriesGetName(series); //todo: free series_name
+    if (!series_name) {
+        *result=MTMFLIX_OUT_OF_MEMORY;
+        return false;
+    }
+    SeriesResult status;
+    /* Checking age limitations of series vs user's age. */
+    bool user_can_watch = userCanWatchSeries(mtmflix, user, series,&status);
+    if(status!=SERIES_SUCCESS){
+        /* UserCanWatch failed. */
+        free(series_name);
+        *result = MTMFLIX_OUT_OF_MEMORY;
+        free(series_name);
+        return false;
+    }
+    if ((isInUsersFavoriteSeriesList(user, series_name)) || !user_can_watch) {
+        /*If we get here the series is already in the user's favorite
+          series list or the user's age is not in the range of age
+          limitations of the series. This series shouldn't be
+          recommended*/
+        free(series_name);
+        *result=MTMFLIX_SUCCESS;
+        return false;
+    }
+    /* User meets age requirements and also doesn't have the series in his
+     * favorite list. This mean that the given series should be ranked. */
+    free(series_name);
+    *result=MTMFLIX_SUCCESS;
+    return true;
+}
+
+/** Rows: 18
+ ***** Static function: rankAllSeriesForUser *****
+ * Description: Makes the ranking of all the relevant series for the given
+ * user and prints it to the give file.
+ *
+ * @param mtmflix - The mtmflix we are working in.
+ * @param user - User that should rank according to.
+ * @param ranked_series_set - Set of ranked series.
+ * @param outputStream - File to print to the ranked series.
+ * @param count - How many series to print from each genre.
+ * @param series_set - a copy of all the series in the mtmflix. This is
+ * in order to not ruin the iterator for the caller function.
+ *
+ * @return
+ * MTMFLIX_OUT_OF_MEMORY - Any memory error.
+ * MTMFLIX_SUCCESS - All relevant series were ranked and printed
+ * successfully.
+ */
+static MtmFlixResult rankAllSeriesForUser(MtmFlix mtmflix,User user,
+                                          Set ranked_series_set,FILE* outputStream,
+                                          int count,Set series_set){
+    MtmFlixResult result;
+    SET_FOREACH(SetElement,series,mtmflix->series){
+        if(!seriesShouldBeRecommended(series,user,mtmflix,&result)) {
+            if(result!=MTMFLIX_SUCCESS) {
+                return MTMFLIX_OUT_OF_MEMORY;
+            }
+            /* Series shouldn't be recommended. */
+            continue;
+        }
+        if(result!=MTMFLIX_SUCCESS) {
+            return MTMFLIX_OUT_OF_MEMORY;
+        }
+        /*If we got here the current series should be added to the set of
+         * recommended series */
+        rankSeriesAndAddToRankedSeriesSet(mtmflix->users,series_set,
+                                          user,series,
+                                          seriesGetGenre(series),
+                                          &result,ranked_series_set);
+        if(result!=MTMFLIX_SUCCESS){
+            return MTMFLIX_OUT_OF_MEMORY;
+        }
+    }
+    rankedSeriesPrintToFile(count,ranked_series_set,outputStream,&result);
+    if(result!=MTMFLIX_SUCCESS){
+        return MTMFLIX_OUT_OF_MEMORY;
+    }
+    return MTMFLIX_SUCCESS;
+}
