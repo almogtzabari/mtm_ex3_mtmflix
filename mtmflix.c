@@ -24,6 +24,7 @@ static void rankSeriesAndAddToRankedSeriesSet(Set users_set,Set series_set,
                                               Genre genre,
                                               MtmFlixResult* function_status,
                                               Set ranked_series_set);
+static double doubleAbs (double number);
 
 static bool seriesShouldBeRecommended(Series series,User user,
                                       MtmFlix mtmflix,
@@ -464,26 +465,23 @@ MtmFlixResult mtmFlixSeriesJoin(MtmFlix mtmflix, const char* username,
     if(!mtmflix || !username || !seriesName){
         return MTMFLIX_NULL_ARGUMENT;
     }
-    MtmFlixResult result;
     /*Checks if both user and series exist in mtmflix */
-    result= userAndSeriesExist(mtmflix,username,seriesName);
+    MtmFlixResult result= userAndSeriesExist(mtmflix,username,seriesName);
     if(result!=MTMFLIX_SUCCESS){
         return result;
     }
     /*If we got here both user and series exist in mtmflix */
     User dummy_user = userCreate(username,MTM_MIN_AGE+1);
-    if(!dummy_user){
-        /* Memory allocation failed  */
-        return MTMFLIX_OUT_OF_MEMORY;
-    }
     Series dummy_series = seriesCreate((char*)seriesName,1,HORROR,NULL,5);
-    if(!dummy_series){
+    if(!dummy_series || !dummy_user){
         /* Memory allocation failed  */
         userDestroy(dummy_user);
+        seriesDestroy(dummy_series);
         return MTMFLIX_OUT_OF_MEMORY;
     }
     SeriesResult status;
-    bool user_can_watch = userCanWatchSeries(mtmflix, dummy_user, dummy_series,&status);
+    bool user_can_watch = userCanWatchSeries(mtmflix, dummy_user,
+            dummy_series,&status);
     if(status!=SERIES_SUCCESS){
         userDestroy(dummy_user);
         seriesDestroy(dummy_series);
@@ -499,7 +497,6 @@ MtmFlixResult mtmFlixSeriesJoin(MtmFlix mtmflix, const char* username,
     /* If we got here then the user can add the series to his list.  */
     seriesDestroy(dummy_series);
     SET_FOREACH(SetElement,current_user,mtmflix->users){
-         //todo:Check if equal age is allowed!
          if(userCompare(dummy_user,current_user)==0){
              /* We found the user with the given name so we need to add the
               * series to this user.*/
@@ -828,11 +825,17 @@ static int rankSeries(Set users_set,User user,
     int number_of_friends_loved_this_series=
             howManyFriendsLovedThisSeries(users_set,user,series_name);
     int current_series_episode_duration=seriesGetEpisodeDuration(series);
-    double rank=((double)same_genre*number_of_friends_loved_this_series);
-    // todo: rank should be int.
-    rank/=(1+abs(current_series_episode_duration-(int)
+    double rank=(same_genre*number_of_friends_loved_this_series);
+    rank/=(1+doubleAbs((double)current_series_episode_duration-
             (average_list_episode_duration)));
     return (int)rank;
+}
+
+static double doubleAbs (double number){
+    if(number<0){
+        return (-number);
+    }
+    return number;
 }
 
 
