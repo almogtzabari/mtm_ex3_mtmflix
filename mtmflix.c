@@ -747,6 +747,8 @@ MtmFlixResult mtmFlixGetRecommendations(MtmFlix mtmflix, const char* username,
                 setDestroy(ranked_series_set);
                 return MTMFLIX_OUT_OF_MEMORY;
     }
+    setDestroy(series_set_copy);
+    setDestroy(ranked_series_set);
     return MTMFLIX_SUCCESS;
 }
 
