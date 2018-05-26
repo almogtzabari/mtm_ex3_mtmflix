@@ -84,6 +84,9 @@ MtmFlix mtmFlixCreate(){
  * @param mtmflix - MtmFlix we want to destroy.
  */
 void mtmFlixDestroy(MtmFlix mtmflix){
+    if(!mtmflix){
+        return;
+    }
     setDestroy(mtmflix->series);
     setDestroy(mtmflix->users);
     free(mtmflix);
@@ -515,17 +518,23 @@ MtmFlixResult mtmFlixSeriesJoin(MtmFlix mtmflix, const char* username,
  */
 static bool userCanWatchSeries(MtmFlix mtmflix, User user,
                                Series series) {
-    int series_max_age;
-    int series_min_age;
-    if (seriesHasAgeRestrictions(series)) {
-        /* Series has age restrictions */
-        series_max_age = seriesGetMaxAge(series);
-        series_min_age = seriesGetMinAge(series);
-    }
-    else {
-        /*The series has no age limitations and the user can add
-          it*/
-        return true;
+    int series_max_age = -1;
+    int series_min_age = -1;
+    SET_FOREACH(SetElement, current_series, mtmflix->series) {
+        if (seriesCompare(series,current_series) == 0) {
+            /* We found the series with the given name. */
+            if (seriesHasAgeRestrictions(current_series)) {
+                /* Series has age restrictions */
+                series_max_age = seriesGetMaxAge(current_series);
+                series_min_age = seriesGetMinAge(current_series);
+                break;
+            }
+            else {
+                /*The series has no age limitations and the user can add
+                  it*/
+                return true;
+            }
+        }
     }
     /*If we got here the series has age limitations and we need to check
       if the user can add it to his favorite series list */
@@ -681,37 +690,40 @@ MtmFlixResult mtmFlixGetRecommendations(MtmFlix mtmflix, const char* username,
         return MTMFLIX_ILLEGAL_NUMBER;
     }
     MtmFlixResult result;
-    Set users_set_copy = setCopy(mtmflix->users);
     Set series_set_copy = setCopy(mtmflix->series);
-    if(!series_set_copy || !users_set_copy){
+    if(!series_set_copy){
         /* Memory allocation failed. */
         return MTMFLIX_OUT_OF_MEMORY;
     }
-    User user = getUserByUsername((char*)username,&result,users_set_copy);
+    User user = getUserByUsername((char*)username,&result,mtmflix->users);
     if(result!=MTMFLIX_SUCCESS){
         /*We get here in case of memory allocation error or in case the
          * user with the given username doesn't exist */
+        setDestroy(series_set_copy);
         return result;
     }
     Set ranked_series_set=setCreate(rankedSeriesCopySetElement,
                                     rankedSeriesDestroySetElement,
                                     rankedSeriesCompareSetElement);
     if(!ranked_series_set){
+        setDestroy(series_set_copy);
         return MTMFLIX_OUT_OF_MEMORY;
     }
-    SET_FOREACH(SetElement,series,mtmflix->series){
+    SET_FOREACH(SetElement,series,series_set_copy){
         if(!seriesShouldBeRecommended(series,user,mtmflix,&result)) {
             if(result!=MTMFLIX_SUCCESS) {
+                setDestroy(series_set_copy);
                 return MTMFLIX_OUT_OF_MEMORY;
             }
             continue;
         }
+        setDestroy(series_set_copy);
         if(result!=MTMFLIX_SUCCESS) {
             return MTMFLIX_OUT_OF_MEMORY;
         }
     /*If we got here the current series should be added to the set of
      * recommended series */
-        rankSeriesAndAddToRankedSeriesSet(users_set_copy,series_set_copy,
+        rankSeriesAndAddToRankedSeriesSet(mtmflix->users,mtmflix->series,
                                         user,series,seriesGetGenre(series),
                                         &result,ranked_series_set);
         if(result!=MTMFLIX_SUCCESS){
