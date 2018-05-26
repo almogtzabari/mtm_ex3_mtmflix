@@ -36,29 +36,31 @@ User userCreate(const char* username, int age){
     char* username_copy=malloc(strlen(username)+1);
     if(!username_copy){
         /* Username memory allocation failed */
-        free(new_user);
+        userDestroy(new_user);
         return NULL;
     }
     strcpy(username_copy,username);
-    new_user->username=(const char*)username_copy;
-    new_user->age=age;
-    new_user->user_friends_list= listCreate(copyFriendUsername,
-            destroyFriendUsername);
-    if(!new_user->user_friends_list){
+    List friend_list=listCreate(copyFriendUsername,destroyFriendUsername);
+    if(!friend_list){
         /* Friend list creation failed */
-        free((char*)new_user->username);
-        free(new_user);
+        free(username_copy);
+        userDestroy(new_user);
         return NULL;
     }
-    new_user->user_favorite_series= listCreate(copyFavoriteSeriesName,
-            destroyFavoriteSeriesName);
-    if(!new_user->user_favorite_series){
+    List favorite_series_list = listCreate(copyFavoriteSeriesName,
+                                           destroyFavoriteSeriesName);
+    if(!favorite_series_list){
         /* User favorite series list creation failed */
-        free((char*)new_user->username);
-        listDestroy(new_user->user_friends_list);
-        free(new_user);
+        free(username_copy);
+        listDestroy(friend_list);
+        userDestroy(new_user);
         return NULL;
     }
+    new_user->username=username_copy;
+    new_user->age=age;
+    new_user->user_friends_list=friend_list;
+    new_user->user_favorite_series=favorite_series_list;
+
     return new_user;
 }
 
@@ -106,7 +108,7 @@ void userDestroy (User user){
     if(!user){
         return;
     }
-    free((char*)user->username);
+    free((char*)(user->username));
     listDestroy(user->user_friends_list);
     listDestroy(user->user_favorite_series);
     free(user);

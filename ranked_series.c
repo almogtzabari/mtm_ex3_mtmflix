@@ -62,7 +62,6 @@ int rankedSeriesCompare (RankedSeries ranked_series1,
 void rankedSeriesPrintToFile(int number_of_series_to_print,
                              Set ranked_series_set,
                              FILE* outputStream,MtmFlixResult* result){
-    int x = setGetSize(ranked_series_set);
     if(number_of_series_to_print==0){
         number_of_series_to_print=setGetSize(ranked_series_set);
     }
