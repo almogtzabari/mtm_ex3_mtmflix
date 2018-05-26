@@ -480,9 +480,11 @@ MtmFlixResult mtmFlixSeriesJoin(MtmFlix mtmflix, const char* username,
         return MTMFLIX_OUT_OF_MEMORY;
     }
     SeriesResult status;
-    if(!userCanWatchSeries(mtmflix, dummy_user,
-                           dummy_series,&status)){
+    if(!userCanWatchSeries(mtmflix, dummy_user, dummy_series,&status)){
+        /* User can't watch series or userCanWatchSeries had a memory
+         * fail. */
         if(status!=SERIES_SUCCESS){
+            /* Memory fail: userCanWatchSeries memory fail. */
             userDestroy(dummy_user);
             seriesDestroy(dummy_series);
             return MTMFLIX_OUT_OF_MEMORY;
