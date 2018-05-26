@@ -37,7 +37,7 @@ void seriesDestroyName(char* name);
 
 Genre seriesGetGenre (Series series);
 
-SeriesResult printSeriesDetailsToFile(Series current_series,
+SeriesResult printSeriesDetailsToFile(Series series,
                                       FILE* outputStream);
 char* getGenreNameByEnum(Genre genre);
 bool seriesHasAgeRestrictions(Series series);

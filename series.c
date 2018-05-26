@@ -2,7 +2,7 @@
 #include "mtm_ex3.h"
 
 
-
+#define ILLEGAL_VALUE -1
 
 //-----------------------------------------------------------------------//
 //                SERIES: STATIC FUNCTIONS DECLARATIONS                  //
@@ -222,80 +222,53 @@ int seriesGetMinAge(Series series){
 }
 
 
-//-----------------------------------------------------------------------//
-//                      SERIES: STATIC FUNCTIONS                         //
-//-----------------------------------------------------------------------//
-
-/**
- ***** Function: seriesSetAgeLimit *****
- * Description: This function will be used at seriesCreate.
- * The function gets an array of ages or NULL. If NULL, there are no age
- * limitations. Else, the first cell will contain minimum age limit and the
- * second cell will contain maximum age limit. In case not NULL, the
- * function will duplicate the array with a slight change: If the maximum
- * age in the array is higher than MtmFlix maximum age then the new array
- * will contain MtmFlix maximum age. If the minimum age in the array is
- * lower than MtmFlix minimum age then the new array will contain MtmFlix
- * minimum age.
+/** Rows: 2
+ ***** Function: seriesGetEpisodeDuration *****
+ * Description: returns the average episode duration of a given series.
  *
- * @param ages - Array of age limitations. If NULL there are no limitaions.
- * @return - A
+ * @param series - Series we want to get its average episode duration.
+ *
+ * @return
+ * Average episode duration of given series.
  */
-static int* seriesInsertAgeLimit(int* ages, SeriesResult *status) {
-    if (ages) {
-        /* There is an age limitations */
-        int *series_ages = malloc(sizeof(ages));
-        if (!series_ages) {
-            /* Ages array memory allocation failed. */
-            *status = SERIES_MEMORY_ALLOCATION_FAILED;
-            return NULL;
-        }
-        if (ages[0] < MTM_MIN_AGE) {
-            /* Minimum age of series is lower then MtmFlix minimum age. */
-            series_ages[0] = MTM_MIN_AGE;
-        } else {
-            series_ages[0] = ages[0];
-        }
-        if (ages[1] > MTM_MAX_AGE) {
-            /* Maximum age of series is higher then MtmFlix maximum age. */
-            series_ages[1] = MTM_MAX_AGE;
-        } else {
-            series_ages[1] = ages[1];
-        }
-        *status = SERIES_SUCCESS;
-        return series_ages;
-    }
-    /* There is no age limitation. */
-    *status = SERIES_SUCCESS;
-    return NULL;
-}
 int seriesGetEpisodeDuration (Series series){
     assert(series);
     return series->episode_duration;
 }
 
+/** Rows: 2
+ ***** Function: seriesGetGenre *****
+ * Description: returns the genre of a given series.
+ *
+ * @param series - Series we want to get its genre.
+ *
+ * @return
+ * Genre of given series.
+ */
 Genre seriesGetGenre (Series series){
     assert(series);
     return series->genre;
 }
 
-/**
+/** Rows: 11
  ***** Function: printSeriesDetailsToFile *****
- * Description:Prints a series name and genre to a file.
- * @param current_series - The series we want to print to the given file.
+ * Description: Prints a series name and genre to a file.
+ *
+ * @param series - Series we want to print to the given file.
  * @param outputStream - The file we want to print into.
+ *
  * @return
- * SERIES_MEMORY_ALLOCATION_FAILED - In case of memory allocation error.
- * SERIES_SUCCESS - Printing to file succeeded.
+ * SERIES_MEMORY_ALLOCATION_FAILED - Any memory error.
+ * SERIES_SUCCESS - Successfully printed.
  */
-SeriesResult printSeriesDetailsToFile(Series current_series,
+SeriesResult printSeriesDetailsToFile(Series series,
                                       FILE* outputStream){
-    char* series_genre_string = getGenreNameByEnum
-            (current_series->genre);
+    char* series_genre_string = getGenreNameByEnum(series->genre);
     if(!series_genre_string){
+        /* Failed to get genre. */
         return SERIES_MEMORY_ALLOCATION_FAILED;
     }
-    const char* series_details = mtmPrintSeries(current_series->series_name,
+    const char* series_details = mtmPrintSeries(series->series_name,
                                                 series_genre_string);
     free(series_genre_string);
     if(!series_details){
@@ -307,7 +280,14 @@ SeriesResult printSeriesDetailsToFile(Series current_series,
     return SERIES_SUCCESS;
 }
 
-
+/** Rows: 5
+ ***** Function: seriesGetName *****
+ * Description: Returns the name of a given series.
+ * @param series - Series we want to get its name.
+ * @return
+ * If success - Name of given series.
+ * Else - NULL.
+ */
 char* seriesGetName (Series series){
     char* series_name_copy=malloc(strlen(series->series_name)+1);
     if(!series_name_copy){
@@ -317,7 +297,7 @@ char* seriesGetName (Series series){
     return series_name_copy;
 }
 
-/**
+/** Rows: 6
  ***** Function: getGenreNameByEnum *****
  * Description: Converts genre to the string that represents the genre.
  *
@@ -337,34 +317,7 @@ char* getGenreNameByEnum(Genre genre){
     return genre_string;
 }
 
-
-/**
- ***** Function: getGenrePosition *****
- * Description: Gets a genre and returns its lexicographical position.
- * ascii value.
- *
- * //------ Genre ------ Enum ------ Lex oreder
- * //  SCIENCE_FICTION     0            7
- * //  DRAMA               1            3
- * //  COMEDY              2            0
- * //  CRIME               3            1
- * //  MYSTERY             0            5
- * //  DOCUMENTARY         1            2
- * //  ROMANCE             2            6
- * //  HORROR              3            4
- *
- * @param genre - The genre we want to get its position.
- * @return
- * Integer indicates the position of the genre.
- */
-static int getGenrePosition(Genre genre){
-
-    int genres_position[NUMBER_OF_GENRES] = {7,3,0,1,5,2,6,4};
-    return genres_position[genre];
-
-}
-
-/**
+/** Rows: 12
  ***** Function: seriesGetGenreByName *****
  * Description: Gets a series name, a set of all the series in the mtmflix
  * and a status. The function returns the genre of the series with that
@@ -401,7 +354,7 @@ Genre seriesGetGenreByName(char* series_name, Set series_set,
 
 }
 
-/**
+/** Rows: 12
  ***** Function: seriesGetDurationByName *****
  * Description: Gets series name, a status and a set of all the series in
  * the system and returns the episode duration of the given series.
@@ -413,7 +366,7 @@ Genre seriesGetGenreByName(char* series_name, Set series_set,
  * @return
  * If succeeded - The episode duration of the series with the given series
  * name.
- * If fails - Returns -1.
+ * If fails - Returns ILLEGAL_VALUE.
  */
 int seriesGetDurationByName(char *series_name, Set series_set,
                             SeriesResult *status){
@@ -421,7 +374,7 @@ int seriesGetDurationByName(char *series_name, Set series_set,
     if(!dummy_series){
         /* Memory allocation failed. */
         *status = SERIES_MEMORY_ALLOCATION_FAILED;
-        return -1; // This value won't be checked.
+        return ILLEGAL_VALUE; // This value won't be checked.
     }
     SET_FOREACH(SetElement,current_series,series_set){
         if(seriesCompare(current_series,dummy_series)==0){
@@ -434,6 +387,80 @@ int seriesGetDurationByName(char *series_name, Set series_set,
     /*  Shouldn't get here. */
     seriesDestroy(dummy_series);
     *status = SERIES_MEMORY_ALLOCATION_FAILED; // Series doesn't exist.
-    return -1; // This value won't be checked.
-
+    return ILLEGAL_VALUE; // This value won't be checked.
 }
+
+//-----------------------------------------------------------------------//
+//                      SERIES: STATIC FUNCTIONS                         //
+//-----------------------------------------------------------------------//
+
+/** Rows: 16
+ ***** Static function: seriesSetAgeLimit *****
+ * Description: This function will be used at seriesCreate.
+ * The function gets an array of ages or NULL. If NULL, there are no age
+ * limitations. Else, the first cell will contain minimum age limit and the
+ * second cell will contain maximum age limit. In case not NULL, the
+ * function will duplicate the array with a slight change: If the maximum
+ * age in the array is higher than MtmFlix maximum age then the new array
+ * will contain MtmFlix maximum age. If the minimum age in the array is
+ * lower than MtmFlix minimum age then the new array will contain MtmFlix
+ * minimum age.
+ *
+ * @param ages - Array of age limitations. If NULL there are no limitaions.
+ * @return
+ * Array of final age restrictions.
+ */
+static int* seriesInsertAgeLimit(int* ages, SeriesResult *status) {
+    if (ages) {
+        /* There is an age limitations */
+        int *series_ages = malloc(sizeof(ages));
+        if (!series_ages) {
+            /* Ages array memory allocation failed. */
+            *status = SERIES_MEMORY_ALLOCATION_FAILED;
+            return NULL;
+        }
+        if (ages[0] < MTM_MIN_AGE) {
+            /* Minimum age of series is lower then MtmFlix minimum age. */
+            series_ages[0] = MTM_MIN_AGE;
+        } else {
+            series_ages[0] = ages[0];
+        }
+        if (ages[1] > MTM_MAX_AGE) {
+            /* Maximum age of series is higher then MtmFlix maximum age. */
+            series_ages[1] = MTM_MAX_AGE;
+        } else {
+            series_ages[1] = ages[1];
+        }
+        *status = SERIES_SUCCESS;
+        return series_ages;
+    }
+    /* There is no age limitation. */
+    *status = SERIES_SUCCESS;
+    return NULL;
+}
+
+/** Rows: 2
+ ***** Static function: getGenrePosition *****
+ * Description: Gets a genre and returns its lexicographical position.
+ * ascii value.
+ *
+ * //------ Genre ------ Enum ------ Lex oreder
+ * //  SCIENCE_FICTION     0            7
+ * //  DRAMA               1            3
+ * //  COMEDY              2            0
+ * //  CRIME               3            1
+ * //  MYSTERY             0            5
+ * //  DOCUMENTARY         1            2
+ * //  ROMANCE             2            6
+ * //  HORROR              3            4
+ *
+ * @param genre - The genre we want to get its position.
+ *
+ * @return
+ * Integer indicates the position of the genre.
+ */
+static int getGenrePosition(Genre genre){
+    int genres_position[NUMBER_OF_GENRES] = {7,3,0,1,5,2,6,4};
+    return genres_position[genre];
+}
+
