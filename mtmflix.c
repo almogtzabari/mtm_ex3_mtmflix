@@ -25,6 +25,9 @@ static void rankSeriesAndAddToRankedSeriesSet(Set users_set,Set series_set,
                                               MtmFlixResult* function_status,
                                               Set ranked_series_set);
 static double doubleAbs (double number);
+MtmFlixResult rankAllSeriesForUser(MtmFlix mtmflix,User user,
+                                  Set ranked_series_set,FILE* outputStream,
+                                   int count,Set series_set_copy);
 
 static bool seriesShouldBeRecommended(Series series,User user,
                                       MtmFlix mtmflix,
@@ -708,7 +711,7 @@ MtmFlixResult mtmFlixRemoveFriend(MtmFlix mtmflix, const char* username1,
     return MTMFLIX_SUCCESS;
 }
 
-//todo:31 lines
+
 MtmFlixResult mtmFlixGetRecommendations(MtmFlix mtmflix, const char* username,
                                         int count, FILE* outputStream){
     if(!mtmflix || !username || !outputStream){
@@ -737,33 +740,42 @@ MtmFlixResult mtmFlixGetRecommendations(MtmFlix mtmflix, const char* username,
         setDestroy(series_set_copy);
         return MTMFLIX_OUT_OF_MEMORY;
     }
-    /** Starting to rank the series. */
+    result=rankAllSeriesForUser(mtmflix,user,ranked_series_set,
+            outputStream,count,series_set_copy);
+            if(result!=MTMFLIX_SUCCESS) {
+                setDestroy(series_set_copy);
+                setDestroy(ranked_series_set);
+                return MTMFLIX_OUT_OF_MEMORY;
+    }
+    return MTMFLIX_SUCCESS;
+}
+
+MtmFlixResult rankAllSeriesForUser(MtmFlix mtmflix,User user,
+                                  Set ranked_series_set,FILE* outputStream,
+                                   int count,Set series_set_copy){
+    MtmFlixResult result;
     SET_FOREACH(SetElement,series,mtmflix->series){
         if(!seriesShouldBeRecommended(series,user,mtmflix,&result)) {
             if(result!=MTMFLIX_SUCCESS) {
-                setDestroy(series_set_copy);
                 return MTMFLIX_OUT_OF_MEMORY;
             }
             /* Series shouldn't be recommended. */
             continue;
         }
         if(result!=MTMFLIX_SUCCESS) {
-            setDestroy(series_set_copy);
             return MTMFLIX_OUT_OF_MEMORY;
         }
-    /*If we got here the current series should be added to the set of
-     * recommended series */
+        /*If we got here the current series should be added to the set of
+         * recommended series */
         rankSeriesAndAddToRankedSeriesSet(mtmflix->users,series_set_copy,
-          user,series,seriesGetGenre(series), &result,ranked_series_set);
+                                          user,series,
+                                          seriesGetGenre(series),
+                                          &result,ranked_series_set);
         if(result!=MTMFLIX_SUCCESS){
-            setDestroy(series_set_copy);
-            setDestroy(ranked_series_set);
             return MTMFLIX_OUT_OF_MEMORY;
         }
     }
     rankedSeriesPrintToFile(count,ranked_series_set,outputStream,&result);
-    setDestroy(ranked_series_set);
-    setDestroy(series_set_copy);
     if(result!=MTMFLIX_SUCCESS){
         return MTMFLIX_OUT_OF_MEMORY;
     }
