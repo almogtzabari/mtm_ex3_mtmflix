@@ -80,6 +80,9 @@ User userCopy (User user){
         /* User creation failed */
         return NULL;
     }
+    /* User create has created an extra of the lists.*/
+    listDestroy(new_user->user_favorite_series);
+    listDestroy(new_user->user_friends_list);
     new_user->user_friends_list=listCopy(user->user_friends_list);
     if(!new_user->user_friends_list){
         /* List copying failed */
