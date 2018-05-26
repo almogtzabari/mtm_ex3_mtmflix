@@ -5,6 +5,8 @@
 #include "utilities.h"
 #include "user.h"
 
+#define ILLEGAL_VALUE -1
+
 //-----------------------------------------------------------------------//
 //                MTMFLIX: STATIC FUNCTIONS DECLARATIONS                 //
 //-----------------------------------------------------------------------//
@@ -36,7 +38,6 @@ static int rankSeries(Set users_set,User user,
                       char* series_name,Series series,Set series_set,
                       Genre genre,MtmFlixResult* function_status);
 
-#define ILLEGAL_VALUE -1
 
 //-----------------------------------------------------------------------//
 //                       MTMFLIX: STRUCT                                 //
@@ -80,11 +81,12 @@ MtmFlix mtmFlixCreate(){
         setDestroy(flix->series);
         free(flix);
     }
+    /* New mtmflix successfully created. */
     return flix;
 }
 
 /** Rows: 5
- ***** Function: *****
+ ***** Function: mtmFlixDestroy *****
  * Description: Frees all allocated memory of a given MtmFlix.
  *
  * @param mtmflix - MtmFlix we want to destroy.
@@ -155,7 +157,7 @@ MtmFlixResult mtmFlixAddUser(MtmFlix mtmflix,
         userDestroy(temp_user);
         return MTMFLIX_OUT_OF_MEMORY;
     }
-    /* If we got here then user added successfully. */
+    /* If we got here then user added successfully to mtmflix. */
     userDestroy(temp_user);
     return MTMFLIX_SUCCESS;
 }
@@ -198,6 +200,7 @@ MtmFlixResult mtmFlixRemoveUser(MtmFlix mtmflix, const char* username){
         /*Removing the username from each user's friend list  */
         removeFromList(current_user, (char*)username,FRIENDS_LIST);
     }
+    /* User removed successfully from mtmflix. */
     return MTMFLIX_SUCCESS;
 }
 
@@ -226,6 +229,7 @@ static bool nameIsValid(const char *name){
         }
         name++;
     }
+    /* Username is valid (still need to check if in use).*/
     return true;
 }
 
@@ -334,6 +338,7 @@ MtmFlixResult mtmFlixRemoveSeries(MtmFlix mtmflix, const char* name){
         /*Removing the series from each user's favorite series list  */
         removeFromList(current_user,(char*)name,FAVORITE_SERIES_LIST);
     }
+    /* Series removed successully. */
     return MTMFLIX_SUCCESS;
 }
 
@@ -347,17 +352,19 @@ MtmFlixResult mtmFlixRemoveSeries(MtmFlix mtmflix, const char* name){
  * @param outputStream - A file to print to.
  *
  * @return
- * MTMFLIX_NULL_ARGUMENT - If one or more of the given arguments is NULL.
- * MTMFLIX_NO_SERIES - If there are no series on mtmtflix.
- * MTMFLIX_OUT_OF_MEMORY - In case of memory allocation error.
- * MTMFLIX_SUCCESS - Printing has succeeded.
+ * MTMFLIX_NULL_ARGUMENT - At least one of the given arguments is NULL.
+ * MTMFLIX_NO_SERIES - No series in mtmtflix.
+ * MTMFLIX_OUT_OF_MEMORY - Any memory error.
+ * MTMFLIX_SUCCESS - Users report successfully printed.
  */
 MtmFlixResult mtmFlixReportSeries(MtmFlix mtmflix, int seriesNum,
                                   FILE* outputStream){
     if(!mtmflix || !outputStream){
+        /* At least one of the given arguments is NULL. */
         return MTMFLIX_NULL_ARGUMENT;
     }
     if(setGetSize(mtmflix->series)==0){
+        /* No series in mtmtflix. */
         return MTMFLIX_NO_SERIES;
     }
     assert(seriesNum>=0);
@@ -423,28 +430,34 @@ MtmFlixResult mtmFlixReportSeries(MtmFlix mtmflix, int seriesNum,
 /** Rows: 10
  ***** Function: mtmFlixReportUsers *****
  * Description: Prints all the details of all the users to a file.
+ *
  * @param mtmflix - The mtmflix to print the series list from.
  * @param outputStream -A file to print to.
+ *
  * @return
- * MTMFLIX_NULL_ARGUMENT - If one or more of the given arguments is NULL.
- * MTMFLIX_NO_USERS - If there are no users on mtmtflix.
+ * MTMFLIX_NULL_ARGUMENT - At least one of the given arguments is NULL.
+ * MTMFLIX_NO_USERS - No users in mtmtflix.
  * MTMFLIX_OUT_OF_MEMORY - In case of memory allocation error.
  * MTMFLIX_SUCCESS - Printing has succeeded.
  */
 MtmFlixResult mtmFlixReportUsers(MtmFlix mtmflix, FILE* outputStream){
     if (!mtmflix || !outputStream){
+        /* At least one of the given arguments is NULL. */
         return MTMFLIX_NULL_ARGUMENT;
     }
     if(setGetSize(mtmflix->users)==0){
+        /* No users in mtmtflix. */
         return MTMFLIX_NO_USERS;
     }
     UserResult result;
     SET_FOREACH(SetElement,current_user,mtmflix->users){
         result= userPrintDetailsToFile(current_user, outputStream);
         if(result!=USER_SUCCESS){
+            /* Failed to print. */
             return MTMFLIX_OUT_OF_MEMORY;
         }
     }
+    /* Users printed successfully. */
     return MTMFLIX_SUCCESS;
 }
 
@@ -456,6 +469,7 @@ MtmFlixResult mtmFlixReportUsers(MtmFlix mtmflix, FILE* outputStream){
  * @param mtmflix - The system of MtmFlix.
  * @param username - The user to add the series to his favorite series.
  * @param seriesName - The name of the series we want to add.
+ *
  * @return
  * MTMFLIX_SUCCESS - Adding succeeded.
  * MTMFLIX_NULL_ARGUMENT - At lease one of the given arguments is NULL.
@@ -583,7 +597,7 @@ static bool userCanWatchSeries(MtmFlix mtmflix, User user,
     return true;
 }
 
-/** Rows: 15
+/** Rows: 16
  ***** Function: mtmFlixSeriesLeave *****
  * Description: Gets a mtmflix system, username and series name.
  * The function removes the series from the given user's favorite list.
@@ -591,6 +605,7 @@ static bool userCanWatchSeries(MtmFlix mtmflix, User user,
  * @param mtmflix - The system we are working on.
  * @param username - The user we want to remove from.
  * @param seriesName - The series we want to remove.
+ *
  * @return
  * MTMFLIX_SUCCESS - Function succeeded.
  * MTMFLIX_NULL_ARGUMENT - At lease one argument is NULL.
@@ -610,24 +625,29 @@ MtmFlixResult mtmFlixSeriesLeave(MtmFlix mtmflix, const char* username,
           mtmflix or in case of memory allocation error*/
         return result;
     }
-    User temp_user=userCreate(username,14);
+    User temp_user=userCreate(username,MTM_MIN_AGE);
     if(!temp_user){
         /*User creation failed because of memory allocation error */
         return MTMFLIX_OUT_OF_MEMORY;
     }
     SET_FOREACH(SetElement,user,mtmflix->users){
         if(userCompare(temp_user,user)==0){
-            /*User to remove from found */
-            removeFromList((User)user,(char*)seriesName,FAVORITE_SERIES_LIST);
+            /* Found the user with the given username. Now we'll remove
+             * the series from his list. */
+            removeFromList((User)user,(char*)seriesName,
+                                                  FAVORITE_SERIES_LIST);
             break;
         }
     }
+    /* Series successfully removed from user's favorite list. */
     userDestroy(temp_user);
     return MTMFLIX_SUCCESS;
 }
 
-/** Rows: 19
+/** Rows: 20
  ***** Function: mtmFlixAddFriend *****
+ * Description: Adds username2 to the friend list of username1.
+ *
  * @param mtmflix - The system we are working on.
  * @param username1 - The user to add to his friend list.
  * @param username2 - The user to add to.
@@ -654,7 +674,7 @@ MtmFlixResult mtmFlixAddFriend(MtmFlix mtmflix, const char* username1,
         return MTMFLIX_SUCCESS;
     }
     /*If we got here both users exist in mtmflix */
-    User dummy_user = userCreate(username1,MTM_MIN_AGE+1);
+    User dummy_user = userCreate(username1,MTM_MIN_AGE);
     if(!dummy_user){
         /* Memory allocation failed  */
         return MTMFLIX_OUT_OF_MEMORY;
@@ -663,25 +683,29 @@ MtmFlixResult mtmFlixAddFriend(MtmFlix mtmflix, const char* username1,
         if(userCompare(dummy_user,current_user)==0){
             /* We found the user with the given name so we need to add
              * username2 to this user's friend list.*/
-            result = AddToList((User)current_user,(char*)username2,FRIENDS_LIST);
+            result = AddToList((User)current_user,(char*)username2,
+                                                        FRIENDS_LIST);
             if (result!=MTMFLIX_SUCCESS) {
+                /* Failed to add to usernames1's friend list. */
                 userDestroy(dummy_user);
                 return result;
             }
         }
     }
+    /* Username2 successfully added to username1's friend list. */
     userDestroy(dummy_user);
     return MTMFLIX_SUCCESS;
 }
 
 /** Rows: 12
  ***** Function: mtmFlixRemoveFriend *****
- * Description: Gets two usernames and removes username2 from the friend
+ * Description: Removes username2 from the friend
  * list of username1.
  *
  * @param mtmflix - The system we are working on.
  * @param username1 - The username we want to remove a friend from.
  * @param username2 - The username we want to remove.
+ *
  * @return
  * MTMFLIX_SUCCESS - Friend removed successfully.
  * MTMFLIX_OUT_OF_MEMORY - Memory allocation error.
@@ -706,23 +730,31 @@ MtmFlixResult mtmFlixRemoveFriend(MtmFlix mtmflix, const char* username1,
         if(userCompare(dummy_user1,current_user)==0){
             /* We found user1. */
             removeFromList(current_user,(char*)username2,FRIENDS_LIST);
-
         }
     }
+    /* Username2 sucessfully removed from username1's friend list. */
     userDestroy(dummy_user1);
     return MTMFLIX_SUCCESS;
 }
 
 /** Rows: 25
+ ***** Function: mtmFlixGetRecommendations *****
+ * Description: Prints recommendations of series for the given user.
+ * Recommendations will be printed into the given file.
  *
- * @param mtmflix
- * @param username
- * @param count
- * @param outputStream
+ * @param mtmflix - Mtmflix we are working on.
+ * @param username - The username we want to print recommendations for.
+ * @param count - How many series to recommend from each genre.
+ * @param outputStream - File to print to.
+ *
  * @return
+ * MTMFLIX_SUCCESS - Successfully printed the recommendations.
+ * MTMFLIX_NULL_ARGUMENT - At least one of the given  arguments is NULL.
+ * MTMFLIX_USER_DOES_NOT_EXIST - User with given username doesn't exist.
+ * MTMFLIX_ILLEGAL_NUMBER - A negative numer was inserted.
  */
-MtmFlixResult mtmFlixGetRecommendations(MtmFlix mtmflix, const char* username,
-                                        int count, FILE* outputStream){
+MtmFlixResult mtmFlixGetRecommendations(MtmFlix mtmflix,
+                    const char* username, int count, FILE* outputStream){
     if(!mtmflix || !username || !outputStream){
         return MTMFLIX_NULL_ARGUMENT;
     }
@@ -749,13 +781,17 @@ MtmFlixResult mtmFlixGetRecommendations(MtmFlix mtmflix, const char* username,
         setDestroy(series_set_copy);
         return MTMFLIX_OUT_OF_MEMORY;
     }
+    /* rankAllSeriesForUser will rank the relevant series and print them
+     * to the given file. */
     result=rankAllSeriesForUser(mtmflix,user,ranked_series_set,
             outputStream,count,series_set_copy);
             if(result!=MTMFLIX_SUCCESS) {
+                /* Failed to print. */
                 setDestroy(series_set_copy);
                 setDestroy(ranked_series_set);
                 return MTMFLIX_OUT_OF_MEMORY;
     }
+    /* Recommendations printed successfully.*/
     setDestroy(series_set_copy);
     setDestroy(ranked_series_set);
     return MTMFLIX_SUCCESS;
@@ -909,10 +945,8 @@ static MtmFlixResult usersExist(MtmFlix mtmflix, const char* username1,
  * @param ranked_series_set
  */
 static void rankSeriesAndAddToRankedSeriesSet(Set users_set,Set series_set,
-                                              User user,Series series,
-                                              Genre genre,
-                                              MtmFlixResult* function_status,
-                                              Set ranked_series_set){
+     User user,Series series, Genre genre, MtmFlixResult* function_status,
+                                                    Set ranked_series_set){
     char* series_name = seriesGetName(series);
     if(!series_name){
         /* Failed to copy name. */
@@ -1047,7 +1081,7 @@ static bool seriesShouldBeRecommended(Series series,User user,
     }
     SeriesResult status;
     /* Checking age limitations of series vs user's age. */
-    bool user_can_watch = userCanWatchSeries(mtmflix, user, series,&status);
+    bool user_can_watch=userCanWatchSeries(mtmflix, user, series,&status);
     if(status!=SERIES_SUCCESS){
         /* UserCanWatch failed. */
         free(series_name);
@@ -1055,7 +1089,7 @@ static bool seriesShouldBeRecommended(Series series,User user,
         free(series_name);
         return false;
     }
-    if ((isInUsersFavoriteSeriesList(user, series_name)) || !user_can_watch) {
+    if ((isInUsersFavoriteSeriesList(user, series_name))||!user_can_watch){
         /*If we get here the series is already in the user's favorite
           series list or the user's age is not in the range of age
           limitations of the series. This series shouldn't be
@@ -1090,8 +1124,7 @@ static bool seriesShouldBeRecommended(Series series,User user,
  * successfully.
  */
 static MtmFlixResult rankAllSeriesForUser(MtmFlix mtmflix,User user,
-                                          Set ranked_series_set,FILE* outputStream,
-                                          int count,Set series_set){
+       Set ranked_series_set,FILE* outputStream, int count,Set series_set){
     MtmFlixResult result;
     SET_FOREACH(SetElement,series,mtmflix->series){
         if(!seriesShouldBeRecommended(series,user,mtmflix,&result)) {
