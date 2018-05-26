@@ -754,8 +754,7 @@ MtmFlixResult mtmFlixGetRecommendations(MtmFlix mtmflix, const char* username,
     /*If we got here the current series should be added to the set of
      * recommended series */
         rankSeriesAndAddToRankedSeriesSet(mtmflix->users,series_set_copy,
-                                        user,series,seriesGetGenre(series),
-                                        &result,ranked_series_set);
+          user,series,seriesGetGenre(series), &result,ranked_series_set);
         if(result!=MTMFLIX_SUCCESS){
             setDestroy(series_set_copy);
             setDestroy(ranked_series_set);
