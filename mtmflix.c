@@ -515,7 +515,7 @@ MtmFlixResult mtmFlixSeriesJoin(MtmFlix mtmflix, const char* username,
     return MTMFLIX_SUCCESS;
 }
 
-/**
+/** Rows: 24
  ***** Static function : userCanWatchSeries *****
  * Description: Checks if a user can add a series to his favorite series
  * list by the series age limitations.
@@ -578,7 +578,7 @@ static bool userCanWatchSeries(MtmFlix mtmflix, User user,
     return true;
 }
 
-/**
+/** Rows: 15
  ***** Function: mtmFlixSeriesLeave *****
  * Description: Gets a mtmflix system, username and series name.
  * The function removes the series from the given user's favorite list.
@@ -621,7 +621,7 @@ MtmFlixResult mtmFlixSeriesLeave(MtmFlix mtmflix, const char* username,
     return MTMFLIX_SUCCESS;
 }
 
-/**
+/** Rows: 19
  ***** Function: mtmFlixAddFriend *****
  * @param mtmflix - The system we are working on.
  * @param username1 - The user to add to his friend list.
@@ -669,7 +669,7 @@ MtmFlixResult mtmFlixAddFriend(MtmFlix mtmflix, const char* username1,
     return MTMFLIX_SUCCESS;
 }
 
-/**
+/** Rows: 12
  ***** Function: mtmFlixRemoveFriend *****
  * Description: Gets two usernames and removes username2 from the friend
  * list of username1.
@@ -732,8 +732,7 @@ MtmFlixResult mtmFlixGetRecommendations(MtmFlix mtmflix, const char* username,
     }
 
     Set ranked_series_set=setCreate(rankedSeriesCopySetElement,
-                                    rankedSeriesDestroySetElement,
-                                    rankedSeriesCompareSetElement);
+            rankedSeriesDestroySetElement, rankedSeriesCompareSetElement);
     if(!ranked_series_set){
         setDestroy(series_set_copy);
         return MTMFLIX_OUT_OF_MEMORY;
