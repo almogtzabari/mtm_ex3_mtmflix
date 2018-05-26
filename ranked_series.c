@@ -8,6 +8,17 @@ struct ranked_series_t{
     char* series_genre;
 };
 
+/**
+ ***** Function : rankedSeriesCreate *****
+ * Description : Creates a new ranked series.
+ * @param rank - Series rank.
+ * @param series_name - Series name.
+ * @param series_genre - Series genre.
+ *
+ * @return
+ * NULL in case of memory allocation error, else a pointer to a new ranked
+ * series.
+ */
 RankedSeries rankedSeriesCreate (int rank, char* series_name,
                                  char* series_genre){
     RankedSeries new_ranked_series=malloc(sizeof(*new_ranked_series));
@@ -33,6 +44,14 @@ RankedSeries rankedSeriesCreate (int rank, char* series_name,
     return new_ranked_series;
 }
 
+/**
+ ***** Description : rankedSeriesCopy *****
+ * @param ranked_series - A ranked series to copy.
+ *
+ * @return
+ * NULL in case of memory allocation error, else a copy of the given ranked
+ * series.
+ */
 RankedSeries rankedSeriesCopy (RankedSeries ranked_series){
     RankedSeries ranked_series_copy=rankedSeriesCreate(ranked_series->rank,
             ranked_series->series_name,ranked_series->series_genre);
@@ -42,6 +61,11 @@ RankedSeries rankedSeriesCopy (RankedSeries ranked_series){
     return ranked_series_copy;
 }
 
+/**
+ ***** Function : rankedSeriesDestroy *****
+ * Description: Deallocates all recources of a ranked series.
+ * @param ranked_series
+ */
 void rankedSeriesDestroy (RankedSeries ranked_series){
     if(!ranked_series){
         return;
@@ -51,6 +75,19 @@ void rankedSeriesDestroy (RankedSeries ranked_series){
     free(ranked_series);
 }
 
+/**
+ ***** Function : rankedSeriesCompare *****
+ * Description : Compares between to ranked series by their rank, if the
+ * rank is equal, the comparison is made by their names.
+ * @param ranked_series1 - A ranked series to compare.
+ * @param ranked_series2 - A ranked series to compare.
+ *
+ * @return
+ * If the ranks are different, return a positive integer if the rank of
+ * ranked series 2 is higher else a negative integer. If the ranks are
+ * equal the comparison is made by strcmp (returns a positive integer if
+ * the name of ranked series 1 has a bigger value).
+ */
 int rankedSeriesCompare (RankedSeries ranked_series1,
                          RankedSeries ranked_series2){
     if((ranked_series1->rank)!=(ranked_series2->rank)){
@@ -59,6 +96,15 @@ int rankedSeriesCompare (RankedSeries ranked_series1,
     return strcmp(ranked_series1->series_name,ranked_series2->series_name);
 }
 
+/**
+ ***** Function : rankedSeriesPrintToFile *****
+ * @param number_of_series_to_print - The number of series to print to
+ * file, if the number is 0 we need to print all the rabked series.
+ * @param ranked_series_set - Set of all ranked series.
+ * @param outputStream - A file to print to.
+ * @param result - The status of the function, in case of memory allocation
+ * error will be updated to MTMFLIX_OUT_OF_MEMORY.
+ */
 void rankedSeriesPrintToFile(int number_of_series_to_print,
                              Set ranked_series_set,
                              FILE* outputStream,MtmFlixResult* result){
