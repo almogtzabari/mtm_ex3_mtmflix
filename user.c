@@ -3,7 +3,7 @@
 #include <string.h>
 #include "user.h"
 
-#define ILLEGAL_VALUE -1
+
 
 //-----------------------------------------------------------------------//
 //                USER: STATIC FUNCTIONS DECLARATIONS                    //
@@ -20,7 +20,7 @@ static bool checkIfUserLikedSeries (List favorite_series_list,
                                     char* series_name);
 
 //-----------------------------------------------------------------------//
-//                            USER: STRUCT                               //
+//                        USER: STRUCT                                   //
 //-----------------------------------------------------------------------//
 
 struct user_t{
@@ -145,7 +145,6 @@ void userDestroy (User user){
  * Positive Integer - User1's name is bigger than user2's name.
  * Negative Integer - User2's name is bigger than user1's name.
  * Zero - Both names are equal.
- *
  */
 int userCompare (User user1, User user2){
     assert(user1);
@@ -227,7 +226,7 @@ MtmFlixResult addNameToUsersList(User user,char *name,UserList list_type){
 
 
 /** Rows: 8
- ***** Function: printUserDetailsToFile *****
+ ***** Function: userPrintDetailsToFile *****
  * Description: Gets a user and prints its details to a given file.
  *
  * @param current_user - The user which his details will be printed to the
