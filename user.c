@@ -5,7 +5,7 @@
 
 
 static void userRemoveFromList(List list, const char *username);
-static MtmFlixResult addToList(List list, const char *name);
+static MtmFlixResult addToUsersList(List list, const char *name);
 static bool friendLikedTheSeries(Set users_set, char *friend_name,
                                  char *series_name);
 static bool checkIfUserLikedSeries (List favorite_series_list,
@@ -189,16 +189,16 @@ MtmFlixResult AddToList(User user,const char *name, UserList list_type){
     assert(name);
     MtmFlixResult result;
     if(list_type==FRIENDS_LIST){
-        result=addToList(user->user_friends_list,name);
+        result= addToUsersList(user->user_friends_list, name);
     }
     else{
-        result=addToList(user->user_favorite_series,name);
+        result= addToUsersList(user->user_favorite_series, name);
     }
     return result;
 }
 
 
-static MtmFlixResult addToList(List list, const char *name){
+static MtmFlixResult addToUsersList(List list, const char *name){
     ListResult result;
     LIST_FOREACH(ListElement,iterator,list) {
         if (!strcmp((char*) iterator, name)) {
