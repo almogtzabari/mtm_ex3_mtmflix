@@ -78,7 +78,7 @@ MtmFlix mtmFlixCreate(){
     return flix;
 }
 
-/**
+/** Rows: 5
  ***** Function: *****
  * Description: Frees all allocated memory of a given MtmFlix.
  *
@@ -93,7 +93,7 @@ void mtmFlixDestroy(MtmFlix mtmflix){
     free(mtmflix);
 }
 
-/** Rows: 19
+/** Rows: 21
  ***** Function: mtmFlixAddUser *****
  * Description: Adds a username to the MtmFlix if the user doesn't already
  * exist and the given age is legal.
@@ -155,7 +155,7 @@ MtmFlixResult mtmFlixAddUser(MtmFlix mtmflix,
     return MTMFLIX_SUCCESS;
 }
 
-/** Rows: 14
+/** Rows: 13
  ***** Function: mtmFlixRemoveUser *****
  * Description: Removes a given user from the given MtmFlix.
  *
@@ -179,7 +179,6 @@ MtmFlixResult mtmFlixRemoveUser(MtmFlix mtmflix, const char* username){
         /* Failed to create dummy user. */
         return MTMFLIX_OUT_OF_MEMORY;
     }
-    assert(mtmflix->users);
     if(!setIsIn(mtmflix->users,dummy_user)){
         /* User does not exist. */
         userDestroy(dummy_user);
@@ -197,7 +196,7 @@ MtmFlixResult mtmFlixRemoveUser(MtmFlix mtmflix, const char* username){
     return MTMFLIX_SUCCESS;
 }
 
-/** Rows: 9
+/** Rows: 8
  ***** Function: nameIsValid *****
  * Description: Checks if the given name contains only letters or numbers
  * and is not an empty string.
@@ -225,7 +224,7 @@ static bool nameIsValid(const char *name){
     return true;
 }
 
-/** Rows: 22
+/** Rows: 24
  ***** Function: mtmFlixAddSeries *****
  * Description: Adds a series to MtmFlix.
  *
@@ -333,7 +332,7 @@ MtmFlixResult mtmFlixRemoveSeries(MtmFlix mtmflix, const char* name){
     return MTMFLIX_SUCCESS;
 }
 
-/** Rows:30
+/** Rows: 29
  ***** Function: mtmFlixReportSeries *****
  * Description: Prints name and genre of series in MtmFlix to a file. Only
  * the 'seriesNum' first from each genre will be printed.
@@ -416,7 +415,7 @@ MtmFlixResult mtmFlixReportSeries(MtmFlix mtmflix, int seriesNum,
     }
     return MTMFLIX_SUCCESS;
 }
-/**Rows:9
+/** Rows: 10
  ***** Function: mtmFlixReportUsers *****
  * Description: Prints all the details of all the users to a file.
  * @param mtmflix - The mtmflix to print the series list from.
@@ -444,7 +443,7 @@ MtmFlixResult mtmFlixReportUsers(MtmFlix mtmflix, FILE* outputStream){
     return MTMFLIX_SUCCESS;
 }
 
-/**
+/** Rows:
  ***** Function: mtmFlixSeriesJoin *****
  * Description: Gets a username and a series name and put the series in
  * user's favorite-series-list.
@@ -454,7 +453,7 @@ MtmFlixResult mtmFlixReportUsers(MtmFlix mtmflix, FILE* outputStream){
  * @param seriesName - The name of the series we want to add.
  * @return
  * MTMFLIX_SUCCESS - Adding succeeded.
- * MTMFLIX_NULL_ARGUMENT - One or more of the given arguments is NULL.
+ * MTMFLIX_NULL_ARGUMENT - At lease one of the given arguments is NULL.
  * MTMFLIX_USER_DOES_NOT_EXIST - User doesn't exist in the given system.
  * MTMFLIX_SERIES_DOES_NOT_EXIST - Series doesn't exist in the given
  * system.
@@ -463,9 +462,10 @@ MtmFlixResult mtmFlixReportUsers(MtmFlix mtmflix, FILE* outputStream){
 MtmFlixResult mtmFlixSeriesJoin(MtmFlix mtmflix, const char* username,
                                 const char* seriesName){
     if(!mtmflix || !username || !seriesName){
+        /* At lease one of the given arguments is NULL. */
         return MTMFLIX_NULL_ARGUMENT;
     }
-    /*Checks if both user and series exist in mtmflix */
+    /* Checks if both user and series exist in mtmflix. */
     MtmFlixResult result= userAndSeriesExist(mtmflix,username,seriesName);
     if(result!=MTMFLIX_SUCCESS){
         return result;
@@ -480,14 +480,13 @@ MtmFlixResult mtmFlixSeriesJoin(MtmFlix mtmflix, const char* username,
         return MTMFLIX_OUT_OF_MEMORY;
     }
     SeriesResult status;
-    bool user_can_watch = userCanWatchSeries(mtmflix, dummy_user,
-            dummy_series,&status);
-    if(status!=SERIES_SUCCESS){
-        userDestroy(dummy_user);
-        seriesDestroy(dummy_series);
-        return MTMFLIX_OUT_OF_MEMORY;
-    }
-    if(!user_can_watch){
+    if(!userCanWatchSeries(mtmflix, dummy_user,
+                           dummy_series,&status)){
+        if(status!=SERIES_SUCCESS){
+            userDestroy(dummy_user);
+            seriesDestroy(dummy_series);
+            return MTMFLIX_OUT_OF_MEMORY;
+        }
         /*If we got here user can't add the series because of age
           limitations */
         userDestroy(dummy_user);
