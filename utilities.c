@@ -1,5 +1,14 @@
 #include "utilities.h"
 
+//-----------------------------------------------------------------------//
+//                            DESCIPTION                                 //
+//                                                                       //
+//   THE FOLLOWING FUNCTIONS ARE AUXILIARY FUNCTION THAT USES THE COPY,  //
+//   CREATE AND DESTROY OF EACH ADT (SERIES,USERS). A FULL DESCRIPTION   //
+//   OF EACH FUNCTION CAN BE FOUND IN EACH ADT FILES.                    //
+//-----------------------------------------------------------------------//
+
+
 
 //-----------------------------------------------------------------------//
 //                       SERIES SET FUNCTIONS                            //
