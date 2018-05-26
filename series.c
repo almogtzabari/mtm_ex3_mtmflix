@@ -101,7 +101,7 @@ char* seriesCopyName( char *name){
         /* NULL argument. */
         return NULL;
     }
-    char* name_copy = malloc(sizeof(strlen(name)+1));
+    char* name_copy = malloc(sizeof(strlen(name))+1);
     if(!name_copy){
         /* Name copy memory allocation failed. */
         return NULL;
