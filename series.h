@@ -10,7 +10,6 @@
 #include <assert.h>
 
 #define NUMBER_OF_GENRES 8
-#define SERIES_NO_AGE_RESTRICTIONS -1
 
 typedef struct series_t* Series;
 
@@ -21,6 +20,10 @@ typedef enum SeriesResult_t {
     SERIES_ALREADY_EXISTS
 } SeriesResult;
 
+
+//-----------------------------------------------------------------------//
+//                   SERIES: FUNCTIONS DECLARATIONS                      //
+//-----------------------------------------------------------------------//
 
 Series seriesCopy(Series series);
 

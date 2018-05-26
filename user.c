@@ -3,13 +3,25 @@
 #include <string.h>
 #include "user.h"
 
+#define ILLEGAL_VALUE -1
 
-static void userRemoveFromList(List list,char *username);
-static MtmFlixResult addToUsersList(List list,char *name);
+//-----------------------------------------------------------------------//
+//                USER: STATIC FUNCTIONS DECLARATIONS                    //
+//-----------------------------------------------------------------------//
+
+static void userRemoveFromList(List list,char *name);
+
+static MtmFlixResult addNameToAList(List list, char *name);
+
 static bool friendLikedTheSeries(Set users_set, char *friend_name,
                                  char *series_name);
+
 static bool checkIfUserLikedSeries (List favorite_series_list,
                                     char* series_name);
+
+//-----------------------------------------------------------------------//
+//                            USER: STRUCT                               //
+//-----------------------------------------------------------------------//
 
 struct user_t{
     char* username;
@@ -18,12 +30,18 @@ struct user_t{
     List user_favorite_series;
 };
 
-/**
+
+//-----------------------------------------------------------------------//
+//                       USER: FUNCTIONS                                 //
+//-----------------------------------------------------------------------//
+
+/** Rows: 25
  ***** Function: userCreate *****
  * Description: Creates a new user.
  *
  * @param username - String with the user's name.
  * @param age - Age of the user.
+ *
  * @return
  * A pointer to a new user or NULL in case of memory error or illegal age.
  */
@@ -65,11 +83,12 @@ User userCreate(const char* username, int age){
 }
 
 
-/**
+/** Rows: 15
  ***** Function: userCopy *****
  * Description: Copies a given user.
  *
  * @param user - A user to copy.
+ *
  * @return
  * A new user or NULL in case of failure.
  */
@@ -99,9 +118,7 @@ User userCopy (User user){
     return new_user;
 }
 
-
-
-/**
+/** Rows: 6
  ***** Function: userDestroy *****
  * Description: Deallocates an existing user.
  *
@@ -117,15 +134,17 @@ void userDestroy (User user){
     free(user);
 }
 
-/**
+/** Rows: 1
   ***** Function: userCompare *****
  * Description: Compares between two user's usernames.
+ *
  * @param user1 - First user.
  * @param user2 - Second user.
  *
  * @return
- * A negative integer if user1's name is less than user2's name, 0 if the
- * names are equal and a positive integer if user1's name is bigger.
+ * Positive Integer - User1's name is bigger than user2's name.
+ * Negative Integer - User2's name is bigger than user1's name.
+ * Zero - Both names are equal.
  *
  */
 int userCompare (User user1, User user2){
@@ -134,9 +153,10 @@ int userCompare (User user1, User user2){
     return strcmp(user1->username,user2->username);
 }
 
-/**
+/** Rows: 5
  ***** Function: usernameCopy *****
  * Description: Copying a friend's name.
+ *
  * @param username - A friend's name to copy.
  *
  * @return
@@ -153,16 +173,25 @@ char* usernameCopy(char* username){
     return username_copy;
 }
 
-/**
+/** Rows: 1
  ***** Function: destroyUsername *****
  * Description: Deallocates the memory used for a friend's name.
+ *
  * @param user - A friend's name to destroy.
  */
 void destroyUsername (char* friend_username){
     free(friend_username);
 }
 
-
+/** Rows: 3
+ ***** Function: removeFromList *****
+ * Description: Removes the given name from the specified list of given
+ * user.
+ *
+ * @param user - User we want to remove from one of his list.
+ * @param name - Name to remove from list.
+ * @param list_type - Which of given user's lists to remove from.
+ */
 void removeFromList(User user,char* name,UserList list_type){
     assert(user);
     assert(name);
@@ -174,31 +203,209 @@ void removeFromList(User user,char* name,UserList list_type){
     }
 }
 
-static void userRemoveFromList(List list, char *username){
-    LIST_FOREACH(ListElement,iterator,list){
-        if(!strcmp((char*)iterator,username)){
-            listRemoveCurrent(list);
-            break;
-        }
-    }
-}
-
-
-MtmFlixResult AddToList(User user,char *name, UserList list_type){
+/** Rows: 5
+ ***** Function: addNameToUsersList *****
+ * Description: Adds a given name to a specified list of a given user.
+ *
+ * @param user - User we want to add to one of his lists.
+ * @param name - Name we want to add to list.
+ * @param list_type - Which of given user's lists to add to.
+ * @return
+ */
+MtmFlixResult addNameToUsersList(User user,char *name,UserList list_type){
     assert(user);
     assert(name);
     MtmFlixResult result;
     if(list_type==FRIENDS_LIST){
-        result= addToUsersList(user->user_friends_list, name);
+        result= addNameToAList(user->user_friends_list, name);
     }
     else{
-        result= addToUsersList(user->user_favorite_series, name);
+        result= addNameToAList(user->user_favorite_series, name);
     }
     return result;
 }
 
 
-static MtmFlixResult addToUsersList(List list,char *name){
+/** Rows: 8
+ ***** Function: printUserDetailsToFile *****
+ * Description: Gets a user and prints its details to a given file.
+ *
+ * @param current_user - The user which his details will be printed to the
+ * file.
+ * @param outputStream - A file to print to.
+ *
+ * @return
+ * USER_OUT_OF_MEMORY - Any memory error.
+ * USER_SUCCESS - Successfully printed.
+ */
+UserResult userPrintDetailsToFile(User current_user, FILE *outputStream) {
+
+    const char *user_details = mtmPrintUser(current_user->username,
+                       current_user->age, current_user->user_friends_list
+                                     ,current_user->user_favorite_series);
+    if (!user_details) {
+        return USER_OUT_OF_MEMORY;
+    }
+    if(fprintf(outputStream, "%s", user_details)<0){
+        return USER_OUT_OF_MEMORY;
+    }
+    return USER_SUCCESS;
+}
+
+/** Rows: 1
+ ***** Function: userGetAge *****
+ * Description: Returns the age of given user.
+ *
+ * @param user - User to get its age.
+ *
+ * @return
+ * Age of given user.
+ */
+int userGetAge (User user){
+    assert(user);
+    return user->age;
+}
+
+/** Rows: 5
+ ***** Function: howManyFriendsLovedThisSeries *****
+ * Description: Returns how many friends of a given user loves a given
+ * series.
+ *
+ * @param users_set - Set which contains all users in mtmflix.
+ * @param user - A user to check with his friends.
+ * @param series_name - A series name to search on friends' favorite lists.
+ *
+ * @return
+ * The number of friends that loved the given series.
+ */
+int howManyFriendsLovedThisSeries(Set users_set, User user,
+                                                        char *series_name){
+    int how_many_loved_this_series=0;
+    LIST_FOREACH(ListElement,friend_name,user->user_friends_list){
+        /*Checks each friend series list */
+        if(friendLikedTheSeries(users_set,(char*)friend_name,series_name)){
+            how_many_loved_this_series++;
+        }
+    }
+    return how_many_loved_this_series;
+}
+
+/** Rows: 12
+ ***** Function: userHowManySeriesWithGenre *****
+ * Description: Returns the number of series in user's favorite-series-list
+ * with the same genre as the given genre.
+ *
+ * @param user - The user we want to check his favorite-series-list.
+ * @param genre - The genre we are looking for.
+ * @param series_set - Set of all the series in the mtmflix.
+ *
+ * @return
+ * If succeeded - Number of series with same genre in user's
+ * favorite-series-list.
+ * If fails - Will return ILLEGAL_VALUE.
+ */
+int userHowManySeriesWithGenre(Set series_set, User user, Genre genre){
+    Genre current_genre;
+    int count=0;
+    SeriesResult status;
+    LIST_FOREACH(ListElement,current_series_name,
+                 user->user_favorite_series){
+        current_genre = seriesGetGenreByName((char*)current_series_name,
+                                             series_set,&status);
+        if(status != SERIES_SUCCESS){
+            /* There was an error with seriesGetGenreByName. */
+            return ILLEGAL_VALUE;
+        }
+        if(current_genre == genre){
+            /* Current series has the same genre as the given genre. */
+            count++;
+        }
+    }
+    return count;
+}
+
+/** Rows: 16
+ ***** Function: userGetAverageEpisodeDuration *****
+ * Description: Gets a user, a status and a set of all the series in the
+ * system. The function returns the average duration of episodes of user's
+ * favorite series.
+ *
+ * @param user - The user we want to check his favorite series for
+ * the calulation.
+ * @param series_set - Set of all the series in the system.
+ * @param function_status - Will hold information of success/failure of the
+ * function.
+ *
+ * @return
+ * If succeeded - Average episode duration of all series in user's
+ * favorite-series-list.
+ * If fails - returns ILLEGAL_VALUE.
+ */
+double userGetAverageEpisodeDuration(User user, Set series_set,
+                                     MtmFlixResult* function_status){
+    int episode_duration=0;
+    int number_of_series=0;
+    SeriesResult series_status;
+    LIST_FOREACH(ListElement,current_series_name,
+                 user->user_favorite_series){
+        episode_duration+= seriesGetDurationByName(current_series_name,
+                                                   series_set,
+                                                   &series_status);
+        if(series_status != SERIES_SUCCESS){
+            /* Error in seriesGetDurationByName. */
+            *function_status = MTMFLIX_OUT_OF_MEMORY;
+            return ILLEGAL_VALUE; // This value won't be checked.
+        }
+        number_of_series++;
+    }
+    *function_status = MTMFLIX_SUCCESS;
+    if(number_of_series == 0){
+        /* User doesn't have any series in his favorite list. */
+        return 0;
+    }
+    return ((double)episode_duration)/((double)number_of_series);
+}
+
+/** Rows: 4
+ ***** Function: isInUsersFavoriteSeriesList *****
+ * Description: Returns whether or not a given series name is in given
+ * user's favorite series list.
+ *
+ * @param user - A user to check in his favorite series list.
+ * @param series_name - Series name to check for.
+ *
+ * @return
+ * True - Series name does exist in given user's favorite series list.
+ * False - Series name doesn't exist in given user's favorite series list.
+ */
+bool isInUsersFavoriteSeriesList(User user,char* series_name){
+    LIST_FOREACH(ListElement,series,user->user_favorite_series){
+        if(strcmp(series,series_name)==0){
+            /* series is found in user's favorite series list*/
+            return true;
+        }
+    }
+    return false;
+}
+
+
+//-----------------------------------------------------------------------//
+//                       USER: STATIC FUNCTIONS                          //
+//-----------------------------------------------------------------------//
+
+/** Rows: 11
+ ***** Static function: addNameToAList *****
+ * Description: Add a given name to a given list.
+ *
+ * @param list - List to add to.
+ * @param name - Name to add to the given list.
+ *
+ * @return
+ * MTMFLIX_SUCCESS - Successfully added.
+ * MTMFLIX_OUT_OF_MEMORY - Any memory error.
+ *
+ */
+static MtmFlixResult addNameToAList(List list, char *name){
     ListResult result;
     LIST_FOREACH(ListElement,iterator,list) {
         if (!strcmp((char*) iterator, name)) {
@@ -218,65 +425,23 @@ static MtmFlixResult addToUsersList(List list,char *name){
     return MTMFLIX_SUCCESS;
 }
 
-
-/**
- ***** Function: printUserDetailsToFile *****
- * Description: Gets a user and prints its details to a given file.
- * @param current_user - The user which his details will be printed to the
- * file.
- * @param outputStream - A file to print to.
+/** Rows: 4
+ ***** Static function: userRemoveFromList *****
+ * Description: remove a given name from a given list.
  *
- * @return
- * USER_OUT_OF_MEMORY - In case of memory allocation error.
- * USER_SUCCESS - Printing to file succeeded.
+ * @param list - List to remove from.
+ * @param name - Name to remove from list.
  */
-UserResult userPrintDetailsToFile(User current_user,
-                                  FILE *outputStream) {
-    const char *user_details = mtmPrintUser(current_user->username,
-                                            current_user->age,
-                                            current_user->user_friends_list
-            ,current_user->user_favorite_series);
-    if (!user_details) {
-        return USER_OUT_OF_MEMORY;
-    }
-    if(fprintf(outputStream, "%s", user_details)<0){
-        return USER_OUT_OF_MEMORY;
-    }
-    return USER_SUCCESS;
-}
-
-int userGetAge (User user){
-    assert(user);
-    return user->age;
-}
-
-
-
-
-
-/**
- ***** Function: howManyFriendsLovedThisSeries *****
- * @param users_set - Set which contains all users in mtmflix.
- * @param user - A user to recommend to.
- * @param series_name - A series name to search on friends lists.
- *
- * @return
- * The number of friends that loved the series.
- */
-int howManyFriendsLovedThisSeries(Set users_set, User user,
-                                  char *series_name){
-    int how_many_loved_this_series=0;
-    LIST_FOREACH(ListElement,friend_name,user->user_friends_list){
-        /*Checks each friend series list */
-        if(friendLikedTheSeries(users_set, (char *) friend_name,
-                                series_name)){
-            how_many_loved_this_series++;
+static void userRemoveFromList(List list, char *name){
+    LIST_FOREACH(ListElement,iterator,list){
+        if(!strcmp((char*)iterator,name)){
+            listRemoveCurrent(list);
+            break;
         }
     }
-    return how_many_loved_this_series;
 }
 
-/**
+/** Rows: 9
  ***** Function: friendLikedTheSeries *****
  * Description: searches for the friend in the users list and checks
  * if he liked the series.
@@ -292,7 +457,7 @@ static bool friendLikedTheSeries(Set users_set, char *friend_name,
     SET_FOREACH(User,current_user,users_set){
         /*Searching for the friend in users set */
         if(userCompare(friend,current_user)==0){
-           /*Found the friend in users list */
+            /*Found the friend in users list */
             if(checkIfUserLikedSeries(current_user->user_favorite_series,
                                       series_name)){
                 userDestroy(friend);
@@ -305,7 +470,7 @@ static bool friendLikedTheSeries(Set users_set, char *friend_name,
     return false;
 }
 
-/**
+/** Rows: 4
  ***** Function: checkIfUserLikedSeries *****
  * @param favorite_series_list - Favorite series list of the friend.
  * @param series_name - A series name to search on this friend's list.
@@ -322,94 +487,6 @@ static bool checkIfUserLikedSeries (List favorite_series_list,char* series_name)
     }
     return false;
 }
-
-/**
- ***** Function: userHowManySeriesWithGenre *****
- * Description: Gets a user and a genre and returns the number of series in
- * user's favorite-series-list with the same genre.
- * @param user - The user we want to check his favorite-series-list.
- * @param genre - The genre we are looking for.
- * @param series_set - Set of all the series in the mtmflix.
- * @return
- * If succeeded - Number of series with same genre in user's
- * favorite-series-list.
- * If fails - Will return -1.
- */
-int userHowManySeriesWithGenre(Set series_set, User user, Genre genre){
-    Genre current_genre;
-    int count=0;
-    SeriesResult status;
-    LIST_FOREACH(ListElement,current_series_name,
-                 user->user_favorite_series){
-        current_genre = seriesGetGenreByName((char*)current_series_name,
-                                             series_set,&status);
-        if(status != SERIES_SUCCESS){
-            /* There was an error with seriesGetGenreByName. */
-            return -1;
-        }
-        if(current_genre == genre){
-            /* Current series has the same genre as the given genre. */
-            count++;
-        }
-    }
-    return count;
-}
-
-/**
- ***** Function: userGetAverageEpisodeDuration *****
- * Description: Gets a user, a status and a set of all the series in the
- * system. The function returns the average duration of episodes of user's
- * favorite series.
- *
- * @param user - The user we want to check his favorite series for
- * the calulation.
- * @param series_set - Set of all the series in the system.
- * @param function_status - Will hold information of success/failure of the
- * function.
- * @return
- * If succeeded - Average episode duration of all series in user's
- * favorite-series-list.
- * If fails - returns -1.
- */
-double userGetAverageEpisodeDuration(User user, Set series_set,
-                                     MtmFlixResult* function_status){
-    int episode_duration=0;
-    int number_of_series=0;
-    SeriesResult series_status;
-    LIST_FOREACH(ListElement,current_series_name,
-                 user->user_favorite_series){
-        episode_duration+= seriesGetDurationByName(current_series_name,
-                                                   series_set,
-                                                   &series_status);
-        if(series_status != SERIES_SUCCESS){
-            /* Error in seriesGetDurationByName. */
-            *function_status = MTMFLIX_OUT_OF_MEMORY;
-            return -1; // This value won't be checked.
-        }
-        number_of_series++;
-    }
-    *function_status = MTMFLIX_SUCCESS;
-    if(number_of_series == 0){
-        /* User doesn't have any series in his favorite list. */
-        return 0;
-    }
-    return ((double)episode_duration)/((double)number_of_series);
-}
-
-bool isInUsersFavoriteSeriesList(User user,char* series_name){
-    LIST_FOREACH(ListElement,series,user->user_favorite_series){
-        if(strcmp(series,series_name)==0){
-            /*If we get here series is found in user's favorite series
-              list*/
-            return true;
-        }
-    }
-    return false;
-}
-
-
-
-
 
 
 

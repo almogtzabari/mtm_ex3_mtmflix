@@ -526,8 +526,9 @@ MtmFlixResult mtmFlixSeriesJoin(MtmFlix mtmflix, const char* username,
          if(userCompare(dummy_user,current_user)==0){
              /* We found the user with the given name so we need to add the
               * series to this user.*/
-             result = AddToList((User)current_user,(char*)seriesName,
-                     FAVORITE_SERIES_LIST);
+             result = addNameToUsersList((User) current_user,
+                                         (char *) seriesName,
+                                         FAVORITE_SERIES_LIST);
              if (result!=MTMFLIX_SUCCESS) {
                  userDestroy(dummy_user);
                  return MTMFLIX_OUT_OF_MEMORY;
@@ -689,8 +690,9 @@ MtmFlixResult mtmFlixAddFriend(MtmFlix mtmflix, const char* username1,
         if(userCompare(dummy_user,current_user)==0){
             /* We found the user with the given name so we need to add
              * username2 to this user's friend list.*/
-            result = AddToList((User)current_user,(char*)username2,
-                                                        FRIENDS_LIST);
+            result = addNameToUsersList((User) current_user,
+                                        (char *) username2,
+                                        FRIENDS_LIST);
             if (result!=MTMFLIX_SUCCESS) {
                 /* Failed to add to usernames1's friend list. */
                 userDestroy(dummy_user);
